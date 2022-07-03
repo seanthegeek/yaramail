@@ -1,0 +1,17 @@
+mailsuite==1.7.3
+yara-python==4.2.0
+nose
+pygments
+flake8
+doc8
+collective.checkdocs
+jinja2
+packaging
+imagesize
+alabaster
+babel
+rstcheck>=3.3.1
+sphinx
+sphinx_rtd_theme
+wheel
+codecov

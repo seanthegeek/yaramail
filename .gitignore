@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Pycharm project
+.idea/
+
+# Samples for testing
+private/
