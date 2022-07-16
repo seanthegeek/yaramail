@@ -20,6 +20,8 @@ handler.setFormatter(formatter)
 logger = logging.getLogger("mailsuite.scanner")
 logger.addHandler(handler)
 
+__version__ = "1.0.0"
+
 
 def _match_to_dict(match: Union[yara.Match,
                                 List[yara.Match]]) -> Union[List[Dict],

@@ -1,11 +1,11 @@
-yaramail
-========
+# yaramail
+
 
 A Python package and command-line utility for scanni emails with YARA rules.
 Ideal for automated triage of phishing reports.
 
-Features
---------
+## Features
+
 
 - Scans all parts of an email via API or CLI
 

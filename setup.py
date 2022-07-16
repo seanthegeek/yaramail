@@ -19,7 +19,7 @@ description = "A Python package and command-line utility for scanning " \
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
@@ -83,7 +83,7 @@ setup(
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
                       'yara-python>=4.2.0',
-                      'mailparser>=1.0.0,'
+                      'mailsuite>=1.8.0,'
                       'pdftotext==2.2.2',
                       ],
 
