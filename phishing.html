@@ -237,15 +237,19 @@ analyzing an email.</p>
       description = &quot;Impersonation of key employees of Planet Express in an external email&quot;
 
   /*
-  /(Hubert|Prof\.?(lessor)?) (Hubert )?Farnsworth/
+  /(Hubert|Hugh|Prof\.?(lessor)?) ((Hubert|Hugh) )?Farnsworth/
 
   Hubert Farnsworth
+  Hugh Farnsworth
   Professor Farnsworth
   Prof. Farnsworth
   Prof Farnsworth
   Professor Hubert Farnsworth
+  Professor Hugh Farnsworth
   Prof. Hubert Farnsworth
   Prof Hubert Farnsworth
+  Prof. Hugh Farnsworth
+  Prof Hugh Farnsworth
 
   /Phil(ip)? (J\.? )?Fry/
 
@@ -259,7 +263,7 @@ analyzing an email.</p>
 
   strings:
       $external = &quot;[EXT]&quot; ascii wide nocase
-      $s1 = /(Hubert|Prof\.?(essor)?) (Hubert )?Farnsworth/ ascii wide nocase
+      $s1 = /(Hubert|Hugh|Prof\.?(lessor)?) ((Hubert|Hugh) )?Farnsworth/ ascii wide nocase
       $s2 = &quot;Hermes Conrad&quot; ascii wide nocase
       $s3 = &quot;Turanga Leela&quot; ascii wide nocase
       $s4 = &quot;Amy Wong&quot; ascii wide nocase
