@@ -154,7 +154,7 @@ with false positives. An exemption to a malicious rule **does not** mean that
 the content is safe — it only means that the rule cannot be used for that
 content.
 
-```{note}
+```{tip}
 If an external email tag is not in use, an alternative approach is using the
 previously mentioned `from_trusted_domain()` function in Python when an
 analyzing an email.
