@@ -203,7 +203,13 @@ rule exec_impersonation {
 }
 ```
 
- Rules in the `header_body` ruleset are checked against combined email header
+```{tip}
+Full names (often including middle initials) of executives at
+publicly-traded US companies can be found in SEC filings, which are
+[publicly searchable][EDGAR] on EDGAR.
+```
+
+Rules in the `header_body` ruleset are checked against combined email header
 and email body content. A rule like the one above should be added to the
  `header_body` ruleset. That way it can identify impersonation in the `From`
 header display name and/or the email body.
@@ -332,3 +338,4 @@ for email in emails:
 [trusted]: https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.from_trusted_domain
 [mailsuite.utils]: https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.from_trusted_domain
 [parse_email]: https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.parse_email
+[EDGAR]: https://www.sec.gov/edgar/searchedgar/companysearch.html
