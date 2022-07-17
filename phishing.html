@@ -102,12 +102,12 @@ that have been sent to the inbox. That way new samples can be tested against
 existing automation, and changes in automation can be checked for effectiveness
 against new samples and regressions with existing samples.</p>
 <p>Production material should be kept in the <code class="docutils literal notranslate"><span class="pre">master</span></code> branch. Any development
-should be done in a developer’s fork of the repository. New samples for
-testing must always be added when adjusting automations for new content. Each
-commit should trigger automated testing of the changes. The developer is ready,
-they create a Pull Request, and a project maintainer reviews the proposed
-changes before squashing and merging commits into the upstream <code class="docutils literal notranslate"><span class="pre">master</span></code>
-branch.</p>
+should be done in a rule developer’s fork of the repository. New samples for
+testing must always be added when adjusting for new content. Each commit should
+trigger automated testing of the changes. Whe the rule  developer is ready to
+submit their changes for review, they create a Pull Request, and a project
+maintainer reviews the proposed  changes before squashing and merging commits
+into the upstream <code class="docutils literal notranslate"><span class="pre">master</span></code> branch.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Use the <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#including-files">include</a> directive in the YARA rule files that you pass to
@@ -115,7 +115,7 @@ branch.</p>
 divided into separate files as you see fit.</p>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> class in the <a class="reference internal" href="index.html#api"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">yaramail</span></code> API</span></a> provides a YARA scanner
-specifically designed for scanning emails.</p>
+that is specifically designed for emails.</p>
 <p>To scan an email, pass the output from
 <a class="reference external" href="https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.parse_email"><code class="docutils literal notranslate"><span class="pre">mailsuite.utils.parse_email()</span></code></a> to <code class="docutils literal notranslate"><span class="pre">MailScanner.scan_email()</span></code>,
 Take a look at the <a class="reference internal" href="index.html#api"><span class="std std-doc">API documentation</span></a> to learn about the returned value.</p>
@@ -125,7 +125,7 @@ Take a look at the <a class="reference internal" href="index.html#api"><span cla
 <section id="check-if-an-email-is-trusted">
 <h3>Check if an email is trusted<a class="headerlink" href="#check-if-an-email-is-trusted" title="Permalink to this heading"></a></h3>
 <p>Use the <a class="reference external" href="https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.from_trusted_domain">from_trusted_domain()</a> function in
-<a class="reference external" href="https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.from_trusted_domain">mailsuite.utils</a> to  check the results of DKIM and/or DMARC
+<a class="reference external" href="https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.from_trusted_domain">mailsuite.utils</a> to check the results of DKIM and/or DMARC
 in the <code class="docutils literal notranslate"><span class="pre">Authentication-Results</span></code> header against a list of trusted domains.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -138,7 +138,7 @@ as a way of logging the results of authentication checks that prove that
 the domain in the message <code class="docutils literal notranslate"><span class="pre">From</span></code> header was not spoofed. Most email services
 — including Microsoft 365 and Gmail — use a single <code class="docutils literal notranslate"><span class="pre">Authentication-Results</span></code>
 header to log the results of all authentication checks. By default,
-<a class="reference external" href="https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.from_trusted_domain">from_trusted_domain()</a> will always return <code class="docutils literal notranslate"><span class="pre">False</span></code> if multiple
+<a class="reference external" href="https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.from_trusted_domain">from_trusted_domain()</a> will return <code class="docutils literal notranslate"><span class="pre">False</span></code> if multiple
 <code class="docutils literal notranslate"><span class="pre">Authentication-Results</span></code> headers are found in an email. This is done to
 avoid false positives when an attacker adds their own
 <code class="docutils literal notranslate"><span class="pre">Authentication-Results</span></code> header to an email before it reaches the destination
@@ -146,14 +146,14 @@ mail server.</p>
 <p>Postfix mail servers use a separate <code class="docutils literal notranslate"><span class="pre">Authentication-Results</span></code> header for each
 authentication check. If your mail service does this, set the
 <code class="docutils literal notranslate"><span class="pre">allow_multiple_authentication_results</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">True</span></code>.
-This allows multiple headers, but will return <code class="docutils literal notranslate"><span class="pre">False</span></code> if multiple DKIM
+This allows multiple headers, but will return <code class="docutils literal notranslate"><span class="pre">False</span></code> if multiple DMARC
 results are found, to avoid malicious results.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Set <code class="docutils literal notranslate"><span class="pre">allow_multiple_authentication_results</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> <strong>if and only if</strong>
 the receiving mail service splits the results of each authentication method
-in separate <code class="docutils literal notranslate"><span class="pre">Authentication-Results</span></code> headers <strong>and always</strong> includes DKIM
-results, even when a DKIM signature is not present.</p>
+in separate <code class="docutils literal notranslate"><span class="pre">Authentication-Results</span></code> headers <strong>and always</strong> includes DMARC
+results.</p>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -163,12 +163,12 @@ results, even when a DKIM signature is not present.</p>
 IronPort. This <strong>does not</strong> include API-based email security solutions,
 such as Abnormal Security.</p>
 </div>
-<p>For additional security, check the content of emails in addition to checking
+<p>For stronger security, check the content of emails in addition to checking
 authentication results. This adds another layer of defense when phishing emails
 are sent by a trusted sender. <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html">YARA rules</a> provide a flexable method of
 checking the contents of email headers, body, and attachment content against
 known malicious and trusted patterns.</p>
-<p>For example, the following YARA rule could be used to ensure that all URLs
+<p>For example, the following YARA body rule could be used to ensure that all URLs
 in an email body match the domain of a vendor.</p>
 <div class="highlight-yara notranslate"><div class="highlight"><pre><span></span>rule all_urls_example_vendor : urls {
 
@@ -213,8 +213,8 @@ condition:
 if a target organisation has fully implemented DMARC to prevent domain
 spoofing, people can still be impersonated in the display name of the
 message <code class="docutils literal notranslate"><span class="pre">From</span></code> header, or in the email body. A YARA rule can check for this.
-<a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#regular-expressions">Regular Expressions</a> (regex) are handy, because one string can match a wide
-variety of name variations.</p>
+<a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#regular-expressions">Regular Expressions</a> (regex) are handy, because one string can match a
+wide variety of name variations.</p>
 <p>Most organisations add something to the beginning of an email subject or body
 to let the user know that the email came from an external, untrusted source.
 This can be leveraged in a YARA rule to identify external emails that include
@@ -271,6 +271,10 @@ analyzing an email.</p>
 }
 </pre></div>
 </div>
+<p>Rules in the <code class="docutils literal notranslate"><span class="pre">header_body</span></code> ruleset are checked against combined email header
+and email body content. A rule like the one above should be added to the
+<code class="docutils literal notranslate"><span class="pre">header_body</span></code> ruleset. That way it can identify impersonation in the <code class="docutils literal notranslate"><span class="pre">From</span></code>
+header display name and/or the email body.</p>
 <p>This was a very simple, practical example. YARA was developed to identify and
 classify malware, so it is capable of much more complex pattern matching.
 That the time to read over YARA’s documentation and other resources.</p>
@@ -311,22 +315,18 @@ time, but the reduction in alert fatigue is well worth the effort.</p>
 <h3>Putting it all together<a class="headerlink" href="#putting-it-all-together" title="Permalink to this heading"></a></h3>
 <p>Here’s a complete example of triage code.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
 <span class="kn">from</span> <span class="nn">mailsuite.utils</span> <span class="kn">import</span> <span class="n">parse_email</span><span class="p">,</span> <span class="n">from_trusted_domain</span>
 <span class="kn">from</span> <span class="nn">yaramail</span> <span class="kn">import</span> <span class="n">MailScanner</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;scanner&quot;</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">beautify_report</span><span class="p">(</span><span class="n">report</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-  <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">report</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
-
-<span class="k">def</span> <span class="nf">escalate_to_incident_response</span><span class="p">(</span><span class="n">reported_email</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">priority</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-  <span class="n">reported_email</span> <span class="o">=</span> <span class="n">beautify_report</span><span class="p">(</span><span class="n">reported_email</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">escalate_to_incident_response</span><span class="p">(</span><span class="n">reported_email</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">priority</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+  <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Escalating </span><span class="si">{</span><span class="n">priority</span><span class="si">}</span><span class="s2"> email: </span><span class="si">{</span><span class="n">reported_email</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
   <span class="c1"># TODO: Do something!</span>
   <span class="k">pass</span>
-
 
 <span class="n">malicious_verdicts</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;social engineering&quot;</span><span class="p">,</span> <span class="s2">&quot;credential harvesting&quot;</span><span class="p">,</span>
                       <span class="s2">&quot;fraud&quot;</span><span class="p">,</span> <span class="s2">&quot;malware&quot;</span><span class="p">]</span>
@@ -343,6 +343,7 @@ time, but the reduction in alert fatigue is well worth the effort.</p>
                         <span class="n">attachment_rules</span><span class="o">=</span><span class="s2">&quot;attachment.yar&quot;</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
   <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error parsing YARA rules: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+  <span class="n">scanner</span> <span class="o">=</span> <span class="kc">None</span>
   <span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="c1"># TODO: Do something to fetch emails</span>

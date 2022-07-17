@@ -24,12 +24,12 @@ existing automation, and changes in automation can be checked for effectiveness
 against new samples and regressions with existing samples.
 
 Production material should be kept in the `master` branch. Any development
-should be done in a developer's fork of the repository. New samples for
-testing must always be added when adjusting automations for new content. Each
-commit should trigger automated testing of the changes. The developer is ready,
-they create a Pull Request, and a project maintainer reviews the proposed
-changes before squashing and merging commits into the upstream `master`
-branch.
+should be done in a rule developer's fork of the repository. New samples for
+testing must always be added when adjusting for new content. Each commit should
+trigger automated testing of the changes. Whe the rule  developer is ready to
+submit their changes for review, they create a Pull Request, and a project
+maintainer reviews the proposed  changes before squashing and merging commits
+into the upstream `master` branch.
 
 ```{tip}
 Use the [include][include] directive in the YARA rule files that you pass to
@@ -38,7 +38,7 @@ divided into separate files as you see fit.
 ```
 
 The `MailScanner` class in the [`yaramail` API][API] provides a YARA scanner 
-specifically designed for scanning emails.
+that is specifically designed for emails.
 
 To scan an email, pass the output from 
 [`mailsuite.utils.parse_email()`][parse_email] to `MailScanner.scan_email()`, 
@@ -49,7 +49,7 @@ Take a look at the [API documentation][API] to learn about the returned value.
 ### Check if an email is trusted
 
 Use the [from_trusted_domain()][trusted] function in 
-[mailsuite.utils][mailsuite.utils] to  check the results of DKIM and/or DMARC
+[mailsuite.utils][mailsuite.utils] to check the results of DKIM and/or DMARC
 in the `Authentication-Results` header against a list of trusted domains.
 
 ```{warning}
@@ -63,7 +63,7 @@ as a way of logging the results of authentication checks that prove that
 the domain in the message `From` header was not spoofed. Most email services
 — including Microsoft 365 and Gmail — use a single `Authentication-Results`
 header to log the results of all authentication checks. By default,
-[from_trusted_domain()][trusted] will always return `False` if multiple
+[from_trusted_domain()][trusted] will return `False` if multiple
 `Authentication-Results` headers are found in an email. This is done to
 avoid false positives when an attacker adds their own
 `Authentication-Results` header to an email before it reaches the destination
@@ -72,14 +72,14 @@ mail server.
 Postfix mail servers use a separate `Authentication-Results` header for each
 authentication check. If your mail service does this, set the
 `allow_multiple_authentication_results` parameter to `True`.
-This allows multiple headers, but will return `False` if multiple DKIM
+This allows multiple headers, but will return `False` if multiple DMARC
 results are found, to avoid malicious results.
 
 ```{warning}
 Set `allow_multiple_authentication_results` to `True` **if and only if**
 the receiving mail service splits the results of each authentication method
-in separate `Authentication-Results` headers **and always** includes DKIM
-results, even when a DKIM signature is not present.
+in separate `Authentication-Results` headers **and always** includes DMARC
+results.
 ```
 
 ```{warning}
@@ -90,13 +90,13 @@ IronPort. This **does not** include API-based email security solutions,
 such as Abnormal Security.
 ```
 
-For additional security, check the content of emails in addition to checking
+For stronger security, check the content of emails in addition to checking
 authentication results. This adds another layer of defense when phishing emails
 are sent by a trusted sender. [YARA rules][rules] provide a flexable method of
 checking the contents of email headers, body, and attachment content against
 known malicious and trusted patterns.
 
-For example, the following YARA rule could be used to ensure that all URLs
+For example, the following YARA body rule could be used to ensure that all URLs
 in an email body match the domain of a vendor.
 
 ```yara
@@ -142,8 +142,8 @@ Impersonating a top executive is a classic social engineering technique. Even
 if a target organisation has fully implemented DMARC to prevent domain
 spoofing, people can still be impersonated in the display name of the
 message `From` header, or in the email body. A YARA rule can check for this.
-[Regular Expressions][regex] (regex) are handy, because one string can match a wide
-variety of name variations.
+[Regular Expressions][regex] (regex) are handy, because one string can match a
+wide variety of name variations.
 
 Most organisations add something to the beginning of an email subject or body
 to let the user know that the email came from an external, untrusted source.
@@ -203,6 +203,11 @@ rule exec_impersonation {
 }
 ```
 
+ Rules in the `header_body` ruleset are checked against combined email header
+and email body content. A rule like the one above should be added to the
+ `header_body` ruleset. That way it can identify impersonation in the `From`
+header display name and/or the email body.
+
 This was a very simple, practical example. YARA was developed to identify and
 classify malware, so it is capable of much more complex pattern matching.
 That the time to read over YARA's documentation and other resources.
@@ -248,22 +253,18 @@ Here's a complete example of triage code.
 
 ```python
 import logging
-import json
+from typing import Dict
 
 from mailsuite.utils import parse_email, from_trusted_domain
 from yaramail import MailScanner
 
 logger = logging.getLogger("scanner")
 
-def beautify_report(report: dict):
-  return json.dumps(report, indent=2)
 
-
-def escalate_to_incident_response(reported_email: dict, priority: str):
-  reported_email = beautify_report(reported_email)
+def escalate_to_incident_response(reported_email: Dict, priority: str):
+  logger.info(f"Escalating {priority} email: {reported_email['subject']}")
   # TODO: Do something!
   pass
-
 
 malicious_verdicts = ["social engineering", "credential harvesting",
                       "fraud", "malware"]
@@ -280,6 +281,7 @@ try:
                         attachment_rules="attachment.yar")
 except Exception as e:
   logger.error(f"Error parsing YARA rules: {e}")
+  scanner = None
   exit(-1)
 
 # TODO: Do something to fetch emails
