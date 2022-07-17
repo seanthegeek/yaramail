@@ -8,7 +8,7 @@ build-backend = "hatchling.build"
 name = "yaramail"
 description = "A Python package and command line utility for scanning emails with YARA rules"
 readme = "README.md"
-license = "LICENSE"
+license = "Apache-2.0"
 authors = [
     { name = "Sean Whalen", email = "whalenster@gmail.com" },
 ]
