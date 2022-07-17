@@ -146,8 +146,8 @@ message `From` header, or in the email body. A YARA rule can check for this.
 wide variety of name variations.
 
 ```{tip}
-Use a local copy of CyberChef[CyberChef] to quickly and privately test regular
-expressions.
+Use a local copy of [CyberChef][CyberChef] to quickly and privately test
+regular expressions.
 ```
 
 Most organisations add something to the beginning of an email subject or body
