@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to yaramail’s documentation! &mdash; yaramail 1.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Automating phishing report inbox triage" href="phishing.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#" class="icon icon-home"> yaramail
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="phishing.html">Automating phishing report inbox triage</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">yaramail</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+      <li>Welcome to yaramail’s documentation!</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="welcome-to-yaramail-s-documentation">
+<h1>Welcome to yaramail’s documentation!<a class="headerlink" href="#welcome-to-yaramail-s-documentation" title="Permalink to this heading"></a></h1>
+<p><img alt="PyPI" src="https://img.shields.io/pypi/v/yaramail" />
+<img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dm/yaramail?color=blue" /></p>
+<p>yaramail is a Python package and command line utility for scanning emails with
+<a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html">YARA rules</a>. It is Ideal for automated triage of phishing reports.</p>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this heading"></a></h2>
+<p>yaramail scans all parts of an email via API or CLI</p>
+<ul class="simple">
+<li><p>Headers</p>
+<ul>
+<li><p>Removes header indents by default for consistent scanning</p></li>
+</ul>
+</li>
+<li><p>Plain text and HTML body content</p>
+<ul>
+<li><p>Converts body content to Markdown by default for consistent scanning</p></li>
+</ul>
+</li>
+<li><p>Nested email attachments</p></li>
+<li><p>ZIP file contents, including nested ZIP files</p></li>
+<li><p>Raw content and text content in PDF documents</p></li>
+</ul>
+</section>
+<section id="module-yaramail">
+<span id="api"></span><h2>API<a class="headerlink" href="#module-yaramail" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="yaramail.MailScanner">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">yaramail.</span></span><span class="sig-name descname"><span class="pre">MailScanner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">header_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Rules</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Rules</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_body_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Rules</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attachment_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Rules</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaramail.html#MailScanner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaramail.MailScanner" title="Permalink to this definition"></a></dt>
+<dd><p>A YARA scaner for emails</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>header_rules</strong> – Rules that only apply to email header content</p></li>
+<li><p><strong>body_rules</strong> – Rules that only apply to email body content</p></li>
+<li><p><strong>header_body_rules</strong> – Rules that apply to combined email             header and body content</p></li>
+<li><p><strong>attachment_rules</strong> – Rules that only apply to file             attachment content</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Each rules argument can accept raw rule content, a path to a
+rules file, a file-like object, or a <code class="docutils literal notranslate"><span class="pre">yara.Rule</span></code> object.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">include</span></code> directive in the YARA rule files that you
+pass to <code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> to include rules from other files. That
+way, rules can be divided into separate files as you see fit.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="yaramail.MailScanner.scan_email">
+<span class="sig-name descname"><span class="pre">scan_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_raw_headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_raw_body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_zip_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaramail.html#MailScanner.scan_email"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaramail.MailScanner.scan_email" title="Permalink to this definition"></a></dt>
+<dd><p>Scans an email using YARA rules</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email</strong> – Email file content, a path to an email             file, a file-like object, or output from             <code class="docutils literal notranslate"><span class="pre">mailsuite.utils.parse_email()</span></code></p></li>
+<li><p><strong>use_raw_headers</strong> – Scan headers with indentations included</p></li>
+<li><p><strong>use_raw_body</strong> – Scan the raw email body instead of converting it to             Markdown first</p></li>
+<li><p><strong>max_zip_depth</strong> – Number of times to recurse into nested ZIP files</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns: A list of rule matches</p>
+<p>Each match dictionary in the returned list contains
+the following key-value pairs:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> - The name of the rule.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">namespace</span></code> - The namespace of the rule.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">meta</span></code> - A dictionary of key-value pairs from the meta section.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tags</span></code> - A list of the rule’s tags.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strings</span></code> - A list of identified strings or patterns that match.
+Each list item is also a list, with the following values:</p>
+<blockquote>
+<div><ol class="arabic simple" start="0">
+<li><p>The location offset of the identified string/pattern</p></li>
+<li><p>The variable name of the string/pattern in the rule</p></li>
+<li><p>The matching string/pattern content</p></li>
+</ol>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">location</span></code> - The part of the email where the match was found</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">header</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">body</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">header_body</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">attachment:filename</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">attachment:example.zip:evil.js</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">attachment:first.zip:nested.zip:evil.js</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">attachment:evil.eml:attachment:example.zip:evil.js</span></code></p></li>
+</ul>
+</li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="cli">
+<h2>CLI<a class="headerlink" href="#cli" title="Permalink to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">A</span> <span class="n">YARA</span> <span class="n">scanner</span> <span class="k">for</span> <span class="n">emails</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">rules</span> <span class="n">RULES</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">header</span><span class="o">-</span><span class="n">rules</span> <span class="n">HEADER_RULES</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">body</span><span class="o">-</span><span class="n">rules</span> <span class="n">BODY_RULES</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">header</span><span class="o">-</span><span class="n">body</span><span class="o">-</span><span class="n">rules</span> <span class="n">HEADER_BODY_RULES</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">attachment</span><span class="o">-</span><span class="n">rules</span> <span class="n">ATTACHMENT_RULES</span><span class="p">]</span>
+                                 <span class="p">[</span><span class="o">--</span><span class="n">trusted</span><span class="o">-</span><span class="n">domains</span> <span class="n">TRUSTED_DOMAINS</span><span class="p">]</span>
+                                 <span class="n">scan_path</span>
+
+<span class="n">positional</span> <span class="n">arguments</span><span class="p">:</span>
+  <span class="n">scan_path</span>             <span class="n">The</span> <span class="n">file</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="n">to</span> <span class="n">scan</span> <span class="p">(</span><span class="n">wildcards</span> <span class="n">allowed</span><span class="p">)</span>
+
+<span class="n">options</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span>            <span class="n">show</span> <span class="n">this</span> <span class="n">help</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span>
+  <span class="o">-</span><span class="n">V</span><span class="p">,</span> <span class="o">--</span><span class="n">version</span>         <span class="n">show</span> <span class="n">program</span><span class="s1">&#39;s version number and exit</span>
+  <span class="o">-</span><span class="n">v</span><span class="p">,</span> <span class="o">--</span><span class="n">verbose</span>         <span class="n">Output</span> <span class="n">the</span> <span class="n">entire</span> <span class="n">parsed</span> <span class="n">email</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
+  <span class="o">--</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="p">,</span> <span class="o">-</span><span class="n">o</span> <span class="n">OUTPUT</span>
+                        <span class="n">Redirect</span> <span class="n">output</span> <span class="n">to</span> <span class="n">a</span> <span class="n">file</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+  <span class="o">--</span><span class="n">rules</span> <span class="n">RULES</span>         <span class="n">A</span> <span class="n">path</span> <span class="n">to</span> <span class="n">a</span> <span class="n">directory</span> <span class="n">that</span> <span class="n">contains</span> <span class="n">YARA</span> <span class="n">rules</span><span class="o">.</span> <span class="n">Can</span> <span class="n">be</span>
+                        <span class="nb">set</span> <span class="n">by</span> <span class="n">the</span> <span class="n">YARA_RULES_DIR</span> <span class="n">environment</span> <span class="n">variable</span><span class="o">.</span>
+                        <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="o">.</span><span class="p">)</span>
+  <span class="o">--</span><span class="n">header</span><span class="o">-</span><span class="n">rules</span> <span class="n">HEADER_RULES</span>
+                        <span class="n">Filename</span> <span class="n">of</span> <span class="n">the</span> <span class="n">header</span> <span class="n">rules</span> <span class="n">file</span><span class="o">.</span> <span class="n">Can</span> <span class="n">be</span> <span class="nb">set</span> <span class="n">by</span> <span class="n">the</span>
+                        <span class="n">YARA_HEADER_RULES</span> <span class="n">environment</span> <span class="n">variable</span><span class="o">.</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span>
+                        <span class="n">header</span><span class="o">.</span><span class="n">yar</span><span class="p">)</span>
+  <span class="o">--</span><span class="n">body</span><span class="o">-</span><span class="n">rules</span> <span class="n">BODY_RULES</span>
+                        <span class="n">Filename</span> <span class="n">of</span> <span class="n">the</span> <span class="n">body</span> <span class="n">rules</span> <span class="n">file</span><span class="o">.</span> <span class="n">Can</span> <span class="n">be</span> <span class="nb">set</span> <span class="n">by</span> <span class="n">the</span>
+                        <span class="n">YARAMAIL_BODY_RULES</span> <span class="n">environment</span> <span class="n">variable</span><span class="o">.</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span>
+                        <span class="n">body</span><span class="o">.</span><span class="n">yar</span><span class="p">)</span>
+  <span class="o">--</span><span class="n">header</span><span class="o">-</span><span class="n">body</span><span class="o">-</span><span class="n">rules</span> <span class="n">HEADER_BODY_RULES</span>
+                        <span class="n">Filename</span> <span class="n">of</span> <span class="n">the</span> <span class="n">header_body</span> <span class="n">rules</span> <span class="n">file</span><span class="o">.</span> <span class="n">Can</span> <span class="n">be</span> <span class="nb">set</span> <span class="n">by</span>
+                        <span class="n">the</span> <span class="n">YARAMAIL_HEADER_BODY_RULES</span> <span class="n">environment</span> <span class="n">variable</span><span class="o">.</span>
+                        <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="n">header_body</span><span class="o">.</span><span class="n">yar</span><span class="p">)</span>
+  <span class="o">--</span><span class="n">attachment</span><span class="o">-</span><span class="n">rules</span> <span class="n">ATTACHMENT_RULES</span>
+                        <span class="n">Filename</span> <span class="n">of</span> <span class="n">the</span> <span class="n">body</span> <span class="n">rules</span> <span class="n">file</span><span class="o">.</span> <span class="n">Can</span> <span class="n">be</span> <span class="nb">set</span> <span class="n">by</span> <span class="n">the</span>
+                        <span class="n">YARAMAIL_BODY_RULES</span> <span class="n">environment</span> <span class="n">variable</span><span class="o">.</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span>
+                        <span class="n">attachment</span><span class="o">.</span><span class="n">yar</span><span class="p">)</span>
+  <span class="o">--</span><span class="n">trusted</span><span class="o">-</span><span class="n">domains</span> <span class="n">TRUSTED_DOMAINS</span>
+                        <span class="n">A</span> <span class="n">path</span> <span class="n">to</span> <span class="n">a</span> <span class="n">file</span> <span class="n">containing</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">trusted</span> <span class="n">domains</span><span class="o">.</span>
+                        <span class="n">Can</span> <span class="n">be</span> <span class="nb">set</span> <span class="n">by</span> <span class="n">the</span> <span class="n">YARAMAIL_TRUSTED_DOMAINS</span> <span class="n">environment</span>
+                        <span class="n">variable</span><span class="o">.</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="n">trusted_domains</span><span class="o">.</span><span class="n">txt</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>It is not recommended to use <code class="docutils literal notranslate"><span class="pre">yaramail</span></code> in the same OS that is targeted by
+the potential malware you are scanning. Consider using <code class="docutils literal notranslate"><span class="pre">yaramail</span></code> inside of a
+container or VM for additional security.</p>
+</div>
+<section id="system-dependencies">
+<h3>System dependencies<a class="headerlink" href="#system-dependencies" title="Permalink to this heading"></a></h3>
+<p>Some system dependencies <strong>must</strong> be installed before installing <code class="docutils literal notranslate"><span class="pre">yaramail</span></code>.</p>
+<section id="debian-ubuntu-and-friends">
+<h4>Debian, Ubuntu, and friends<a class="headerlink" href="#debian-ubuntu-and-friends" title="Permalink to this heading"></a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">build</span><span class="o">-</span><span class="n">essential</span> <span class="n">libpoppler</span><span class="o">-</span><span class="n">cpp</span><span class="o">-</span><span class="n">dev</span> <span class="n">pkg</span><span class="o">-</span><span class="n">config</span> <span class="n">python3</span><span class="o">-</span><span class="n">dev</span> <span class="n">libemail</span><span class="o">-</span><span class="n">outlook</span><span class="o">-</span><span class="n">message</span><span class="o">-</span><span class="n">perl</span>
+</pre></div>
+</div>
+</section>
+<section id="fedora-red-hat-and-friends">
+<h4>Fedora, Red Hat, and friends<a class="headerlink" href="#fedora-red-hat-and-friends" title="Permalink to this heading"></a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">yum</span> <span class="n">install</span> <span class="n">gcc</span><span class="o">-</span><span class="n">c</span><span class="o">++</span> <span class="n">pkgconfig</span> <span class="n">poppler</span><span class="o">-</span><span class="n">cpp</span><span class="o">-</span><span class="n">devel</span> <span class="n">python3</span><span class="o">-</span><span class="n">devel</span>
+</pre></div>
+</div>
+</section>
+<section id="macos">
+<h4>macOS<a class="headerlink" href="#macos" title="Permalink to this heading"></a></h4>
+<p>Install <a class="reference external" href="https://brew.sh/">Homebrew</a>, then run the following command in a terminal.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">brew</span> <span class="n">install</span> <span class="n">pkg</span><span class="o">-</span><span class="n">config</span> <span class="n">poppler</span> <span class="n">python</span>
+</pre></div>
+</div>
+</section>
+<section id="windows">
+<h4>Windows<a class="headerlink" href="#windows" title="Permalink to this heading"></a></h4>
+<ol class="arabic">
+<li><p>Install the <a class="reference external" href="https://visualstudio.microsoft.com/downloads/#microsoft-visual-c-redistributable-for-visual-studio-2022">Microsoft Visual Studio Build Tools</a></p></li>
+<li><p>Install <a class="reference external" href="https://www.anaconda.com/products/distribution">Anaconda Distribution</a></p></li>
+<li><p>Use Anaconda Navigator to create a new Anaconda Environment</p></li>
+<li><p>Click the play button for the Anaconda Environment</p></li>
+<li><p>Click Open Terminal</p></li>
+<li><p>Run this command and leave the terminal open:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">poppler</span>
+</pre></div>
+</div>
+</li>
+<li><p>Configure your Python IDE/project to use the Anaconda Environment</p></li>
+</ol>
+</section>
+</section>
+<section id="install-yaramail">
+<h3>Install yaramail<a class="headerlink" href="#install-yaramail" title="Permalink to this heading"></a></h3>
+<p>In a terminal, run</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">yaramail</span>
+</pre></div>
+</div>
+</section>
+<section id="working-with-msg-files">
+<h3>Working with .msg files<a class="headerlink" href="#working-with-msg-files" title="Permalink to this heading"></a></h3>
+<p>If you would like to be able to parse and scan Microsoft Outlook <code class="docutils literal notranslate"><span class="pre">.msg</span></code>
+emails, you’ll need to install the <code class="docutils literal notranslate"><span class="pre">Email::Outlook::Message</span></code> Perl module, which
+includes the <code class="docutils literal notranslate"><span class="pre">msgconvert</span></code> utility that is used to convert <code class="docutils literal notranslate"><span class="pre">.msg</span></code> files into the
+standard RFC 822 format. Ubuntu and Debian make this easy because they have a
+package for it (which is included in the above instructions). On
+Fedora/RHEL/CentOS based distributions and macOS, you’ll need to install
+<a class="reference external" href="https://perlbrew.pl/">Perlbrew</a>.</p>
+<p>Perlbrew installs a local copy of Perl within the user’s home directory,
+similar to how Homebrew works (which is why the initial installation can take
+a while). That way, you don’t need to use <code class="docutils literal notranslate"><span class="pre">sudo</span></code> to  install Perl modules, and
+risk breaking your system’s Perl installation in the process.</p>
+<p>Once Perlbrew is installed, use <code class="docutils literal notranslate"><span class="pre">cpan</span></code> to install <code class="docutils literal notranslate"><span class="pre">Email::Outlook::Message</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cpan</span> <span class="n">install</span> <span class="n">Email</span><span class="p">::</span><span class="n">Outlook</span><span class="p">::</span><span class="n">Message</span>
+</pre></div>
+</div>
+<p>The installation process will take a few minutes while <code class="docutils literal notranslate"><span class="pre">cpan</span></code> builds and
+installs all the dependencies. Once complete, the <code class="docutils literal notranslate"><span class="pre">msgconvert</span></code> utility will be
+in your <code class="docutils literal notranslate"><span class="pre">PATH</span></code>, ready for use.</p>
+</section>
+</section>
+<section id="documentation-contents">
+<h2>Documentation contents<a class="headerlink" href="#documentation-contents" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="phishing.html">Automating phishing report inbox triage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="phishing.html#getting-started">Getting started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phishing.html#practical-examples">Practical examples</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="indices-and-tables">
+<h3>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="phishing.html" class="btn btn-neutral float-right" title="Automating phishing report inbox triage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Sean Whalen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
