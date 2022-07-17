@@ -91,6 +91,15 @@ class MailScanner(object):
             header and body content
             attachment_rules: Rules that only apply to file \
             attachment content
+
+        .. note::
+          Each rules argument can accept raw rule content, a path to a
+          rules file, a file-like object, or a ``yara.Rule`` object.
+
+        .. tip::
+          Use the ``include`` directive in the YARA rule files that you
+          pass to ``MailScanner`` to include rules from other files. That
+          way, rules can be divided into separate files as you see fit.
         """
         self._header_rules = header_rules
         self._body_rules = body_rules
@@ -219,11 +228,6 @@ class MailScanner(object):
                    max_zip_depth: int = None) -> List[Dict]:
         """
         Scans an email using YARA rules
-
-        .. tip::
-          Use the ``include`` directive in the YARA rule files that you pass to
-          ``MailScanner`` to include rules from other files. That way, rules
-          can be divided into separate files as you see fit.
 
         Args:
             email: Email file content, a path to an email \
