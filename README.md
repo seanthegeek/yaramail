@@ -20,7 +20,7 @@ yaramail scans all parts of an email via API or CLI
 
 ## CLI
 
-```
+```text
 usage: A YARA scanner for emails [-h] [-V] [-v] [--output OUTPUT]
                                  [--rules RULES] [--header-rules HEADER_RULES]
                                  [--body-rules BODY_RULES]
