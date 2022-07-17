@@ -1,6 +1,7 @@
-mailsuite>=1.8.0
-yara-python==4.2.0
+mailsuite>=1.8.2
+yara-python>=4.2.0
 pdftotext==2.2.2
+simplejson>=3.17.6
 nose
 pygments
 flake8
