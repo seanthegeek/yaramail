@@ -277,7 +277,8 @@ logger = logging.getLogger("scanner")
 
 
 def escalate_to_incident_response(reported_email: Dict, priority: str):
-  logger.info(f"Escalating {priority} email: {reported_email['subject']}")
+  m = f"Escalating {priority} priority email: {reported_email['subject']}"
+  logger.info(m)
   # TODO: Do something!
   pass
 
@@ -285,10 +286,11 @@ malicious_verdicts = ["social engineering", "credential harvesting",
                       "fraud", "malware"]
 
 # Load list of trusted domains
-with open("trusted-domains.txt") as trusted_domains_file:
+with open("trusted_domains.txt") as trusted_domains_file:
   trusted_domains = trusted_domains_file.read().split("\n")
 
 # Initialize the scanner
+scanner = None # Avoid an IDE warning
 try:
   scanner = MailScanner(header_rules="header.yar",
                         body_rules="body.yar",
@@ -296,7 +298,6 @@ try:
                         attachment_rules="attachment.yar")
 except Exception as e:
   logger.error(f"Error parsing YARA rules: {e}")
-  scanner = None
   exit(-1)
 
 # TODO: Do something to fetch emails
