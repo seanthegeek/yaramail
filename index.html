@@ -171,46 +171,46 @@ Each list item is also a list, with the following values:</p>
 </section>
 <section id="cli">
 <h2>CLI<a class="headerlink" href="#cli" title="Permalink to this heading"></a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">A</span> <span class="n">YARA</span> <span class="n">scanner</span> <span class="k">for</span> <span class="n">emails</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">V</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="p">]</span>
-                                 <span class="p">[</span><span class="o">--</span><span class="n">rules</span> <span class="n">RULES</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">header</span><span class="o">-</span><span class="n">rules</span> <span class="n">HEADER_RULES</span><span class="p">]</span>
-                                 <span class="p">[</span><span class="o">--</span><span class="n">body</span><span class="o">-</span><span class="n">rules</span> <span class="n">BODY_RULES</span><span class="p">]</span>
-                                 <span class="p">[</span><span class="o">--</span><span class="n">header</span><span class="o">-</span><span class="n">body</span><span class="o">-</span><span class="n">rules</span> <span class="n">HEADER_BODY_RULES</span><span class="p">]</span>
-                                 <span class="p">[</span><span class="o">--</span><span class="n">attachment</span><span class="o">-</span><span class="n">rules</span> <span class="n">ATTACHMENT_RULES</span><span class="p">]</span>
-                                 <span class="p">[</span><span class="o">--</span><span class="n">trusted</span><span class="o">-</span><span class="n">domains</span> <span class="n">TRUSTED_DOMAINS</span><span class="p">]</span>
-                                 <span class="n">scan_path</span>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>usage: A YARA scanner for emails [-h] [-V] [-v] [--output OUTPUT]
+                                 [--rules RULES] [--header-rules HEADER_RULES]
+                                 [--body-rules BODY_RULES]
+                                 [--header-body-rules HEADER_BODY_RULES]
+                                 [--attachment-rules ATTACHMENT_RULES]
+                                 [--trusted-domains TRUSTED_DOMAINS]
+                                 scan_path
 
-<span class="n">positional</span> <span class="n">arguments</span><span class="p">:</span>
-  <span class="n">scan_path</span>             <span class="n">The</span> <span class="n">file</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="n">to</span> <span class="n">scan</span> <span class="p">(</span><span class="n">wildcards</span> <span class="n">allowed</span><span class="p">)</span>
+positional arguments:
+  scan_path             The file(s) to scan (wildcards allowed)
 
-<span class="n">options</span><span class="p">:</span>
-  <span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span>            <span class="n">show</span> <span class="n">this</span> <span class="n">help</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span>
-  <span class="o">-</span><span class="n">V</span><span class="p">,</span> <span class="o">--</span><span class="n">version</span>         <span class="n">show</span> <span class="n">program</span><span class="s1">&#39;s version number and exit</span>
-  <span class="o">-</span><span class="n">v</span><span class="p">,</span> <span class="o">--</span><span class="n">verbose</span>         <span class="n">Output</span> <span class="n">the</span> <span class="n">entire</span> <span class="n">parsed</span> <span class="n">email</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">False</span><span class="p">)</span>
-  <span class="o">--</span><span class="n">output</span> <span class="n">OUTPUT</span><span class="p">,</span> <span class="o">-</span><span class="n">o</span> <span class="n">OUTPUT</span>
-                        <span class="n">Redirect</span> <span class="n">output</span> <span class="n">to</span> <span class="n">a</span> <span class="n">file</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
-  <span class="o">--</span><span class="n">rules</span> <span class="n">RULES</span>         <span class="n">A</span> <span class="n">path</span> <span class="n">to</span> <span class="n">a</span> <span class="n">directory</span> <span class="n">that</span> <span class="n">contains</span> <span class="n">YARA</span> <span class="n">rules</span><span class="o">.</span> <span class="n">Can</span> <span class="n">be</span>
-                        <span class="nb">set</span> <span class="n">by</span> <span class="n">the</span> <span class="n">YARA_RULES_DIR</span> <span class="n">environment</span> <span class="n">variable</span><span class="o">.</span>
-                        <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="o">.</span><span class="p">)</span>
-  <span class="o">--</span><span class="n">header</span><span class="o">-</span><span class="n">rules</span> <span class="n">HEADER_RULES</span>
-                        <span class="n">Filename</span> <span class="n">of</span> <span class="n">the</span> <span class="n">header</span> <span class="n">rules</span> <span class="n">file</span><span class="o">.</span> <span class="n">Can</span> <span class="n">be</span> <span class="nb">set</span> <span class="n">by</span> <span class="n">the</span>
-                        <span class="n">YARA_HEADER_RULES</span> <span class="n">environment</span> <span class="n">variable</span><span class="o">.</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span>
-                        <span class="n">header</span><span class="o">.</span><span class="n">yar</span><span class="p">)</span>
-  <span class="o">--</span><span class="n">body</span><span class="o">-</span><span class="n">rules</span> <span class="n">BODY_RULES</span>
-                        <span class="n">Filename</span> <span class="n">of</span> <span class="n">the</span> <span class="n">body</span> <span class="n">rules</span> <span class="n">file</span><span class="o">.</span> <span class="n">Can</span> <span class="n">be</span> <span class="nb">set</span> <span class="n">by</span> <span class="n">the</span>
-                        <span class="n">YARAMAIL_BODY_RULES</span> <span class="n">environment</span> <span class="n">variable</span><span class="o">.</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span>
-                        <span class="n">body</span><span class="o">.</span><span class="n">yar</span><span class="p">)</span>
-  <span class="o">--</span><span class="n">header</span><span class="o">-</span><span class="n">body</span><span class="o">-</span><span class="n">rules</span> <span class="n">HEADER_BODY_RULES</span>
-                        <span class="n">Filename</span> <span class="n">of</span> <span class="n">the</span> <span class="n">header_body</span> <span class="n">rules</span> <span class="n">file</span><span class="o">.</span> <span class="n">Can</span> <span class="n">be</span> <span class="nb">set</span> <span class="n">by</span>
-                        <span class="n">the</span> <span class="n">YARAMAIL_HEADER_BODY_RULES</span> <span class="n">environment</span> <span class="n">variable</span><span class="o">.</span>
-                        <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="n">header_body</span><span class="o">.</span><span class="n">yar</span><span class="p">)</span>
-  <span class="o">--</span><span class="n">attachment</span><span class="o">-</span><span class="n">rules</span> <span class="n">ATTACHMENT_RULES</span>
-                        <span class="n">Filename</span> <span class="n">of</span> <span class="n">the</span> <span class="n">body</span> <span class="n">rules</span> <span class="n">file</span><span class="o">.</span> <span class="n">Can</span> <span class="n">be</span> <span class="nb">set</span> <span class="n">by</span> <span class="n">the</span>
-                        <span class="n">YARAMAIL_BODY_RULES</span> <span class="n">environment</span> <span class="n">variable</span><span class="o">.</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span>
-                        <span class="n">attachment</span><span class="o">.</span><span class="n">yar</span><span class="p">)</span>
-  <span class="o">--</span><span class="n">trusted</span><span class="o">-</span><span class="n">domains</span> <span class="n">TRUSTED_DOMAINS</span>
-                        <span class="n">A</span> <span class="n">path</span> <span class="n">to</span> <span class="n">a</span> <span class="n">file</span> <span class="n">containing</span> <span class="n">a</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">trusted</span> <span class="n">domains</span><span class="o">.</span>
-                        <span class="n">Can</span> <span class="n">be</span> <span class="nb">set</span> <span class="n">by</span> <span class="n">the</span> <span class="n">YARAMAIL_TRUSTED_DOMAINS</span> <span class="n">environment</span>
-                        <span class="n">variable</span><span class="o">.</span> <span class="p">(</span><span class="n">default</span><span class="p">:</span> <span class="n">trusted_domains</span><span class="o">.</span><span class="n">txt</span><span class="p">)</span>
+options:
+  -h, --help            show this help message and exit
+  -V, --version         show program&#39;s version number and exit
+  -v, --verbose         Output the entire parsed email (default: False)
+  --output OUTPUT, -o OUTPUT
+                        Redirect output to a file (default: None)
+  --rules RULES         A path to a directory that contains YARA rules. Can be
+                        set by the YARA_RULES_DIR environment variable.
+                        (default: .)
+  --header-rules HEADER_RULES
+                        Filename of the header rules file. Can be set by the
+                        YARA_HEADER_RULES environment variable. (default:
+                        header.yar)
+  --body-rules BODY_RULES
+                        Filename of the body rules file. Can be set by the
+                        YARAMAIL_BODY_RULES environment variable. (default:
+                        body.yar)
+  --header-body-rules HEADER_BODY_RULES
+                        Filename of the header_body rules file. Can be set by
+                        the YARAMAIL_HEADER_BODY_RULES environment variable.
+                        (default: header_body.yar)
+  --attachment-rules ATTACHMENT_RULES
+                        Filename of the body rules file. Can be set by the
+                        YARAMAIL_BODY_RULES environment variable. (default:
+                        attachment.yar)
+  --trusted-domains TRUSTED_DOMAINS
+                        A path to a file containing a list of trusted domains.
+                        Can be set by the YARAMAIL_TRUSTED_DOMAINS environment
+                        variable. (default: trusted_domains.txt)
 </pre></div>
 </div>
 </section>
