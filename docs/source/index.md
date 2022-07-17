@@ -149,7 +149,7 @@ The installation process will take a few minutes while `cpan` builds and
 installs all the dependencies. Once complete, the `msgconvert` utility will be
 in your `PATH`, ready for use.
 
-## Documentation contents
+## Further reading
 
 ```{toctree}
 ---
