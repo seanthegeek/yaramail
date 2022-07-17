@@ -44,8 +44,8 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Automating phishing report inbox triage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#practical-examples">Practical examples</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#check-if-an-email-is-trusted">Check if an email is trusted</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#check-if-an-email-is-malicious">Check if an email is malicious</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#checking-if-an-email-is-trusted">Checking if an email is trusted</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#checking-if-an-email-is-malicious">Checking if an email is malicious</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#checking-if-an-email-is-junk">Checking if an email is junk</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#putting-it-all-together">Putting it all together</a></li>
 </ul>
@@ -122,8 +122,8 @@ Take a look at the <a class="reference internal" href="index.html#api"><span cla
 </section>
 <section id="practical-examples">
 <h2>Practical examples<a class="headerlink" href="#practical-examples" title="Permalink to this heading"></a></h2>
-<section id="check-if-an-email-is-trusted">
-<h3>Check if an email is trusted<a class="headerlink" href="#check-if-an-email-is-trusted" title="Permalink to this heading"></a></h3>
+<section id="checking-if-an-email-is-trusted">
+<h3>Checking if an email is trusted<a class="headerlink" href="#checking-if-an-email-is-trusted" title="Permalink to this heading"></a></h3>
 <p>Use the <a class="reference external" href="https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.from_trusted_domain">from_trusted_domain()</a> function in
 <a class="reference external" href="https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.from_trusted_domain">mailsuite.utils</a> to check the results of DKIM and/or DMARC
 in the <code class="docutils literal notranslate"><span class="pre">Authentication-Results</span></code> header against a list of trusted domains.</p>
@@ -207,8 +207,8 @@ condition:
 </pre></div>
 </div>
 </section>
-<section id="check-if-an-email-is-malicious">
-<h3>Check if an email is malicious<a class="headerlink" href="#check-if-an-email-is-malicious" title="Permalink to this heading"></a></h3>
+<section id="checking-if-an-email-is-malicious">
+<h3>Checking if an email is malicious<a class="headerlink" href="#checking-if-an-email-is-malicious" title="Permalink to this heading"></a></h3>
 <p>Impersonating a top executive is a classic social engineering technique. Even
 if a target organisation has fully implemented DMARC to prevent domain
 spoofing, people can still be impersonated in the display name of the
