@@ -1,7 +1,7 @@
 # Welcome to yaramail's documentation!
 
-![PyPI](https://img.shields.io/pypi/v/yaramail)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/yaramail?color=blue)
+[![PyPI](https://img.shields.io/pypi/v/yaramail)](https://github.com/seanthegeek/yaramail/)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/yaramail?color=blue)](https://pypistats.org/packages/yaramail)
 
 yaramail is a Python package and command line utility for scanning emails with
 [YARA rules][yara]. It is Ideal for automated triage of phishing reports.
