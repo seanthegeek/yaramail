@@ -74,7 +74,7 @@ options:
 ## Installation
 
 ```{warning}
-It is not recommended to use `yaramail` in the same OS that is targeted by 
+It is recommended to use `yaramail` in a different OS than what is targeted by 
 the potential malware you are scanning. Consider using `yaramail` inside of a
 container or VM for additional security.
 ```
@@ -130,7 +130,7 @@ If you would like to be able to parse and scan Microsoft Outlook `.msg`
 emails, you'll need to install the `Email::Outlook::Message` Perl module, which
 includes the `msgconvert` utility that is used to convert `.msg` files into the
 standard RFC 822 format. Ubuntu and Debian make this easy because they have a
-package for it (which is included in the above instructions). On 
+package for it (which is included in the installation instructions above). On 
 Fedora/RHEL/CentOS based distributions and macOS, you'll need to install
 [Perlbrew][perlbrew].
 
