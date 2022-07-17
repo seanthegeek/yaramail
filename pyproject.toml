@@ -1,0 +1,54 @@
+[build-system]
+requires = [
+    "hatchling>=1.5.0",
+]
+build-backend = "hatchling.build"
+
+[project]
+name = "yaramail"
+description = "A Python package and command line utility for scanning emails with YARA rules"
+readme = "README.md"
+license = "LICENSE"
+authors = [
+    { name = "Sean Whalen", email = "whalenster@gmail.com" },
+]
+keywords = [
+    "YARA",
+    "email",
+    "security",
+    "information security",
+    "infosec",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: Apache Software License",
+    "Topic :: Security",
+    "Topic :: Communications :: Email",
+
+]
+dependencies = [
+    "mailsuite>=1.8.2",
+    "pdftotext==2.2.2",
+    "simplejson>=3.17.6",
+    "yara-python>=4.2.0",
+]
+dynamic = [
+    "version",
+]
+
+[project.scripts]
+yaramail = "yaramail.cli:_main"
+
+[project.urls]
+Homepage = "https://github.com/seanthegeek/yaramail"
+
+Documentation = "https://seanthegeek.github.io/yaramail/"
+
+[tool.hatch.version]
+path = "yaramail/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/yaramail",
+]
