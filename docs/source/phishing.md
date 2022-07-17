@@ -1,11 +1,11 @@
 # Automating phishing report inbox triage
 
 Through a combination authentication header parsing and YARA rules,
-[mailsuite][mailsuite] and `yaramail` can be used to create customized automation for
-triaging phishing reports from users. `mailsuite` is installed as a
-dependency of `yaramail`.
+[mailsuite][mailsuite] and `yaramail` can be used to create customized 
+automation for triaging phishing reports from users. `mailsuite` is installed
+as a dependency of `yaramail`.
 
-## Best practices
+## Getting started
 
 It is **strongly recommended** to develop, store, and maintain YARA rules,
 trusted domain lists, and sample emails in a private Git repository
@@ -30,6 +30,19 @@ commit should trigger automated testing of the changes. The developer is ready,
 they create a Pull Request, and a project maintainer reviews the proposed
 changes before squashing and merging commits into the upstream `master`
 branch.
+
+```{tip}
+Use the [include][include] directive in the YARA rule files that you pass to
+`MailScanner` to include rules from other files. That way, rules can be
+divided into separate files as you see fit.
+```
+
+The `MailScanner` class in the [`yaramail` API][API] provides a YARA scanner 
+specifically designed for scanning emails.
+
+To scan an email, pass the output from 
+[`mailsuite.utils.parse_email()`][parse_email] to `MailScanner.scan_email()`, 
+Take a look at the [API documentation][API] to learn about the returned value.
 
 ## Practical examples
 
@@ -122,51 +135,6 @@ condition:
   #http == #example
 }
 ```
-
-The `MailScanner` class provides a YARA scanner specifically designed for
-scanning emails. `libyara` is built by the upstream `yara` package that is
-installed as a dependency of `yaramail`,so no additional installation is
-needed.
-
-When creating an instance of `MailScanner`, provide paths to `.yar` files
-That contain rules for different parts of an email. Don't worry if you don't
-have rules for each part yet; you can use empty files.
-
-- `header_rules` - Rules that apply to email header content only
-- `header_body_rules` - Rules that apply to the combined email header and body content
-- `body_rules` - Rules that apply to email body content only
-- `attachment_rules` - Rules that apply to email attachment content only
-
-```{tip}
-Use the ['include'][include] directive in include rules from other files. That way,
-rules can be divided into separate files as you see fit, then include those
-files in the files you pass to `MailScanner`.
-```
-
-To scan an email, pass the output from 
-[`mailsuite.utils.parse_email()`][parse_email] to `MailScanner.scan_email()`, 
-which will return a list of match dictionaries.  Each match dictionary contains
-the following key-value pairs:
-
-- `name` - The name of the rule
-- `namespace` - The namespace
-- `meta` - A dictionary of key-value pairs from the rule's meta section
-- `tags` - A list of the rule's tags
-- `strings` - A list of identified strings or patterns that match the rule
-
-  0. The location offset of the identified string/pattern in the input
-  1. The variable name of the string/pattern in the rule
-  2. The matching string/pattern content
-
-- `location` - The part of the email where the match was found
-
-  - `header`
-  - `body`
-  - `header_body`
-  - `attachment:filename`
-  - `attachment:example.zip:evil.js`
-  - `attachment:first.zip:nested.zip:evil.js`
-  - `attachment:evil.eml:attachment:example.zip:evil.js`
 
 ### Check if an email is malicious
 
@@ -267,9 +235,9 @@ Then, use condition statements and boolean logic similar to the previous
 examples to count the total number of marketing terms/buzzwords/phrases, the
 number of URLs, and any exception strings. The boolean logic can be as complex
 as needed. For example, you could set a threshold of matches that must occur,
-And potentially lower that threshold if a count of URls meet another threshold,
-since bulk marketing emails tend to have at least several links, and maybe even
-a tracking image.
+and potentially lower that threshold if a count of URLs meets another
+threshold — because bulk marketing emails tend to have at least several
+links, and maybe even a tracking image.
 
 Finding the right combination of strings and condition logic may take some
 time, but the reduction in alert fatigue is well worth the effort.
@@ -279,11 +247,13 @@ time, but the reduction in alert fatigue is well worth the effort.
 Here's a complete example of triage code.
 
 ```python
+import logging
 import json
 
 from mailsuite.utils import parse_email, from_trusted_domain
 from yaramail import MailScanner
 
+logger = logging.getLogger("scanner")
 
 def beautify_report(report: dict):
   return json.dumps(report, indent=2)
@@ -296,18 +266,21 @@ def escalate_to_incident_response(reported_email: dict, priority: str):
 
 
 malicious_verdicts = ["social engineering", "credential harvesting",
-                    "fraud", "malware"]
+                      "fraud", "malware"]
 
 # Load list of trusted domains
 with open("trusted-domains.txt") as trusted_domains_file:
   trusted_domains = trusted_domains_file.read().split("\n")
 
 # Initialize the scanner
-scanner = MailScanner(header_rules="header.yar",
-                    body_rules="body.yar",
-                    header_body_rules="header_body.yar",
-                    attachment_rules="attachments.yar")
-
+try:
+  scanner = MailScanner(header_rules="header.yar",
+                        body_rules="body.yar",
+                        header_body_rules="header_body.yar",
+                        attachment_rules="attachment.yar")
+except Exception as e:
+  logger.error(f"Error parsing YARA rules: {e}")
+  exit(-1)
 
 # TODO: Do something to fetch emails
 emails = []
@@ -352,6 +325,7 @@ for email in emails:
 [mailsuite]: https://seanthegeek.github.io/mailsuite/
 [rules]: https://yara.readthedocs.io/en/stable/writingrules.html
 [include]: https://yara.readthedocs.io/en/stable/writingrules.html#including-files
+[API]: index.md#api
 [regex]: https://yara.readthedocs.io/en/stable/writingrules.html#regular-expressions
 [trusted]: https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.from_trusted_domain
 [mailsuite.utils]: https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.from_trusted_domain

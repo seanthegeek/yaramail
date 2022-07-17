@@ -17,7 +17,7 @@ formatter = logging.Formatter(
 handler = logging.StreamHandler()
 handler.setFormatter(formatter)
 
-logger = logging.getLogger("mailsuite.scanner")
+logger = logging.getLogger("yaramail")
 logger.addHandler(handler)
 
 __version__ = "1.0.0"
@@ -82,15 +82,15 @@ class MailScanner(object):
                  header_body_rules: Union[str, IOBase, yara.Rules] = None,
                  attachment_rules: Union[str, IOBase, yara.Rules] = None):
         """
-        A YARA scanner for emails
+        A YARA scaner for emails
 
         Args:
-            header_rules:Rules that match email headers
-            body_rules: Rules that match an email body
-            header_body_rules: Rules that match on email
+            header_rules: Rules that only apply to email header content
+            body_rules: Rules that only apply to email body content
+            header_body_rules: Rules that apply to combined email \
             header and body content
-            attachment_rules: Rules that match file
-            attachment contents
+            attachment_rules: Rules that only apply to file \
+            attachment content
         """
         self._header_rules = header_rules
         self._body_rules = body_rules
@@ -216,9 +216,14 @@ class MailScanner(object):
     def scan_email(self, email: Union[str, IOBase, Dict],
                    use_raw_headers: bool = False,
                    use_raw_body: bool = False,
-                   max_zip_depth: int = 4) -> List[Dict]:
+                   max_zip_depth: int = None) -> List[Dict]:
         """
-        Sans an email using YARA rules
+        Scans an email using YARA rules
+
+        .. tip::
+          Use the ``include`` directive in the YARA rule files that you pass to
+          ``MailScanner`` to include rules from other files. That way, rules
+          can be divided into separate files as you see fit.
 
         Args:
             email: Email file content, a path to an email \
@@ -230,6 +235,30 @@ class MailScanner(object):
             max_zip_depth: Number of times to recurse into nested ZIP files
 
         Returns: A list of rule matches
+
+        Each match dictionary in the returned list contains
+        the following key-value pairs:
+
+        - ``name`` - The name of the rule.
+        - ``namespace`` - The namespace of the rule.
+        - ``meta`` - A dictionary of key-value pairs from the meta section.
+        - ``tags`` - A list of the rule's tags.
+        - ``strings`` - A list of identified strings or patterns that match.
+          Each list item is also a list, with the following values:
+
+              0. The location offset of the identified string/pattern
+              1. The variable name of the string/pattern in the rule
+              2. The matching string/pattern content
+
+        - ``location`` - The part of the email where the match was found
+
+          - ``header``
+          - ``body``
+          - ``header_body``
+          - ``attachment:filename``
+          - ``attachment:example.zip:evil.js``
+          - ``attachment:first.zip:nested.zip:evil.js``
+          - ``attachment:evil.eml:attachment:example.zip:evil.js``
         """
         if isinstance(email, str):
             if path.exists(email):

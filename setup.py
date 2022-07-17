@@ -14,7 +14,7 @@ from setuptools import setup
 from codecs import open
 from os import path
 
-description = "A Python package and command-line utility for scanning " \
+description = "A Python package and command line utility for scanning " \
               "emails with YARA rules"
 here = path.abspath(path.dirname(__file__))
 
@@ -34,7 +34,7 @@ setup(
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://seanthegeek.github.io/mailsuite/',
+    url='https://seanthegeek.github.io/yaramail/',
 
     # Author details
     author='Sean Whalen',
@@ -66,7 +66,7 @@ setup(
     ],
 
     # What does your project relate to?
-    keywords='email,SMTP,IMAP, YARA',
+    keywords='email, YARA',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
@@ -83,8 +83,12 @@ setup(
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
                       'yara-python>=4.2.0',
-                      'mailsuite>=1.8.0,'
+                      'mailsuite>=1.8.2',
                       'pdftotext==2.2.2',
+                      'simplejson>=3.17.6'
                       ],
+    entry_points={
+            'console_scripts': ['yaramail=yaramail.cli:_main'],
+        }
 
 )

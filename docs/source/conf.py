@@ -44,6 +44,9 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.napoleon',
               'myst_parser']
 
+myst_heading_anchors = 3
+autoclass_content = "init"
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
