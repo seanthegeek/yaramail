@@ -32,29 +32,32 @@ positional arguments:
 options:
   -h, --help            show this help message and exit
   -V, --version         show program's version number and exit
-  -v, --verbose         Output the entire parsed email
+  -v, --verbose         Output the entire parsed email (default: False)
   --output OUTPUT, -o OUTPUT
-                        Redirect output to a file
+                        Redirect output to a file (default: None)
   --rules RULES         A path to a directory that contains YARA rules. Can be
-                        substituted by the YARA_RULES_DIR environment
-                        variable.
+                        set by the YARA_RULES_DIR environment variable.
+                        (default: .)
   --header-rules HEADER_RULES
-                        Filename of the header rules file. Can be substituted
-                        by the YARA_HEADER_RULES environment variable.
+                        Filename of the header rules file. Can be set by the
+                        YARA_HEADER_RULES environment variable. (default:
+                        header.yar)
   --body-rules BODY_RULES
-                        Filename of the body rules file. Can be substituted by
-                        the YARAMAIL_BODY_RULES environment variable.
+                        Filename of the body rules file. Can be set by the
+                        YARAMAIL_BODY_RULES environment variable. (default:
+                        body.yar)
   --header-body-rules HEADER_BODY_RULES
-                        Filename of the header_body rules file. Can be
-                        substituted by the YARAMAIL_HEADER_BODY_RULES
-                        environment variable.
+                        Filename of the header_body rules file. Can be set by
+                        the YARAMAIL_HEADER_BODY_RULES environment variable.
+                        (default: header_body.yar)
   --attachment-rules ATTACHMENT_RULES
-                        Filename of the body rules file. Can be substituted by
-                        the YARAMAIL_BODY_RULES environment variable.
+                        Filename of the body rules file. Can be set by the
+                        YARAMAIL_BODY_RULES environment variable. (default:
+                        attachment.yar)
   --trusted-domains TRUSTED_DOMAINS
                         A path to a file containing a list of trusted domains.
-                        Can be substituted by the YARAMAIL_TRUSTED_DOMAINS
-                        environment variable.
+                        Can be set by the YARAMAIL_TRUSTED_DOMAINS environment
+                        variable. (default: trusted_domains.txt)
 ```
 
 ## Installation
