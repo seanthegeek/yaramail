@@ -145,6 +145,11 @@ message `From` header, or in the email body. A YARA rule can check for this.
 [Regular Expressions][regex] (regex) are handy, because one string can match a
 wide variety of name variations.
 
+```{tip}
+Use a local copy of CyberChef[CyberChef] to quickly and privately test regular
+expressions.
+```
+
 Most organisations add something to the beginning of an email subject or body
 to let the user know that the email came from an external, untrusted source.
 This can be leveraged in a YARA rule to identify external emails that include
@@ -342,4 +347,5 @@ for email in emails:
 [trusted]: https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.from_trusted_domain
 [mailsuite.utils]: https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.from_trusted_domain
 [parse_email]: https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.parse_email
+[CyberChef]: https://github.com/gchq/CyberChef/releases
 [EDGAR]: https://www.sec.gov/edgar/searchedgar/companysearch.html
