@@ -169,15 +169,19 @@ rule exec_impersonation {
       description = "Impersonation of key employees of Planet Express in an external email"
 
   /*
-  /(Hubert|Prof\.?(lessor)?) (Hubert )?Farnsworth/
+  /(Hubert|Hugh|Prof\.?(lessor)?) ((Hubert|Hugh) )?Farnsworth/
 
   Hubert Farnsworth
+  Hugh Farnsworth
   Professor Farnsworth
   Prof. Farnsworth
   Prof Farnsworth
   Professor Hubert Farnsworth
+  Professor Hugh Farnsworth
   Prof. Hubert Farnsworth
   Prof Hubert Farnsworth
+  Prof. Hugh Farnsworth
+  Prof Hugh Farnsworth
 
   /Phil(ip)? (J\.? )?Fry/
 
@@ -191,7 +195,7 @@ rule exec_impersonation {
 
   strings:
       $external = "[EXT]" ascii wide nocase
-      $s1 = /(Hubert|Prof\.?(essor)?) (Hubert )?Farnsworth/ ascii wide nocase
+      $s1 = /(Hubert|Hugh|Prof\.?(lessor)?) ((Hubert|Hugh) )?Farnsworth/ ascii wide nocase
       $s2 = "Hermes Conrad" ascii wide nocase
       $s3 = "Turanga Leela" ascii wide nocase
       $s4 = "Amy Wong" ascii wide nocase
