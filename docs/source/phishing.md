@@ -46,7 +46,7 @@ Take a look at the [API documentation][API] to learn about the returned value.
 
 ## Practical examples
 
-### Check if an email is trusted
+### Checking if an email is trusted
 
 Use the [from_trusted_domain()][trusted] function in 
 [mailsuite.utils][mailsuite.utils] to check the results of DKIM and/or DMARC
@@ -136,7 +136,7 @@ condition:
 }
 ```
 
-### Check if an email is malicious
+### Checking if an email is malicious
 
 Impersonating a top executive is a classic social engineering technique. Even
 if a target organisation has fully implemented DMARC to prevent domain
