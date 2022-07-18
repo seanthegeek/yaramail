@@ -121,10 +121,10 @@ brew install pkg-config poppler python
 ### Install yaramail
 
 ```{note}
-The official for this project, package, and module is `yaramail`. Unfortunately,
-The Python Package Index (PyPI)
-[did not allow that name to be used there][pypi-name-issue], so the PyPI
-project name for `yaramail` is `yara-mail`.
+The official name for this project, package, and module is `yaramail`. 
+Unfortunately, the Python Package Index (PyPI) [did not allow that name to be
+used there][pypi-name-issue], so the PyPI project name for `yaramail` is 
+`yara-mail`.
 ```
 
 In a terminal, run
