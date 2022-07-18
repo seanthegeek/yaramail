@@ -5,7 +5,7 @@ requires = [
 build-backend = "hatchling.build"
 
 [project]
-name = "yaramail"
+name = "yara-mail"
 description = "A Python package and command line utility for scanning emails with YARA rules"
 readme = "README.md"
 license = "Apache-2.0"

@@ -1,7 +1,7 @@
 # Welcome to yaramail's documentation!
 
-[![PyPI](https://img.shields.io/pypi/v/yaramail)](https://github.com/seanthegeek/yaramail/)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/yaramail?color=blue)](https://pypistats.org/packages/yaramail)
+[![PyPI](https://img.shields.io/pypi/v/yara-mail)](https://github.com/seanthegeek/yara-mail/)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/yara-mail?color=blue)](https://pypistats.org/packages/yara-mail)
 
 yaramail is a Python package and command line utility for scanning emails with
 [YARA rules][yara]. It is Ideal for automated triage of phishing reports.
@@ -118,6 +118,13 @@ brew install pkg-config poppler python
 
 ### Install yaramail
 
+```{note}
+The official for this project, package, and module is `yaramail`. Unfortunately,
+The Python Package Index (PyPI)
+[did not allow that name to be used there][pypi-name-issue], so the PyPI
+project name for `yaramail` is `yara-mail`.
+```
+
 In a terminal, run
 
 ```
@@ -171,3 +178,4 @@ phishing
 [build_tools]: https://visualstudio.microsoft.com/downloads/#microsoft-visual-c-redistributable-for-visual-studio-2022
 [anaconda_distribution]: https://www.anaconda.com/products/distribution
 [perlbrew]: https://perlbrew.pl/
+[pypi-name-issue]: https://github.com/pypa/pypi-support/issues/2098
