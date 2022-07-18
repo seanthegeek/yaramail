@@ -84,10 +84,6 @@ class MailScanner(object):
         """
         A YARA scaner for emails
 
-        .. note::
-          Each ``rules`` argument can accept raw rule content, a path to a
-          rules file, a file-like object, or a ``yara.Rule`` object.
-
         Args:
             header_rules: Rules that only apply to email header content
             body_rules: Rules that only apply to email body content
@@ -95,6 +91,10 @@ class MailScanner(object):
             header and body content
             attachment_rules: Rules that only apply to file \
             attachment content
+
+        .. note::
+          Each ``_rules`` parameter can accept raw rule content, a path to a
+          rules file, a file-like object, or a ``yara.Rule`` object.
 
         .. tip::
           Use the ``include`` directive in the YARA rule files that you
