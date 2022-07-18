@@ -290,9 +290,8 @@ save the file in a proprietary Microsoft OLE format with a <code class="docutils
 There are tools like <code class="docutils literal notranslate"><span class="pre">msgconvert</span></code> that make an attempt to convert a <code class="docutils literal notranslate"><span class="pre">.msg</span></code>
 file to a standard RFC 822 <code class="docutils literal notranslate"><span class="pre">.eml</span></code> file, and <code class="docutils literal notranslate"><span class="pre">yaramail</span></code> will attempt to use
 this tool when encountering a <code class="docutils literal notranslate"><span class="pre">.msg</span></code> file if it is installed on the system.
-However, the conversion isn’t perfect. <code class="docutils literal notranslate"><span class="pre">.msg</span></code> files store HTML bodies as
-embedded RTF documents. Anomalies are introduced when those bodies are
-converted, making them unsuitable as forensic samples.</p>
+However, anomalies are introduced during conversion that make the results
+unsuitable for forensic analysis.</p>
 <p>Instead of using <code class="docutils literal notranslate"><span class="pre">msgconvert</span></code>, use one of these other Outlook clients.</p>
 </section>
 <section id="microsoft-outlook-for-macos">
