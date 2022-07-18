@@ -14,9 +14,11 @@ yaramail scans all parts of an email via API or CLI
   -  Removes header indents by default for consistent scanning
 - Plain text and HTML body content
   - Converts body content to Markdown by default for consistent scanning
-- Nested email attachments
-- ZIP file contents, including nested ZIP files
-- Raw content and text content in PDF documents
+- Attachments
+  - Raw file content
+  - Emails attached to emails
+  - Non-password-protected ZIP file contents, including nested ZIP files
+  - PDF document text
 
 ## API
 
