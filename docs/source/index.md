@@ -133,30 +133,34 @@ In a terminal, run
 pip3 install -U yaramail
 ```
 
-### Working with .msg files
+## Email samples and Outlook clients
 
-If you would like to be able to parse and scan Microsoft Outlook `.msg`
-emails, you'll need to install the `Email::Outlook::Message` Perl module, which
-includes the `msgconvert` utility that is used to convert `.msg` files into the
-standard RFC 822 format. Ubuntu and Debian make this easy because they have a
-package for it (which is included in the installation instructions above). On 
-Fedora/RHEL/CentOS based distributions and macOS, you'll need to install
-[Perlbrew][perlbrew].
+### Microsoft Outlook for Windows
 
-Perlbrew installs a local copy of Perl within the user's home directory,
-similar to how Homebrew works (which is why the initial installation can take
-a while). That way, you don't need to use `sudo` to  install Perl modules, and 
-risk breaking your system's Perl installation in the process.
+If you save an email to a file using Microsoft Outlook on Windows, it will
+save the file in a proprietary Microsoft OLE format with a `.msg` extension.
+There are tools like `msgconvert` that make an attempt to convert a `.msg`
+file to a standard RFC 822 `.eml` file, and `yaramail` will attempt to use
+this tool when encountering a `.msg` file if it is installed on the system.
+However, the conversion isn't perfect. `.msg` files store HTML bodies as
+embedded RTF documents. Anomalies are introduced when those bodies are
+converted, making them unsuitable as forensic samples.
 
-Once Perlbrew is installed, use `cpan` to install `Email::Outlook::Message`.
+Instead of using `msgconvert`, use one of these other Outlook clients.
 
-```
-cpan install Email::Outlook::Message
-```
+### Microsoft Outlook for macOS
 
-The installation process will take a few minutes while `cpan` builds and
-installs all the dependencies. Once complete, the `msgconvert` utility will be
-in your `PATH`, ready for use.
+Drag the email from the inbox or other folder and drop it on the desktop.
+Attached emails can be saved to a file like any other attachment.
+
+### Outlook Web Access (OWA)
+
+1. Create a new email and leave it open a separate window.
+2. Drag from the inbox or other folder and drop it in the message of the draft.
+3. Download the attachment that was created in step 2
+
+Emails that are already attached to an email can be downloaded from OWA like
+any other attachment.
 
 ## Further reading
 
