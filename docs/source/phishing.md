@@ -311,16 +311,19 @@ for email in emails:
   parsed_email["from_trusted_domain"] = trusted
   matches = scanner.scan_email(email)
   parsed_email["yara_matches"] = matches
-  # This assumes that every rule has a meta value named "category"
+  skip_auth_check = False
   categories = []
   for match in matches:
+      if "skip_auth_check" in match["meta"]:
+          if match["meta"]["skip_auth_check"]:
+              skip_auth_check = True
       if "category" in match["meta"]:
           categories.append(match["meta"]["category"])
   categories = list(set(categories))
   # Ignore matches in multiple categories
   if len(categories) == 1:
       verdict = categories[0]
-  if trusted and verdict == "safe":
+  if (trusted or skip_auth_check) and verdict == "safe":
       verdict = "trusted"
   parsed_email["verdict"] = verdict
   if verdict == "trusted":
