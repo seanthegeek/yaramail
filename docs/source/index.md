@@ -142,9 +142,8 @@ save the file in a proprietary Microsoft OLE format with a `.msg` extension.
 There are tools like `msgconvert` that make an attempt to convert a `.msg`
 file to a standard RFC 822 `.eml` file, and `yaramail` will attempt to use
 this tool when encountering a `.msg` file if it is installed on the system.
-However, the conversion isn't perfect. `.msg` files store HTML bodies as
-embedded RTF documents. Anomalies are introduced when those bodies are
-converted, making them unsuitable as forensic samples.
+However, anomalies are introduced during conversion that make the results
+unsuitable for forensic analysis.
 
 Instead of using `msgconvert`, use one of these other Outlook clients.
 
