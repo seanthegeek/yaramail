@@ -153,10 +153,6 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A YARA scaner for emails</span>
 
-<span class="sd">        .. note::</span>
-<span class="sd">          Each ``rules`` argument can accept raw rule content, a path to a</span>
-<span class="sd">          rules file, a file-like object, or a ``yara.Rule`` object.</span>
-
 <span class="sd">        Args:</span>
 <span class="sd">            header_rules: Rules that only apply to email header content</span>
 <span class="sd">            body_rules: Rules that only apply to email body content</span>
@@ -164,6 +160,10 @@
 <span class="sd">            header and body content</span>
 <span class="sd">            attachment_rules: Rules that only apply to file \</span>
 <span class="sd">            attachment content</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">          Each ``_rules`` parameter can accept raw rule content, a path to a</span>
+<span class="sd">          rules file, a file-like object, or a ``yara.Rule`` object.</span>
 
 <span class="sd">        .. tip::</span>
 <span class="sd">          Use the ``include`` directive in the YARA rule files that you</span>
