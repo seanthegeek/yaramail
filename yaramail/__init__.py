@@ -64,9 +64,9 @@ def _compile_rules(rules: Union[yara.Rules, IOBase, str]) -> yara.Rules:
     if isinstance(rules, IOBase):
         rules = rules.read()
     if not path.exists(rules):
-        return yara.compile(source = rules)
+        return yara.compile(source=rules)
     if not path.isdir(rules):
-        return yara.compile(filepath = rules)
+        return yara.compile(filepath=rules)
     rules_str = ""
     for filename in os.listdir():
         file_path = path.join(rules, filename)
@@ -74,7 +74,6 @@ def _compile_rules(rules: Union[yara.Rules, IOBase, str]) -> yara.Rules:
             with open(file_path) as rules_file:
                 rules_str += rules_file.read()
     return yara.compile(source=rules_str)
-
 
 
 class MailScanner(object):
@@ -182,8 +181,8 @@ class MailScanner(object):
         for attachment in attachments:
             filename = attachment["filename"]
             file_extension = filename.lower().split(".")[-1]
-            payload = attachment["payload"]      
-            is_binary = attachment.get('binary', None)
+            payload = attachment["payload"]
+            is_binary = attachment.get('binary', False)
             if is_binary:
                 try:
                     payload = decode_base64(attachment["payload"])
