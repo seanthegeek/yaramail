@@ -39,12 +39,13 @@ dynamic = [
 ]
 
 [project.scripts]
-yaramail = "yaramail.cli:_main"
+yaramail = "yaramail._cli:_main"
 
 [project.urls]
 Homepage = "https://github.com/seanthegeek/yaramail"
-
 Documentation = "https://seanthegeek.github.io/yaramail/"
+Issues = "https://github.com/seanthegeek/yaramail/issues"
+Changelog = "https://github.com/seanthegeek/yaramail/blob/master/CHANGELOG.md"
 
 [tool.hatch.version]
 path = "yaramail/__init__.py"
