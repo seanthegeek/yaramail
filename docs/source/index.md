@@ -1,6 +1,6 @@
 # Welcome to yaramail's documentation!
 
-[![PyPI](https://img.shields.io/pypi/v/yara-mail)](https://github.com/seanthegeek/yara-mail/)
+[![PyPI](https://img.shields.io/pypi/v/yara-mail)](https://pypi.org/project/yara-mail/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/yara-mail?color=blue)](https://pypistats.org/packages/yara-mail)
 
 yaramail is a Python package and command line utility for scanning emails with
