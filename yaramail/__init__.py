@@ -63,17 +63,18 @@ def _compile_rules(rules: Union[yara.Rules, IOBase, str]) -> yara.Rules:
         return rules
     if isinstance(rules, IOBase):
         rules = rules.read()
-    if path.exists(rules):
-        if path.isdir(rules):
-            rules_str = ""
-            for filename in os.listdir():
-                file_path = path.join(rules, filename)
-                if not path.isdir(file_path):
-                    with open(file_path) as rules_file:
-                        rules_str += rules_file.read()
-            return yara.compile(source=rules_str)
-        return yara.compile(filepath=rules)
-    return yara.compile(source=rules)
+    if not path.exists(rules):
+        return yara.compile(source = rules)
+    if not path.isdir(rules):
+        return yara.compile(filepath = rules)
+    rules_str = ""
+    for filename in os.listdir():
+        file_path = path.join(rules, filename)
+        if not path.isdir(file_path):
+            with open(file_path) as rules_file:
+                rules_str += rules_file.read()
+    return yara.compile(source=rules_str)
+
 
 
 class MailScanner(object):
@@ -181,13 +182,13 @@ class MailScanner(object):
         for attachment in attachments:
             filename = attachment["filename"]
             file_extension = filename.lower().split(".")[-1]
-            payload = attachment["payload"]
-            if "binary" in attachment:
-                if attachment["binary"]:
-                    try:
-                        payload = decode_base64(attachment["payload"])
-                    except binascii.Error:
-                        pass
+            payload = attachment["payload"]      
+            is_binary = attachment.get('binary', None)
+            if is_binary:
+                try:
+                    payload = decode_base64(attachment["payload"])
+                except binascii.Error:
+                    pass
             attachment_matches += _match_to_dict(
                 self._attachment_rules.match(data=payload))
             if _is_pdf(payload):
