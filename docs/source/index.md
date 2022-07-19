@@ -147,6 +147,12 @@ unsuitable for forensic analysis.
 
 Instead of using `msgconvert`, use one of these other Outlook clients.
 
+```{note}
+If a `.msg` file is attached to an email and sent from a Windows Outlook
+client, the email will actually be sent as a `.eml` file. So, users can send 
+email samples without needing to worry about the file format.
+```
+
 ### Microsoft Outlook for macOS
 
 Drag the email from the inbox or other folder and drop it on the desktop.

@@ -80,7 +80,7 @@ Some system dependencies **must** be installed before installing `yaramail`.
 #### Debian, Ubuntu, and friends
 
 ```
-sudo apt install build-essential libpoppler-cpp-dev pkg-config python3-dev libemail-outlook-message-perl
+sudo apt install build-essential libpoppler-cpp-dev pkg-config python3-dev
 ```
 
 #### Fedora, Red Hat, and friends
@@ -111,7 +111,6 @@ brew install pkg-config poppler python
 7. Configure your Python IDE/project to use the Anaconda Environment
 
 ### Install yaramail
-
 
 ```{note}
 The official name for this project, package, and module is `yaramail`. 
