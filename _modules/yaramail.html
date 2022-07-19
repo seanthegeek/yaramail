@@ -132,17 +132,17 @@
         <span class="k">return</span> <span class="n">rules</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">IOBase</span><span class="p">):</span>
         <span class="n">rules</span> <span class="o">=</span> <span class="n">rules</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">rules</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">rules</span><span class="p">):</span>
-            <span class="n">rules_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-            <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">():</span>
-                <span class="n">file_path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
-                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">rules_file</span><span class="p">:</span>
-                        <span class="n">rules_str</span> <span class="o">+=</span> <span class="n">rules_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">yara</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">rules_str</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">rules</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">yara</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">rules</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">rules</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">yara</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">rules</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">yara</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">rules</span><span class="p">)</span>
+    <span class="n">rules_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">():</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">rules_file</span><span class="p">:</span>
+                <span class="n">rules_str</span> <span class="o">+=</span> <span class="n">rules_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">yara</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">rules_str</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="MailScanner"><a class="viewcode-back" href="../index.html#yaramail.MailScanner">[docs]</a><span class="k">class</span> <span class="nc">MailScanner</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -251,12 +251,12 @@
             <span class="n">filename</span> <span class="o">=</span> <span class="n">attachment</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span>
             <span class="n">file_extension</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">payload</span> <span class="o">=</span> <span class="n">attachment</span><span class="p">[</span><span class="s2">&quot;payload&quot;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="s2">&quot;binary&quot;</span> <span class="ow">in</span> <span class="n">attachment</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">attachment</span><span class="p">[</span><span class="s2">&quot;binary&quot;</span><span class="p">]:</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="n">payload</span> <span class="o">=</span> <span class="n">decode_base64</span><span class="p">(</span><span class="n">attachment</span><span class="p">[</span><span class="s2">&quot;payload&quot;</span><span class="p">])</span>
-                    <span class="k">except</span> <span class="n">binascii</span><span class="o">.</span><span class="n">Error</span><span class="p">:</span>
-                        <span class="k">pass</span>
+            <span class="n">is_binary</span> <span class="o">=</span> <span class="n">attachment</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_binary</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">payload</span> <span class="o">=</span> <span class="n">decode_base64</span><span class="p">(</span><span class="n">attachment</span><span class="p">[</span><span class="s2">&quot;payload&quot;</span><span class="p">])</span>
+                <span class="k">except</span> <span class="n">binascii</span><span class="o">.</span><span class="n">Error</span><span class="p">:</span>
+                    <span class="k">pass</span>
             <span class="n">attachment_matches</span> <span class="o">+=</span> <span class="n">_match_to_dict</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_attachment_rules</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">_is_pdf</span><span class="p">(</span><span class="n">payload</span><span class="p">):</span>
