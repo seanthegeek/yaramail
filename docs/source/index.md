@@ -155,7 +155,7 @@ Attached emails can be saved to a file like any other attachment.
 ### Outlook Web Access (OWA)
 
 1. Create a new email and leave it open a separate window.
-2. Drag from the inbox or other folder and drop it in the message of the draft.
+2. Drag the email from the inbox or other folder and drop it in the message of the draft.
 3. Download the attachment that was created in step 2
 
 Emails that are already attached to an email can be downloaded from OWA like
