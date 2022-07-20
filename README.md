@@ -1,14 +1,19 @@
 # yaramail
 
-[![PyPI](https://img.shields.io/pypi/v/yara-mail)](https://pypi.org/project/yara-mail/)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/yara-mail?color=blue)](https://pypistats.org/packages/yara-mail)
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/45714340/179877882-e2365028-b492-474c-9001-883bb4b6858a.png" alt="yaramail logo">
 
-yaramail is a Python package and command line utility for scanning emails with
+
+  [![PyPI](https://img.shields.io/pypi/v/yara-mail)](https://pypi.org/project/yara-mail/)
+  [![PyPI - Downloads](https://img.shields.io/pypi/dm/yara-mail?color=blue)](https://pypistats.org/packages/yara-mail)
+</div>
+
+`yaramail` is a Python package and command line utility for scanning emails with
 [YARA rules][yara]. It is Ideal for automated triage of phishing reports.
 
 ## Features
 
-yaramail scans all parts of an email via API or CLI
+`yaramail` scans all parts of an email via API or CLI
 
 - Headers
   -  Removes header indents by default for consistent scanning
