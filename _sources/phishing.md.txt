@@ -136,7 +136,7 @@ condition:
 }
 ```
 
-### Checking if an email is malicious
+### Checking for impersonation
 
 Impersonating a top executive is a classic social engineering technique. Even
 if a target organisation has fully implemented DMARC to prevent domain
@@ -220,12 +220,59 @@ publicly-traded US companies can be found in SEC filings, which are
 
 Rules in the `header_body` ruleset are checked against combined email header
 and email body content. A rule like the one above should be added to the
- `header_body` ruleset. That way it can identify impersonation in the `From`
+`header_body` ruleset. That way it can identify impersonation in the `From`
 header display name and/or the email body.
 
 This was a very simple, practical example. YARA was developed to identify and
 classify malware, so it is capable of much more complex pattern matching.
 That the time to read over YARA's documentation and other resources.
+
+### Checking attachment content
+
+As demonstrated by the previous examples, YARA rules don't need
+to be complex to be effective. The same is true for file/attachment rules.
+Sometimes attackers will store malicious files inside ISO files, because the 
+content of ISO files are often not scanned by email security controls.
+Although `yaramail` does not scan the contents of malicious ISO files, it can
+be used to identify small ISO files.
+
+Legitimate ISO files are large. They are disk images that are most commonly 
+used as bootable operating system installers that range from hundreds of
+megabytes to several gigabytes in size. Malicious ISO files are much
+smaller, because they only contain malware payloads.
+
+File types can be identified by looking for a known sequence of bytes at a
+particular location/offset in a file (usually at offset `0`, the very beginning
+of a file). These file signatures are often called magic bytes or magic
+numbers.
+
+```{tip}
+A helpful list of [file signatures][file signatures] can be found on Wikipedia.
+``` 
+ISO files contain the bytes `43 44 30 30 31` at offset `0`. This information 
+can be combined with the special YARA variable `fiilesize` to look for small
+ISO files
+
+```yara
+rule small_iso {
+  meta:
+    author = "Sean Whalen"
+    date = "2022-07-21"
+    category = "malware"
+    discription = "Indentifies small ISO files"
+
+  strings:
+    $iso = {43 44 30 30 31} // Magic bytes for ISO files
+
+  condition:
+    $iso at 0 and filesize < 100MB 
+}
+```
+
+```{tip}
+These types of conditions can also help to make YARA more efficient when it is
+being used as a filesystem scanner.
+```
 
 ### Checking if an email is junk
 
@@ -353,3 +400,5 @@ for email in emails:
 [parse_email]: https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.parse_email
 [CyberChef]: https://github.com/gchq/CyberChef/releases
 [EDGAR]: https://www.sec.gov/edgar/searchedgar/companysearch.html
+[file signatures]: https://en.wikipedia.org/wiki/List_of_file_signatures
+[filesize]: https://yara.readthedocs.io/en/stable/writingrules.html#file-size

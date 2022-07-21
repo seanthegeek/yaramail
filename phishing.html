@@ -43,7 +43,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#practical-examples">Practical examples</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#checking-if-an-email-is-trusted">Checking if an email is trusted</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#checking-if-an-email-is-malicious">Checking if an email is malicious</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#checking-for-impersonation">Checking for impersonation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#checking-attachment-content">Checking attachment content</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#checking-if-an-email-is-junk">Checking if an email is junk</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#putting-it-all-together">Putting it all together</a></li>
 </ul>
@@ -205,8 +206,8 @@ condition:
 </pre></div>
 </div>
 </section>
-<section id="checking-if-an-email-is-malicious">
-<h3>Checking if an email is malicious<a class="headerlink" href="#checking-if-an-email-is-malicious" title="Permalink to this heading"></a></h3>
+<section id="checking-for-impersonation">
+<h3>Checking for impersonation<a class="headerlink" href="#checking-for-impersonation" title="Permalink to this heading"></a></h3>
 <p>Impersonating a top executive is a classic social engineering technique. Even
 if a target organisation has fully implemented DMARC to prevent domain
 spoofing, people can still be impersonated in the display name of the
@@ -291,6 +292,50 @@ header display name and/or the email body.</p>
 <p>This was a very simple, practical example. YARA was developed to identify and
 classify malware, so it is capable of much more complex pattern matching.
 That the time to read over YARA’s documentation and other resources.</p>
+</section>
+<section id="checking-attachment-content">
+<h3>Checking attachment content<a class="headerlink" href="#checking-attachment-content" title="Permalink to this heading"></a></h3>
+<p>As demonstrated by the previous examples, YARA rules don’t need
+to be complex to be effective. The same is true for file/attachment rules.
+Sometimes attackers will store malicious files inside ISO files, because the
+content of ISO files are often not scanned by email security controls.
+Although <code class="docutils literal notranslate"><span class="pre">yaramail</span></code> does not scan the contents of malicious ISO files, it can
+be used to identify small ISO files.</p>
+<p>Legitimate ISO files are large. They are disk images that are most commonly
+used as bootable operating system installers that range from hundreds of
+megabytes to several gigabytes in size. Malicious ISO files are much
+smaller, because they only contain malware payloads.</p>
+<p>File types can be identified by looking for a known sequence of bytes at a
+particular location/offset in a file (usually at offset <code class="docutils literal notranslate"><span class="pre">0</span></code>, the very beginning
+of a file). These file signatures are often called magic bytes or magic
+numbers.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>A helpful list of <a class="reference external" href="https://en.wikipedia.org/wiki/List_of_file_signatures">file signatures</a> can be found on Wikipedia.</p>
+</div>
+<p>ISO files contain the bytes <code class="docutils literal notranslate"><span class="pre">43</span> <span class="pre">44</span> <span class="pre">30</span> <span class="pre">30</span> <span class="pre">31</span></code> at offset <code class="docutils literal notranslate"><span class="pre">0</span></code>. This information
+can be combined with the special YARA variable <code class="docutils literal notranslate"><span class="pre">fiilesize</span></code> to look for small
+ISO files</p>
+<div class="highlight-yara notranslate"><div class="highlight"><pre><span></span>rule small_iso {
+  meta:
+    author = &quot;Sean Whalen&quot;
+    date = &quot;2022-07-21&quot;
+    category = &quot;malware&quot;
+    discription = &quot;Indentifies small ISO files&quot;
+
+  strings:
+    $iso = {43 44 30 30 31} // Magic bytes for ISO files
+
+  condition:
+    $iso at 0 and filesize &lt; 100MB 
+}
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>These types of conditions can also help to make YARA more efficient when it is
+being used as a filesystem scanner.</p>
+</div>
 </section>
 <section id="checking-if-an-email-is-junk">
 <h3>Checking if an email is junk<a class="headerlink" href="#checking-if-an-email-is-junk" title="Permalink to this heading"></a></h3>
