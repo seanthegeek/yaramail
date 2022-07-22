@@ -44,11 +44,17 @@ def _match_to_dict(match: Union[yara.Match,
 
 
 def _is_pdf(file_bytes: bytes) -> bool:
-    return file_bytes.startswith(b"\x25\x50")
+    try:
+        return file_bytes.startswith(b"\x25\x50")
+    except TypeError:
+        return False
 
 
 def _is_zip(file_bytes: bytes) -> bool:
-    return file_bytes.startswith(b"\x50\x4B\03\04")
+    try:
+        return file_bytes.startswith(b"\x50\x4B\03\04")
+    except TypeError:
+        return False
 
 
 def _pdf_to_markdown(pdf_bytes: bytes) -> str:
