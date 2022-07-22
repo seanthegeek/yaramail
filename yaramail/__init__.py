@@ -45,7 +45,7 @@ def _match_to_dict(match: Union[yara.Match,
 
 def _is_pdf(file_bytes: bytes) -> bool:
     try:
-        return file_bytes.startswith(b"\x25\x50")
+        return file_bytes.startswith(b"\x25\x50\x44\x46\x2D")
     except TypeError:
         return False
 
