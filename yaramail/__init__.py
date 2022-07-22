@@ -127,7 +127,7 @@ class MailScanner(object):
             raise ValueError("Payload is not a PDF file")
         pdf_markdown = _pdf_to_markdown(payload)
         markdown_matches = _match_to_dict(
-            self._attachment_rules.match(pdf_markdown))
+            self._attachment_rules.match(data=pdf_markdown))
         for match in markdown_matches:
             tags = match["tags"].copy()
             tags.append("pdf2text")
