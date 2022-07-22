@@ -196,14 +196,14 @@ class MailScanner(object):
                     pass
             attachment_matches += _match_to_dict(
                 self._attachment_rules.match(data=payload))
-            if _is_pdf(payload):
+            if is_binary and _is_pdf(payload):
                 try:
                     attachment_matches += self._scan_pdf_text(payload)
                 except Exception as e:
                     logger.warning(
                         f"Unable to convert {filename} to markdown. {e}. "
                         f"Scanning raw file content only.")
-            elif _is_zip(payload):
+            elif is_binary and _is_zip(payload):
                 try:
                     attachment_matches += self._scan_zip(
                         filename,
