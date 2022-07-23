@@ -134,7 +134,7 @@ class MailScanner(object):
 
         return markdown_matches
 
-    def _scan_zip(self, filename: str, payload: Union[bytes, BytesIO],
+    def _scan_zip(self, payload: Union[bytes, BytesIO], filename: str = None,
                   _current_depth: int = 0, max_depth: int = None):
         if isinstance(payload, bytes):
             if not _is_zip(payload):
@@ -146,7 +146,9 @@ class MailScanner(object):
                 for name in zip_file.namelist():
                     with zip_file.open(name) as member:
                         tags = ["zip"]
-                        location = "{}:{}".format(filename, name)
+                        location = name
+                        if filename:
+                            location = "{}:{}".format(filename, name)
                         member_content = member.read()
                         matches = _match_to_dict(
                             self._attachment_rules.match(
@@ -169,8 +171,8 @@ class MailScanner(object):
                         elif _is_zip(member_content):
                             if max_depth is None or _current_depth > max_depth:
                                 zip_matches += self._scan_zip(
-                                    name,
                                     member_content,
+                                    filename=name,
                                     _current_depth=_current_depth,
                                     max_depth=max_depth)
                         for match in zip_matches:
