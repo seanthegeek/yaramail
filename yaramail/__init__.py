@@ -1,8 +1,7 @@
 import logging
 from typing import Union, List, Dict
 import binascii
-import os
-from os import path
+from os import path, listdir
 from io import IOBase, BytesIO
 import zipfile
 
@@ -74,7 +73,7 @@ def _compile_rules(rules: Union[yara.Rules, IOBase, str]) -> yara.Rules:
     if not path.isdir(rules):
         return yara.compile(filepath=rules)
     rules_str = ""
-    for filename in os.listdir():
+    for filename in listdir():
         file_path = path.join(rules, filename)
         if not path.isdir(file_path):
             with open(file_path) as rules_file:
