@@ -19,7 +19,7 @@ handler.setFormatter(formatter)
 logger = logging.getLogger("yaramail")
 logger.addHandler(handler)
 
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 
 
 def _match_to_dict(match: Union[yara.Match,
@@ -87,7 +87,7 @@ class MailScanner(object):
                  header_body_rules: Union[str, IOBase, yara.Rules] = None,
                  attachment_rules: Union[str, IOBase, yara.Rules] = None):
         """
-        A YARA scaner for emails
+        A YARA scanner for emails
 
         Args:
             header_rules: Rules that only apply to email header content

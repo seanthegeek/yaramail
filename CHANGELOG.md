@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.4
+
+- Fix typo in `MailScanner` docstring
+
 ## 1.0.3
 
 - Fix PDF scanning bugs
