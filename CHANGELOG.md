@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0
+
+- Attempt to scan encrypted ZIP files
+  - Customizable password list
+    - `[None, "malware", "infected"]` is always included
+
 ## 1.0.4
 
 - Fix typo in `MailScanner` docstring

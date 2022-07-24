@@ -2,7 +2,7 @@ import logging
 from typing import Union, List, Dict
 import binascii
 from os import path, listdir
-from io import IOBase, BytesIO
+from io import IOBase, BytesIO, StringIO
 import zipfile
 
 import yara
@@ -19,7 +19,7 @@ handler.setFormatter(formatter)
 logger = logging.getLogger("yaramail")
 logger.addHandler(handler)
 
-__version__ = "1.0.4"
+__version__ = "1.1.0"
 
 
 def _match_to_dict(match: Union[yara.Match,
@@ -134,53 +134,88 @@ class MailScanner(object):
 
         return markdown_matches
 
-    def _scan_zip(self, payload: Union[bytes, BytesIO], filename: str = None,
-                  _current_depth: int = 0, max_depth: int = None):
+    def _scan_zip(self, payload: Union[bytes, BytesIO, str],
+                  filename: str = None,
+                  passwords: Union[List[Union[None, str, bytes]],
+                                   IOBase, str] = None,
+                  max_depth: int = None, _current_depth: int = 0):
+        if isinstance(payload, str):
+            if not path.exists(payload):
+                raise FileNotFoundError(f"{payload} not found")
+            with open(payload, "rb") as f:
+                payload = f.read()
+        if isinstance(payload, BytesIO):
+            payload = payload.read()
         if isinstance(payload, bytes):
             if not _is_zip(payload):
                 raise ValueError("Payload is not a ZIP file")
-            _current_depth += 1
-            zip_matches = []
-            payload = BytesIO(payload)
-            with zipfile.ZipFile(payload) as zip_file:
-                for name in zip_file.namelist():
-                    with zip_file.open(name) as member:
+        if isinstance(passwords, str):
+            if path.exists(payload):
+                with open(passwords) as f:
+                    passwords = f.read().split("\n")
+        if isinstance(passwords, StringIO):
+            passwords = passwords.read().split("\n")
+        payload = BytesIO(payload)
+        _current_depth += 1
+        zip_matches = []
+        if passwords is None:
+            passwords = []
+        passwords += [None, "malware", "infected"]
+        passwords = list(set(passwords))
+        with zipfile.ZipFile(payload) as zip_file:
+            for name in zip_file.namelist():
+                for password in passwords:
+                    if isinstance(password, str):
+                        password = password.encode("utf-8")
+                    member_content = None
+                    with zip_file.open(name, pwd=password) as member:
                         tags = ["zip"]
                         location = name
                         if filename:
                             location = "{}:{}".format(filename, name)
-                        member_content = member.read()
-                        matches = _match_to_dict(
-                            self._attachment_rules.match(
-                                data=member_content))
-                        for match in matches:
-                            if "location" in match:
-                                existing_location = match["location"]
-                                location = f"{existing_location}:{location}"
-                            match["location"] = location
-                        zip_matches += matches
-                        if _is_pdf(member_content):
-                            try:
-                                zip_matches += self._scan_pdf_text(
-                                    member_content)
-                            except Exception as e:
-                                logger.warning(
-                                    "Unable to convert PDF to markdown. "
-                                    f"{e} Scanning raw file content only"
-                                    ".")
-                        elif _is_zip(member_content):
-                            if max_depth is None or _current_depth > max_depth:
-                                zip_matches += self._scan_zip(
-                                    member_content,
-                                    filename=name,
-                                    _current_depth=_current_depth,
-                                    max_depth=max_depth)
-                        for match in zip_matches:
-                            match["tags"] = list(set(match["tags"] + tags))
+                        matches = []
+                        try:
+                            member_content = member.read()
+                            matches = _match_to_dict(
+                                self._attachment_rules.match(
+                                    data=member_content))
+                        except RuntimeError:
+                            pass
+                    if member_content is None:
+                        logger.warning("Unable to read the contents "
+                                       "of the ZIP file")
+                        break
+                    for match in matches:
+                        if "location" in match:
+                            existing_location = match["location"]
+                            location = f"{existing_location}:{location}"
+                        match["location"] = location
+                    zip_matches += matches
+                    if _is_pdf(member_content):
+                        try:
+                            zip_matches += self._scan_pdf_text(
+                                member_content)
+                        except Exception as e:
+                            logger.warning(
+                                "Unable to convert PDF to markdown. "
+                                f"{e} Scanning raw file content only"
+                                ".")
+                    elif _is_zip(member_content):
+                        if max_depth is None or _current_depth > max_depth:
+                            zip_matches += self._scan_zip(
+                                member_content,
+                                filename=name,
+                                max_depth=max_depth,
+                                passwords=passwords,
+                                _current_depth=_current_depth)
+                    for match in zip_matches:
+                        match["tags"] = list(set(match["tags"] + tags))
 
-                        return zip_matches
+                    return zip_matches
 
     def _scan_attachments(self, attachments: Union[List, Dict],
+                          zip_passwords: Union[List[Union[None, str, bytes]],
+                                               BytesIO, str] = None,
                           max_zip_depth: int = None) -> List[Dict]:
         attachment_matches = []
         if isinstance(attachments, dict):
@@ -207,16 +242,17 @@ class MailScanner(object):
             elif is_binary and _is_zip(payload):
                 try:
                     attachment_matches += self._scan_zip(
-                        filename,
                         payload,
+                        filename=filename,
+                        passwords=zip_passwords,
                         max_depth=max_zip_depth)
-                except Exception as e:
+                except UserWarning as e:
                     logger.warning(f"Unable to scan {filename}. {e}.")
             elif file_extension in ["eml", "msg"]:
                 try:
                     matches = self.scan_email(parse_email(payload))
                     attachment_matches += matches
-                except Exception as e:
+                except UserWarning as e:
                     logger.warning(f"Unable to scan {filename}. {e}.")
 
             for match in attachment_matches:
