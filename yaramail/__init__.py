@@ -185,7 +185,7 @@ class MailScanner(object):
                 if member_content is None:
                     logger.warning("Unable to read the contents "
                                    "of the ZIP file")
-                    break
+                    return zip_matches
                 for match in matches:
                     if "location" in match:
                         existing_location = match["location"]
