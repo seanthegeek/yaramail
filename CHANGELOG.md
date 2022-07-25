@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1
+
+- Fix encrypted ZIP scanning
+
 ## 1.1.0
 
 - Attempt to scan encrypted ZIP files

@@ -19,7 +19,7 @@ handler.setFormatter(formatter)
 logger = logging.getLogger("yaramail")
 logger.addHandler(handler)
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 
 
 def _match_to_dict(match: Union[yara.Match,
@@ -168,19 +168,20 @@ class MailScanner(object):
                     if isinstance(password, str):
                         password = password.encode("utf-8")
                     member_content = None
-                    with zip_file.open(name, pwd=password) as member:
-                        tags = ["zip"]
-                        location = name
-                        if filename:
-                            location = "{}:{}".format(filename, name)
-                        matches = []
-                        try:
+                    try:
+                        with zip_file.open(name, pwd=password) as member:
+                            tags = ["zip"]
+                            location = name
+                            if filename:
+                                location = "{}:{}".format(filename, name)
+                            matches = []
                             member_content = member.read()
                             matches = _match_to_dict(
                                 self._attachment_rules.match(
                                     data=member_content))
-                        except RuntimeError:
-                            pass
+                    except RuntimeError:
+                        pass
+
                     if member_content is None:
                         logger.warning("Unable to read the contents "
                                        "of the ZIP file")
