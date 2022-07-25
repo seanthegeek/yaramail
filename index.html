@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to yaramail’s documentation! &mdash; yaramail 1.0.4 documentation</title>
+  <title>Welcome to yaramail’s documentation! &mdash; yaramail 1.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -90,8 +90,12 @@
 <ul>
 <li><p>Raw file content</p></li>
 <li><p>Emails attached to emails</p></li>
-<li><p>Non-password-protected ZIP file contents, including nested ZIP files</p></li>
 <li><p>PDF document text</p></li>
+<li><p>ZIP file contents, including nested ZIP files</p>
+<ul>
+<li><p>Customizable list of passwords to use when attempting to scan encrypted ZIP files</p></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -125,7 +129,7 @@ way, rules can be divided into separate files as you see fit.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="yaramail.MailScanner.scan_email">
-<span class="sig-name descname"><span class="pre">scan_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_raw_headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_raw_body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_zip_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaramail.html#MailScanner.scan_email"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaramail.MailScanner.scan_email" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">scan_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_raw_headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_raw_body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zip_passwords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_zip_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/yaramail.html#MailScanner.scan_email"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaramail.MailScanner.scan_email" title="Permalink to this definition"></a></dt>
 <dd><p>Scans an email using YARA rules</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -133,8 +137,13 @@ way, rules can be divided into separate files as you see fit.</p>
 <li><p><strong>email</strong> – Email file content, a path to an email             file, a file-like object, or output from             <code class="docutils literal notranslate"><span class="pre">mailsuite.utils.parse_email()</span></code></p></li>
 <li><p><strong>use_raw_headers</strong> – Scan headers with indentations included</p></li>
 <li><p><strong>use_raw_body</strong> – Scan the raw email body instead of converting it to             Markdown first</p></li>
+<li><p><strong>zip_passwords</strong> – Passwords to try on encrypted ZIP files</p></li>
 <li><p><strong>max_zip_depth</strong> – Number of times to recurse into nested ZIP files</p></li>
 </ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>,, note::</dt><dd><p><code class="docutils literal notranslate"><span class="pre">infected</span></code> and <code class="docutils literal notranslate"><span class="pre">malware</span></code> are always tried as ZIP passwords.</p>
 </dd>
 </dl>
 <p>Returns: A list of rule matches</p>
