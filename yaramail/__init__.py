@@ -160,7 +160,7 @@ class MailScanner(object):
         zip_matches = []
         if passwords is None:
             passwords = []
-        passwords += [None, "malware", "infected"]
+        passwords += ["malware", "infected"]
         passwords = list(set(passwords))
         with zipfile.ZipFile(payload) as zip_file:
             for name in zip_file.namelist():
@@ -168,51 +168,51 @@ class MailScanner(object):
                     if isinstance(password, str):
                         password = password.encode("utf-8")
                     member_content = None
+                    matches = []
                     try:
                         with zip_file.open(name, pwd=password) as member:
                             tags = ["zip"]
                             location = name
                             if filename:
                                 location = "{}:{}".format(filename, name)
-                            matches = []
                             member_content = member.read()
                             matches = _match_to_dict(
                                 self._attachment_rules.match(
                                     data=member_content))
                     except RuntimeError:
-                        pass
+                        continue
 
-                    if member_content is None:
-                        logger.warning("Unable to read the contents "
-                                       "of the ZIP file")
-                        break
-                    for match in matches:
-                        if "location" in match:
-                            existing_location = match["location"]
-                            location = f"{existing_location}:{location}"
-                        match["location"] = location
-                    zip_matches += matches
-                    if _is_pdf(member_content):
-                        try:
-                            zip_matches += self._scan_pdf_text(
-                                member_content)
-                        except Exception as e:
-                            logger.warning(
-                                "Unable to convert PDF to markdown. "
-                                f"{e} Scanning raw file content only"
-                                ".")
-                    elif _is_zip(member_content):
-                        if max_depth is None or _current_depth > max_depth:
-                            zip_matches += self._scan_zip(
-                                member_content,
-                                filename=name,
-                                max_depth=max_depth,
-                                passwords=passwords,
-                                _current_depth=_current_depth)
-                    for match in zip_matches:
-                        match["tags"] = list(set(match["tags"] + tags))
+                if member_content is None:
+                    logger.warning("Unable to read the contents "
+                                   "of the ZIP file")
+                    break
+                for match in matches:
+                    if "location" in match:
+                        existing_location = match["location"]
+                        location = f"{existing_location}:{location}"
+                    match["location"] = location
+                zip_matches += matches
+                if _is_pdf(member_content):
+                    try:
+                        zip_matches += self._scan_pdf_text(
+                            member_content)
+                    except Exception as e:
+                        logger.warning(
+                            "Unable to convert PDF to markdown. "
+                            f"{e} Scanning raw file content only"
+                            ".")
+                elif _is_zip(member_content):
+                    if max_depth is None or _current_depth > max_depth:
+                        zip_matches += self._scan_zip(
+                            member_content,
+                            filename=name,
+                            max_depth=max_depth,
+                            passwords=passwords,
+                            _current_depth=_current_depth)
+                for match in zip_matches:
+                    match["tags"] = list(set(match["tags"] + tags))
 
-                    return zip_matches
+                return zip_matches
 
     def _scan_attachments(self, attachments: Union[List, Dict],
                           zip_passwords: Union[List[Union[None, str, bytes]],
