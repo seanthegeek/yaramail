@@ -20,8 +20,9 @@
 - Attachments
   - Raw file content
   - Emails attached to emails
-  - Non-password-protected ZIP file contents, including nested ZIP files
   - PDF document text
+  - ZIP file contents, including nested ZIP files
+    - Customizable list of passwords to use when attempting to scan encrypted ZIP files
 
 ## CLI
 
