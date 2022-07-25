@@ -284,8 +284,9 @@ class MailScanner(object):
             zip_passwords: Passwords to try on encrypted ZIP files
             max_zip_depth: Number of times to recurse into nested ZIP files
 
-            ,, note::
-              ``infected`` and ``malware`` are always tried as ZIP passwords.
+        ,, note::
+          ``infected`` and ``malware`` are always tried as ZIP passwords.
+
 
         Returns: A list of rule matches
 
