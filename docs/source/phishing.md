@@ -41,7 +41,7 @@ The `MailScanner` class in the [`yaramail` API][API] provides a YARA scanner
 that is specifically designed for emails.
 
 To scan an email, pass the output from 
-[`mailsuite.utils.parse_email()`][parse_email] to `MailScanner.scan_email()`, 
+[mailsuite.utils.parse_email()][parse_email] to `MailScanner.scan_email()`, 
 Take a look at the [API documentation][API] to learn about the returned value.
 
 ## Practical examples
