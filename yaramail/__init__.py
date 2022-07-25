@@ -268,6 +268,8 @@ class MailScanner(object):
     def scan_email(self, email: Union[str, IOBase, Dict],
                    use_raw_headers: bool = False,
                    use_raw_body: bool = False,
+                   zip_passwords: Union[List[Union[None, str, bytes]],
+                                        IOBase, str] = None,
                    max_zip_depth: int = None) -> List[Dict]:
         """
         Scans an email using YARA rules
@@ -279,7 +281,11 @@ class MailScanner(object):
             use_raw_headers: Scan headers with indentations included
             use_raw_body: Scan the raw email body instead of converting it to \
             Markdown first
+            zip_passwords: Passwords to try on encrypted ZIP files
             max_zip_depth: Number of times to recurse into nested ZIP files
+
+            ,, note::
+              ``infected`` and ``malware`` are always tried as ZIP passwords.
 
         Returns: A list of rule matches
 
@@ -350,6 +356,7 @@ class MailScanner(object):
                 matches.append(header_body_match)
         if self._attachment_rules:
             matches += self._scan_attachments(attachments,
+                                              zip_passwords=zip_passwords,
                                               max_zip_depth=max_zip_depth)
 
         return matches
