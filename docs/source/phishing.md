@@ -364,7 +364,7 @@ for email in emails:
                                              yara_required_domains)
     parsed_email["from_trusted_domain"] = (
             trusted_domain or yara_safe_required)
-    parsed_email["from_yara_required_domain"] = yara_safe_required
+    parsed_email["from_yara_safe_required_domain"] = yara_safe_required
     matches = scanner.scan_email(email)
     parsed_email["yara_matches"] = matches
     skip_auth_check = False
@@ -383,7 +383,7 @@ for email in emails:
     elif verdict == "safe" and not (yara_safe_required or skip_auth_check):
         verdict = "yara_safe_auth_fail"
     elif verdict != "safe" and yara_safe_required:
-        verdict = "auth_passed_not_yara_safe"
+        verdict = "auth_pass_not_yara_safe"
     parsed_email["verdict"] = verdict
     if verdict == "safe":
         # TODO: Let the user know the email is safe and close the ticket
