@@ -1,7 +1,7 @@
 # Automating phishing report inbox triage
 
 Through a combination authentication header parsing and YARA rules,
-[mailsuite][mailsuite] and `yaramail` can be used to create customized 
+[mailsuite][mailsuite] and `yaramail` can be used to create customized
 automation for triaging phishing reports from users. `mailsuite` is installed
 as a dependency of `yaramail`.
 
@@ -37,18 +37,18 @@ Use the [include][include] directive in the YARA rule files that you pass to
 divided into separate files as you see fit.
 ```
 
-The `MailScanner` class in the [`yaramail` API][API] provides a YARA scanner 
+The `MailScanner` class in the [`yaramail` API][API] provides a YARA scanner
 that is specifically designed for emails.
 
-To scan an email, pass the output from 
-[mailsuite.utils.parse_email()][parse_email] to `MailScanner.scan_email()`, 
+To scan an email, pass the output from
+[mailsuite.utils.parse_email()][parse_email] to `MailScanner.scan_email()`,
 Take a look at the [API documentation][API] to learn about the returned value.
 
 ## Practical examples
 
 ### Checking if an email is trusted
 
-Use the [from_trusted_domain()][trusted] function in 
+Use the [from_trusted_domain()][trusted] function in
 [mailsuite.utils][mailsuite.utils] to check the results of DKIM and/or DMARC
 in the `Authentication-Results` header against a list of trusted domains.
 
@@ -132,7 +132,7 @@ strings:
 
 condition:
   // The total number of URLs must match the number of example.com URls
-  #http == #example
+  #http > 0 and #http == #example
 }
 ```
 
@@ -231,12 +231,12 @@ That the time to read over YARA's documentation and other resources.
 
 As demonstrated by the previous examples, YARA rules don't need
 to be complex to be effective. The same is true for file/attachment rules.
-Sometimes attackers will store malicious files inside ISO files, because the 
+Sometimes attackers will store malicious files inside ISO files, because the
 content of ISO files are often not scanned by email security controls.
 Although `yaramail` does not scan the contents of malicious ISO files, it can
 be used to identify small ISO files.
 
-Legitimate ISO files are large. They are disk images that are most commonly 
+Legitimate ISO files are large. They are disk images that are most commonly
 used as bootable operating system installers that range from hundreds of
 megabytes to several gigabytes in size. Malicious ISO files are much
 smaller, because they only contain malware payloads.
@@ -249,7 +249,7 @@ numbers.
 ```{tip}
 A helpful list of [file signatures][file signatures] can be found on Wikipedia.
 ``` 
-ISO files contain the bytes `43 44 30 30 31` at offset `0`. This information 
+ISO files contain the bytes `43 44 30 30 31` at offset `0`. This information
 can be combined with the special YARA variable `fiilesize` to look for small
 ISO files
 
@@ -324,69 +324,76 @@ logger = logging.getLogger("scanner")
 
 
 def escalate_to_incident_response(reported_email: Dict, priority: str):
-  m = f"Escalating {priority} priority email: {reported_email['subject']}"
-  logger.info(m)
-  # TODO: Do something!
-  pass
+    m = f"Escalating {priority} priority email: {reported_email['subject']}"
+    logger.info(m)
+    # TODO: Do something!
+    pass
 
 malicious_verdicts = ["social engineering", "credential harvesting",
                       "fraud", "malware"]
 
-# Load list of trusted domains
+# Load list of trusted domains that require a safe YARA too
 with open("trusted_domains.txt") as trusted_domains_file:
-  trusted_domains = trusted_domains_file.read().split("\n")
+    trusted_domains = trusted_domains_file.read().split("\n")
+
+# Load list of trusted domains that require a safe YARA too
+with open("trusted_domains_skip_yara.txt") as trusted_domains_file:
+    trusted_domains_skip_yara = trusted_domains_file.read().split("\n")
 
 # Initialize the scanner
 scanner = None # Avoid an IDE warning
 try:
-  scanner = MailScanner(header_rules="header.yar",
-                        body_rules="body.yar",
-                        header_body_rules="header_body.yar",
-                        attachment_rules="attachment.yar")
+    scanner = MailScanner(header_rules="header.yar",
+                          body_rules="body.yar",
+                          header_body_rules="header_body.yar",
+                          attachment_rules="attachment.yar")
 except Exception as e:
-  logger.error(f"Error parsing YARA rules: {e}")
-  exit(-1)
+    logger.error(f"Error parsing YARA rules: {e}")
+    exit(-1)
 
 # TODO: Do something to fetch emails
 emails = []
 
 for email in emails:
-  # TODO: Send user a "Thanks for sending a report" email
-  verdict = None
-  parsed_email = parse_email(email)
-  trusted = from_trusted_domain(email, trusted_domains)
-  parsed_email["from_trusted_domain"] = trusted
-  matches = scanner.scan_email(email)
-  parsed_email["yara_matches"] = matches
-  skip_auth_check = False
-  categories = []
-  for match in matches:
-      if "skip_auth_check" in match["meta"]:
-          if match["meta"]["skip_auth_check"]:
-              skip_auth_check = True
-      if "category" in match["meta"]:
-          categories.append(match["meta"]["category"])
-  categories = list(set(categories))
-  # Ignore matches in multiple categories
-  if len(categories) == 1:
-      verdict = categories[0]
-  if (trusted or skip_auth_check) and verdict == "safe":
-      verdict = "trusted"
-  parsed_email["verdict"] = verdict
-  if verdict == "trusted":
-      # TODO: Let the user know the email is safe and close the ticket
-      # TODO: Move the report to the trusted folder
-      pass
-  elif verdict == "junk":
-      # TODO: Tell the user how to add an address to their spam filter
-      # TODO: Close the ticket and move the report to the junk folder
-      pass
-  elif verdict in malicious_verdicts:
-      # TODO: Instruct the user to delete the malicious email
-      # TODO: Maybe do something different for each verdict?
-      escalate_to_incident_response(parsed_email, "high")
-  else:
-      escalate_to_incident_response(parsed_email, "normal")
+    # TODO: Send user a "Thanks for sending a report" email
+    verdict = None
+    parsed_email = parse_email(email)
+    trusted = from_trusted_domain(email, trusted_domains)
+    skip_yara = from_trusted_domain(email, trusted_domains_skip_yara)
+    parsed_email["from_trusted_domain"] = trusted
+    matches = scanner.scan_email(email)
+    parsed_email["yara_matches"] = matches
+    skip_auth_check = False
+    categories = []
+    for match in matches:
+        if "skip_auth_check" in match["meta"]:
+            if match["meta"]["skip_auth_check"]:
+                skip_auth_check = True
+        if "category" in match["meta"]:
+            categories.append(match["meta"]["category"])
+    categories = list(set(categories))
+    # Ignore matches in multiple categories
+    if len(categories) == 1:
+        verdict = categories[0]
+    if verdict == "safe" and not (trusted or skip_auth_check):
+        verdict = "yara_safe_auth_fail"
+    elif skip_yara:
+      verdict = "safe"
+    parsed_email["verdict"] = verdict
+    if verdict == "safe":
+        # TODO: Let the user know the email is safe and close the ticket
+        # TODO: Move the report to the trusted folder
+        pass
+    elif verdict == "junk":
+        # TODO: Tell the user how to add an address to their spam filter
+        # TODO: Close the ticket and move the report to the junk folder
+        pass
+    elif verdict in malicious_verdicts:
+        # TODO: Instruct the user to delete the malicious email
+        # TODO: Maybe do something different for each verdict?
+        escalate_to_incident_response(parsed_email, "high")
+    else:
+        escalate_to_incident_response(parsed_email, "normal")
 
 ```
 
