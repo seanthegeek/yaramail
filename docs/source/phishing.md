@@ -329,19 +329,20 @@ def escalate_to_incident_response(reported_email: Dict, priority: str):
     # TODO: Do something!
     pass
 
+
 malicious_verdicts = ["social engineering", "credential harvesting",
                       "fraud", "malware"]
 
-# Load list of trusted domains that require a safe YARA too
+# Load list of trusted domains that require a safe YARA rule too
+with open("trusted_domains_yara_required.txt") as trusted_domains_file:
+    yara_required_domains = trusted_domains_file.read().split("\n")
+
+# Load list of trusted domains that *do not* require a safe YARA
 with open("trusted_domains.txt") as trusted_domains_file:
     trusted_domains = trusted_domains_file.read().split("\n")
 
-# Load list of trusted domains that require a safe YARA too
-with open("trusted_domains_skip_yara.txt") as trusted_domains_file:
-    trusted_domains_skip_yara = trusted_domains_file.read().split("\n")
-
 # Initialize the scanner
-scanner = None # Avoid an IDE warning
+scanner = None  # Avoid an IDE warning
 try:
     scanner = MailScanner(header_rules="header.yar",
                           body_rules="body.yar",
@@ -358,27 +359,31 @@ for email in emails:
     # TODO: Send user a "Thanks for sending a report" email
     verdict = None
     parsed_email = parse_email(email)
-    trusted = from_trusted_domain(email, trusted_domains)
-    skip_yara = from_trusted_domain(email, trusted_domains_skip_yara)
-    parsed_email["from_trusted_domain"] = trusted
+    trusted_domain = from_trusted_domain(email, trusted_domains)
+    yara_safe_required = from_trusted_domain(email,
+                                             yara_required_domains)
+    parsed_email["from_trusted_domain"] = (
+            trusted_domain or yara_safe_required)
+    parsed_email["from_yara_required_domain"] = yara_safe_required
     matches = scanner.scan_email(email)
     parsed_email["yara_matches"] = matches
     skip_auth_check = False
     categories = []
     for match in matches:
-        if "skip_auth_check" in match["meta"]:
-            if match["meta"]["skip_auth_check"]:
-                skip_auth_check = True
+        if "skip_auth_check" in match["meta"] and not skip_auth_check:
+            skip_auth_check = match["meta"]["skip_auth_check"]
         if "category" in match["meta"]:
             categories.append(match["meta"]["category"])
     categories = list(set(categories))
     # Ignore matches in multiple categories
     if len(categories) == 1:
         verdict = categories[0]
-    if verdict == "safe" and not (trusted or skip_auth_check):
+    if trusted_domain and verdict not in malicious_verdicts:
+       verdict = "safe" 
+    elif verdict == "safe" and not (yara_safe_required or skip_auth_check):
         verdict = "yara_safe_auth_fail"
-    elif skip_yara:
-      verdict = "safe"
+    elif verdict != "safe" and yara_safe_required:
+        verdict = "auth_passed_not_yara_safe"
     parsed_email["verdict"] = verdict
     if verdict == "safe":
         # TODO: Let the user know the email is safe and close the ticket
