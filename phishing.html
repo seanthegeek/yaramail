@@ -201,7 +201,7 @@ strings:
 
 condition:
   // The total number of URLs must match the number of example.com URls
-  #http == #example
+  #http &gt; 0 and #http == #example
 }
 </pre></div>
 </div>
@@ -382,69 +382,81 @@ time, but the reduction in alert fatigue is well worth the effort.</p>
 
 
 <span class="k">def</span> <span class="nf">escalate_to_incident_response</span><span class="p">(</span><span class="n">reported_email</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">priority</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-  <span class="n">m</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Escalating </span><span class="si">{</span><span class="n">priority</span><span class="si">}</span><span class="s2"> priority email: </span><span class="si">{</span><span class="n">reported_email</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-  <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-  <span class="c1"># TODO: Do something!</span>
-  <span class="k">pass</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Escalating </span><span class="si">{</span><span class="n">priority</span><span class="si">}</span><span class="s2"> priority email: </span><span class="si">{</span><span class="n">reported_email</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+    <span class="c1"># TODO: Do something!</span>
+    <span class="k">pass</span>
+
 
 <span class="n">malicious_verdicts</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;social engineering&quot;</span><span class="p">,</span> <span class="s2">&quot;credential harvesting&quot;</span><span class="p">,</span>
                       <span class="s2">&quot;fraud&quot;</span><span class="p">,</span> <span class="s2">&quot;malware&quot;</span><span class="p">]</span>
 
-<span class="c1"># Load list of trusted domains</span>
+<span class="c1"># Load list of trusted domains that require a safe YARA rule too</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;trusted_domains_yara_required.txt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">trusted_domains_file</span><span class="p">:</span>
+    <span class="n">yara_required_domains</span> <span class="o">=</span> <span class="n">trusted_domains_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Load list of trusted domains that *do not* require a safe YARA</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;trusted_domains.txt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">trusted_domains_file</span><span class="p">:</span>
-  <span class="n">trusted_domains</span> <span class="o">=</span> <span class="n">trusted_domains_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">trusted_domains</span> <span class="o">=</span> <span class="n">trusted_domains_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="c1"># Initialize the scanner</span>
-<span class="n">scanner</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># Avoid an IDE warning</span>
+<span class="n">scanner</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Avoid an IDE warning</span>
 <span class="k">try</span><span class="p">:</span>
-  <span class="n">scanner</span> <span class="o">=</span> <span class="n">MailScanner</span><span class="p">(</span><span class="n">header_rules</span><span class="o">=</span><span class="s2">&quot;header.yar&quot;</span><span class="p">,</span>
-                        <span class="n">body_rules</span><span class="o">=</span><span class="s2">&quot;body.yar&quot;</span><span class="p">,</span>
-                        <span class="n">header_body_rules</span><span class="o">=</span><span class="s2">&quot;header_body.yar&quot;</span><span class="p">,</span>
-                        <span class="n">attachment_rules</span><span class="o">=</span><span class="s2">&quot;attachment.yar&quot;</span><span class="p">)</span>
+    <span class="n">scanner</span> <span class="o">=</span> <span class="n">MailScanner</span><span class="p">(</span><span class="n">header_rules</span><span class="o">=</span><span class="s2">&quot;header.yar&quot;</span><span class="p">,</span>
+                          <span class="n">body_rules</span><span class="o">=</span><span class="s2">&quot;body.yar&quot;</span><span class="p">,</span>
+                          <span class="n">header_body_rules</span><span class="o">=</span><span class="s2">&quot;header_body.yar&quot;</span><span class="p">,</span>
+                          <span class="n">attachment_rules</span><span class="o">=</span><span class="s2">&quot;attachment.yar&quot;</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-  <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error parsing YARA rules: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-  <span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error parsing YARA rules: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="c1"># TODO: Do something to fetch emails</span>
 <span class="n">emails</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="k">for</span> <span class="n">email</span> <span class="ow">in</span> <span class="n">emails</span><span class="p">:</span>
-  <span class="c1"># TODO: Send user a &quot;Thanks for sending a report&quot; email</span>
-  <span class="n">verdict</span> <span class="o">=</span> <span class="kc">None</span>
-  <span class="n">parsed_email</span> <span class="o">=</span> <span class="n">parse_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
-  <span class="n">trusted</span> <span class="o">=</span> <span class="n">from_trusted_domain</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">trusted_domains</span><span class="p">)</span>
-  <span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;from_trusted_domain&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trusted</span>
-  <span class="n">matches</span> <span class="o">=</span> <span class="n">scanner</span><span class="o">.</span><span class="n">scan_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
-  <span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;yara_matches&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">matches</span>
-  <span class="n">skip_auth_check</span> <span class="o">=</span> <span class="kc">False</span>
-  <span class="n">categories</span> <span class="o">=</span> <span class="p">[]</span>
-  <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
-      <span class="k">if</span> <span class="s2">&quot;skip_auth_check&quot;</span> <span class="ow">in</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]:</span>
-          <span class="k">if</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;skip_auth_check&quot;</span><span class="p">]:</span>
-              <span class="n">skip_auth_check</span> <span class="o">=</span> <span class="kc">True</span>
-      <span class="k">if</span> <span class="s2">&quot;category&quot;</span> <span class="ow">in</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]:</span>
-          <span class="n">categories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;category&quot;</span><span class="p">])</span>
-  <span class="n">categories</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">categories</span><span class="p">))</span>
-  <span class="c1"># Ignore matches in multiple categories</span>
-  <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-      <span class="n">verdict</span> <span class="o">=</span> <span class="n">categories</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">trusted</span> <span class="ow">or</span> <span class="n">skip_auth_check</span><span class="p">)</span> <span class="ow">and</span> <span class="n">verdict</span> <span class="o">==</span> <span class="s2">&quot;safe&quot;</span><span class="p">:</span>
-      <span class="n">verdict</span> <span class="o">=</span> <span class="s2">&quot;trusted&quot;</span>
-  <span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;verdict&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">verdict</span>
-  <span class="k">if</span> <span class="n">verdict</span> <span class="o">==</span> <span class="s2">&quot;trusted&quot;</span><span class="p">:</span>
-      <span class="c1"># TODO: Let the user know the email is safe and close the ticket</span>
-      <span class="c1"># TODO: Move the report to the trusted folder</span>
-      <span class="k">pass</span>
-  <span class="k">elif</span> <span class="n">verdict</span> <span class="o">==</span> <span class="s2">&quot;junk&quot;</span><span class="p">:</span>
-      <span class="c1"># TODO: Tell the user how to add an address to their spam filter</span>
-      <span class="c1"># TODO: Close the ticket and move the report to the junk folder</span>
-      <span class="k">pass</span>
-  <span class="k">elif</span> <span class="n">verdict</span> <span class="ow">in</span> <span class="n">malicious_verdicts</span><span class="p">:</span>
-      <span class="c1"># TODO: Instruct the user to delete the malicious email</span>
-      <span class="c1"># TODO: Maybe do something different for each verdict?</span>
-      <span class="n">escalate_to_incident_response</span><span class="p">(</span><span class="n">parsed_email</span><span class="p">,</span> <span class="s2">&quot;high&quot;</span><span class="p">)</span>
-  <span class="k">else</span><span class="p">:</span>
-      <span class="n">escalate_to_incident_response</span><span class="p">(</span><span class="n">parsed_email</span><span class="p">,</span> <span class="s2">&quot;normal&quot;</span><span class="p">)</span>
+    <span class="c1"># TODO: Send user a &quot;Thanks for sending a report&quot; email</span>
+    <span class="n">verdict</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">parsed_email</span> <span class="o">=</span> <span class="n">parse_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+    <span class="n">trusted_domain</span> <span class="o">=</span> <span class="n">from_trusted_domain</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">trusted_domains</span><span class="p">)</span>
+    <span class="n">yara_safe_required</span> <span class="o">=</span> <span class="n">from_trusted_domain</span><span class="p">(</span><span class="n">email</span><span class="p">,</span>
+                                             <span class="n">yara_required_domains</span><span class="p">)</span>
+    <span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;from_trusted_domain&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">trusted_domain</span> <span class="ow">or</span> <span class="n">yara_safe_required</span><span class="p">)</span>
+    <span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;from_yara_safe_required_domain&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">yara_safe_required</span>
+    <span class="n">matches</span> <span class="o">=</span> <span class="n">scanner</span><span class="o">.</span><span class="n">scan_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+    <span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;yara_matches&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">matches</span>
+    <span class="n">skip_auth_check</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">categories</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;skip_auth_check&quot;</span> <span class="ow">in</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">skip_auth_check</span><span class="p">:</span>
+            <span class="n">skip_auth_check</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;skip_auth_check&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;category&quot;</span> <span class="ow">in</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]:</span>
+            <span class="n">categories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;category&quot;</span><span class="p">])</span>
+    <span class="n">categories</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">categories</span><span class="p">))</span>
+    <span class="c1"># Ignore matches in multiple categories</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">verdict</span> <span class="o">=</span> <span class="n">categories</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">trusted_domain</span> <span class="ow">and</span> <span class="n">verdict</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">malicious_verdicts</span><span class="p">:</span>
+       <span class="n">verdict</span> <span class="o">=</span> <span class="s2">&quot;safe&quot;</span> 
+    <span class="k">elif</span> <span class="n">verdict</span> <span class="o">==</span> <span class="s2">&quot;safe&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">yara_safe_required</span> <span class="ow">or</span> <span class="n">skip_auth_check</span><span class="p">):</span>
+        <span class="n">verdict</span> <span class="o">=</span> <span class="s2">&quot;yara_safe_auth_fail&quot;</span>
+    <span class="k">elif</span> <span class="n">verdict</span> <span class="o">!=</span> <span class="s2">&quot;safe&quot;</span> <span class="ow">and</span> <span class="n">yara_safe_required</span><span class="p">:</span>
+        <span class="n">verdict</span> <span class="o">=</span> <span class="s2">&quot;auth_pass_not_yara_safe&quot;</span>
+    <span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;verdict&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">verdict</span>
+    <span class="k">if</span> <span class="n">verdict</span> <span class="o">==</span> <span class="s2">&quot;safe&quot;</span><span class="p">:</span>
+        <span class="c1"># TODO: Let the user know the email is safe and close the ticket</span>
+        <span class="c1"># TODO: Move the report to the trusted folder</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">verdict</span> <span class="o">==</span> <span class="s2">&quot;junk&quot;</span><span class="p">:</span>
+        <span class="c1"># TODO: Tell the user how to add an address to their spam filter</span>
+        <span class="c1"># TODO: Close the ticket and move the report to the junk folder</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">verdict</span> <span class="ow">in</span> <span class="n">malicious_verdicts</span><span class="p">:</span>
+        <span class="c1"># TODO: Instruct the user to delete the malicious email</span>
+        <span class="c1"># TODO: Maybe do something different for each verdict?</span>
+        <span class="n">escalate_to_incident_response</span><span class="p">(</span><span class="n">parsed_email</span><span class="p">,</span> <span class="s2">&quot;high&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">escalate_to_incident_response</span><span class="p">(</span><span class="n">parsed_email</span><span class="p">,</span> <span class="s2">&quot;normal&quot;</span><span class="p">)</span>
 
 </pre></div>
 </div>
