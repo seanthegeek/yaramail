@@ -393,7 +393,7 @@ time, but the reduction in alert fatigue is well worth the effort.</p>
 
 <span class="c1"># Load list of trusted domains that require a safe YARA rule too</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;trusted_domains_yara_required.txt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">trusted_domains_file</span><span class="p">:</span>
-    <span class="n">yara_required_domains</span> <span class="o">=</span> <span class="n">trusted_domains_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">yara_required_trusted_domains</span> <span class="o">=</span> <span class="n">trusted_domains_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="c1"># Load list of trusted domains that *do not* require a safe YARA</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;trusted_domains.txt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">trusted_domains_file</span><span class="p">:</span>
@@ -418,11 +418,9 @@ time, but the reduction in alert fatigue is well worth the effort.</p>
     <span class="n">verdict</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">parsed_email</span> <span class="o">=</span> <span class="n">parse_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
     <span class="n">trusted_domain</span> <span class="o">=</span> <span class="n">from_trusted_domain</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">trusted_domains</span><span class="p">)</span>
-    <span class="n">yara_safe_required</span> <span class="o">=</span> <span class="n">from_trusted_domain</span><span class="p">(</span><span class="n">email</span><span class="p">,</span>
-                                             <span class="n">yara_required_domains</span><span class="p">)</span>
-    <span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;from_trusted_domain&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">trusted_domain</span> <span class="ow">or</span> <span class="n">yara_safe_required</span><span class="p">)</span>
-    <span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;from_yara_safe_required_domain&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">yara_safe_required</span>
+    <span class="n">trusted_domain_yara_safe_required</span> <span class="o">=</span> <span class="n">from_trusted_domain</span><span class="p">(</span>
+        <span class="n">email</span><span class="p">,</span>
+        <span class="n">yara_required_trusted_domains</span><span class="p">)</span>
     <span class="n">matches</span> <span class="o">=</span> <span class="n">scanner</span><span class="o">.</span><span class="n">scan_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
     <span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;yara_matches&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">matches</span>
     <span class="n">skip_auth_check</span> <span class="o">=</span> <span class="kc">False</span>
@@ -437,10 +435,11 @@ time, but the reduction in alert fatigue is well worth the effort.</p>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">verdict</span> <span class="o">=</span> <span class="n">categories</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">trusted_domain</span> <span class="ow">and</span> <span class="n">verdict</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">malicious_verdicts</span><span class="p">:</span>
-       <span class="n">verdict</span> <span class="o">=</span> <span class="s2">&quot;safe&quot;</span> 
-    <span class="k">elif</span> <span class="n">verdict</span> <span class="o">==</span> <span class="s2">&quot;safe&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">yara_safe_required</span> <span class="ow">or</span> <span class="n">skip_auth_check</span><span class="p">):</span>
+        <span class="n">verdict</span> <span class="o">=</span> <span class="s2">&quot;safe&quot;</span>
+    <span class="k">elif</span> <span class="n">verdict</span> <span class="o">==</span> <span class="s2">&quot;safe&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span>
+            <span class="n">trusted_domain_yara_safe_required</span> <span class="ow">or</span> <span class="n">skip_auth_check</span><span class="p">):</span>
         <span class="n">verdict</span> <span class="o">=</span> <span class="s2">&quot;yara_safe_auth_fail&quot;</span>
-    <span class="k">elif</span> <span class="n">verdict</span> <span class="o">!=</span> <span class="s2">&quot;safe&quot;</span> <span class="ow">and</span> <span class="n">yara_safe_required</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">verdict</span> <span class="o">!=</span> <span class="s2">&quot;safe&quot;</span> <span class="ow">and</span> <span class="n">trusted_domain_yara_safe_required</span><span class="p">:</span>
         <span class="n">verdict</span> <span class="o">=</span> <span class="s2">&quot;auth_pass_not_yara_safe&quot;</span>
     <span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;verdict&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">verdict</span>
     <span class="k">if</span> <span class="n">verdict</span> <span class="o">==</span> <span class="s2">&quot;safe&quot;</span><span class="p">:</span>

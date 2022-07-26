@@ -335,7 +335,7 @@ malicious_verdicts = ["social engineering", "credential harvesting",
 
 # Load list of trusted domains that require a safe YARA rule too
 with open("trusted_domains_yara_required.txt") as trusted_domains_file:
-    yara_required_domains = trusted_domains_file.read().split("\n")
+    yara_required_trusted_domains = trusted_domains_file.read().split("\n")
 
 # Load list of trusted domains that *do not* require a safe YARA
 with open("trusted_domains.txt") as trusted_domains_file:
@@ -360,11 +360,9 @@ for email in emails:
     verdict = None
     parsed_email = parse_email(email)
     trusted_domain = from_trusted_domain(email, trusted_domains)
-    yara_safe_required = from_trusted_domain(email,
-                                             yara_required_domains)
-    parsed_email["from_trusted_domain"] = (
-            trusted_domain or yara_safe_required)
-    parsed_email["from_yara_safe_required_domain"] = yara_safe_required
+    trusted_domain_yara_safe_required = from_trusted_domain(
+        email,
+        yara_required_trusted_domains)
     matches = scanner.scan_email(email)
     parsed_email["yara_matches"] = matches
     skip_auth_check = False
@@ -379,10 +377,11 @@ for email in emails:
     if len(categories) == 1:
         verdict = categories[0]
     if trusted_domain and verdict not in malicious_verdicts:
-       verdict = "safe" 
-    elif verdict == "safe" and not (yara_safe_required or skip_auth_check):
+        verdict = "safe"
+    elif verdict == "safe" and not (
+            trusted_domain_yara_safe_required or skip_auth_check):
         verdict = "yara_safe_auth_fail"
-    elif verdict != "safe" and yara_safe_required:
+    elif verdict != "safe" and trusted_domain_yara_safe_required:
         verdict = "auth_pass_not_yara_safe"
     parsed_email["verdict"] = verdict
     if verdict == "safe":
