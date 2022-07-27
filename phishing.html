@@ -434,13 +434,15 @@ time, but the reduction in alert fatigue is well worth the effort.</p>
     <span class="c1"># Ignore matches in multiple categories</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">verdict</span> <span class="o">=</span> <span class="n">categories</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">trusted_domain</span> <span class="ow">and</span> <span class="n">verdict</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">malicious_verdicts</span><span class="p">:</span>
-        <span class="n">verdict</span> <span class="o">=</span> <span class="s2">&quot;safe&quot;</span>
-    <span class="k">elif</span> <span class="n">verdict</span> <span class="o">==</span> <span class="s2">&quot;safe&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span>
-            <span class="n">trusted_domain_yara_safe_required</span> <span class="ow">or</span> <span class="n">skip_auth_check</span><span class="p">):</span>
+    <span class="n">authenticated</span> <span class="o">=</span> <span class="kc">True</span> <span class="ow">in</span> <span class="p">[</span><span class="n">trusted_domain</span><span class="p">,</span>
+                             <span class="n">trusted_domain_yara_safe_required</span><span class="p">,</span>
+                             <span class="n">skip_auth_check</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">verdict</span> <span class="o">==</span> <span class="s2">&quot;safe&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">authenticated</span><span class="p">:</span>
         <span class="n">verdict</span> <span class="o">=</span> <span class="s2">&quot;yara_safe_auth_fail&quot;</span>
-    <span class="k">elif</span> <span class="n">verdict</span> <span class="o">!=</span> <span class="s2">&quot;safe&quot;</span> <span class="ow">and</span> <span class="n">trusted_domain_yara_safe_required</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">verdict</span> <span class="o">!=</span> <span class="s2">&quot;safe&quot;</span> <span class="ow">and</span> <span class="n">trusted_domain_yara_safe_required</span><span class="p">:</span>
         <span class="n">verdict</span> <span class="o">=</span> <span class="s2">&quot;auth_pass_not_yara_safe&quot;</span>
+    <span class="k">if</span> <span class="n">verdict</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">authenticated</span><span class="p">:</span>
+        <span class="n">verdict</span> <span class="o">=</span> <span class="s2">&quot;safe&quot;</span>
     <span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;verdict&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">verdict</span>
     <span class="k">if</span> <span class="n">verdict</span> <span class="o">==</span> <span class="s2">&quot;safe&quot;</span><span class="p">:</span>
         <span class="c1"># TODO: Let the user know the email is safe and close the ticket</span>
