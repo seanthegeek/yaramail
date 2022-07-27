@@ -376,9 +376,8 @@ for email in emails:
     # Ignore matches in multiple categories
     if len(categories) == 1:
         verdict = categories[0]
-    authenticated = True in [trusted_domain,
-                             trusted_domain_yara_safe_required,
-                             skip_auth_check]
+    authenticated = any([trusted_domain, trusted_domain_yara_safe_required,
+                         skip_auth_check])
     if verdict == "safe" and not authenticated:
         verdict = "yara_safe_auth_fail"
     if verdict != "safe" and trusted_domain_yara_safe_required:
