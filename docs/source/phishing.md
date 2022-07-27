@@ -376,13 +376,15 @@ for email in emails:
     # Ignore matches in multiple categories
     if len(categories) == 1:
         verdict = categories[0]
-    if trusted_domain and verdict not in malicious_verdicts:
-        verdict = "safe"
-    elif verdict == "safe" and not (
-            trusted_domain_yara_safe_required or skip_auth_check):
+    authenticated = True in [trusted_domain,
+                             trusted_domain_yara_safe_required,
+                             skip_auth_check]
+    if verdict == "safe" and not authenticated:
         verdict = "yara_safe_auth_fail"
-    elif verdict != "safe" and trusted_domain_yara_safe_required:
+    if verdict != "safe" and trusted_domain_yara_safe_required:
         verdict = "auth_pass_not_yara_safe"
+    if verdict is None and authenticated:
+        verdict = "safe"
     parsed_email["verdict"] = verdict
     if verdict == "safe":
         # TODO: Let the user know the email is safe and close the ticket
