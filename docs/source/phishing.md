@@ -118,6 +118,7 @@ meta:
   author = "Sean Whalen"
   date = "2022-07-13"
   category = "safe"
+  from_domain = "example.com" // Optionally make a rule only apply to a specific email from domain 
   description = "All URLs are for the example.com domain"
 
 /*
@@ -131,7 +132,11 @@ strings:
   $example_url = "https://example.com" ascii wide nocase
 
 condition:
-  // The total number of URLs must match the number of example.com URls
+  /*
+  The total number of URLs must match the number of example.com URls
+  Require at least one URL for this rule, otherwise all email with no URLs
+  would match*/
+
   #http > 0 and #http == #example
 }
 ```
@@ -200,15 +205,15 @@ rule exec_impersonation {
 
   strings:
       $external = "[EXT]" ascii wide nocase
-      $s1 = /(Hubert|Hugh|Prof\.?(lessor)?) ((Hubert|Hugh) )?Farnsworth/ ascii wide nocase
-      $s2 = "Hermes Conrad" ascii wide nocase
-      $s3 = "Turanga Leela" ascii wide nocase
-      $s4 = "Amy Wong" ascii wide nocase
-      $s5 = /Phil(ip)? (J\.? )?Fry/
+      $vip_ceo = /(Hubert|Hugh|Prof\.?(lessor)?) ((Hubert|Hugh) )?Farnsworth/ ascii wide nocase
+      $vip_cfo = "Hermes Conrad" ascii wide nocase
+      $vip_cto = "Turanga Leela" ascii wide nocase
+      $vip_admin = "Amy Wong" ascii wide nocase
+      $svip_cdo = /Phil(ip)? (J\.? )?Fry/
       $except_slug = "Brain Slug Fundraiser" ascii wide
 
   condition:
-      $external and any of ($s*) and not any of ($except_*)
+      $external and any of ($vip_*) and not any of ($except_*)
 }
 ```
 
@@ -317,6 +322,7 @@ Here's a complete example of triage code.
 import logging
 from typing import Dict
 
+from publicsuffix2 import get_sld
 from mailsuite.utils import parse_email, from_trusted_domain
 from yaramail import MailScanner
 
@@ -368,6 +374,10 @@ for email in emails:
     skip_auth_check = False
     categories = []
     for match in matches:
+        if "from_domain" in match["meta"]:
+            sld = parsed_email["from"]["sld"]
+            if sld != get_sld(match["meta"]["from_domain"]):
+                continue
         if "skip_auth_check" in match["meta"] and not skip_auth_check:
             skip_auth_check = match["meta"]["skip_auth_check"]
         if "category" in match["meta"]:
