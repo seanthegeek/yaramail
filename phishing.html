@@ -187,6 +187,7 @@ meta:
   author = &quot;Sean Whalen&quot;
   date = &quot;2022-07-13&quot;
   category = &quot;safe&quot;
+  from_domain = &quot;example.com&quot; // Optionally make a rule only apply to a specific email from domain 
   description = &quot;All URLs are for the example.com domain&quot;
 
 /*
@@ -200,7 +201,11 @@ strings:
   $example_url = &quot;https://example.com&quot; ascii wide nocase
 
 condition:
-  // The total number of URLs must match the number of example.com URls
+  /*
+  The total number of URLs must match the number of example.com URls
+  Require at least one URL for this rule, otherwise all email with no URLs
+  would match*/
+
   #http &gt; 0 and #http == #example
 }
 </pre></div>
@@ -241,7 +246,7 @@ analyzing an email.</p>
       description = &quot;Impersonation of key employees of Planet Express in an external email&quot;
 
   /*
-  /(Hubert|Hugh|Prof\.?(lessor)?) ((Hubert|Hugh) )?Farnsworth/
+  /(Hubert|Hugh|Prof\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/
 
   Hubert Farnsworth
   Hugh Farnsworth
@@ -267,15 +272,15 @@ analyzing an email.</p>
 
   strings:
       $external = &quot;[EXT]&quot; ascii wide nocase
-      $s1 = /(Hubert|Hugh|Prof\.?(lessor)?) ((Hubert|Hugh) )?Farnsworth/ ascii wide nocase
-      $s2 = &quot;Hermes Conrad&quot; ascii wide nocase
-      $s3 = &quot;Turanga Leela&quot; ascii wide nocase
-      $s4 = &quot;Amy Wong&quot; ascii wide nocase
-      $s5 = /Phil(ip)? (J\.? )?Fry/
+      $vip_ceo = /(Hubert|Hugh|Prof\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/ ascii wide nocase
+      $vip_cfo = &quot;Hermes Conrad&quot; ascii wide nocase
+      $vip_cto = &quot;Turanga Leela&quot; ascii wide nocase
+      $vip_admin = &quot;Amy Wong&quot; ascii wide nocase
+      $svip_cdo = /Phil(ip)? (J\.? )?Fry/
       $except_slug = &quot;Brain Slug Fundraiser&quot; ascii wide
 
   condition:
-      $external and any of ($s*) and not any of ($except_*)
+      $external and any of ($vip_*) and not any of ($except_*)
 }
 </pre></div>
 </div>
@@ -375,6 +380,7 @@ time, but the reduction in alert fatigue is well worth the effort.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
+<span class="kn">from</span> <span class="nn">publicsuffix2</span> <span class="kn">import</span> <span class="n">get_sld</span>
 <span class="kn">from</span> <span class="nn">mailsuite.utils</span> <span class="kn">import</span> <span class="n">parse_email</span><span class="p">,</span> <span class="n">from_trusted_domain</span>
 <span class="kn">from</span> <span class="nn">yaramail</span> <span class="kn">import</span> <span class="n">MailScanner</span>
 
@@ -426,6 +432,10 @@ time, but the reduction in alert fatigue is well worth the effort.</p>
     <span class="n">skip_auth_check</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">categories</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;from_domain&quot;</span> <span class="ow">in</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]:</span>
+            <span class="n">sld</span> <span class="o">=</span> <span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">][</span><span class="s2">&quot;sld&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">sld</span> <span class="o">!=</span> <span class="n">get_sld</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;from_domain&quot;</span><span class="p">]):</span>
+                <span class="k">continue</span>
         <span class="k">if</span> <span class="s2">&quot;skip_auth_check&quot;</span> <span class="ow">in</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">skip_auth_check</span><span class="p">:</span>
             <span class="n">skip_auth_check</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;skip_auth_check&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="s2">&quot;category&quot;</span> <span class="ow">in</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]:</span>
