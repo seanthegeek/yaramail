@@ -175,6 +175,7 @@ any other attachment.
 maxdepth: 2
 ---
 phishing
+regex
 ```
 
 ### Indices and tables

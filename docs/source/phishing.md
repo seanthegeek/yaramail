@@ -119,7 +119,7 @@ meta:
   date = "2022-07-13"
   category = "safe"
   from_domain = "example.com" // Optionally make a rule only apply to a specific email from domain 
-  description = "All URLs are for the example.com domain"
+  description = "All URLs point to the example.com domain"
 
 /*
 The strings section defines the patterns that can be used in the rule.
@@ -155,7 +155,7 @@ Use a local copy of [CyberChef][CyberChef] to quickly and privately test
 regular expressions.
 ```
 
-Most organisations add something to the beginning of an email subject or body
+Most organizations add something to the beginning of an email subject or body
 to let the user know that the email came from an external, untrusted source.
 This can be leveraged in a YARA rule to identify external emails that include
 the name of an executive or board member in the email headers or body. You can
@@ -171,15 +171,15 @@ analyzing an email.
 ```
 
 ```yara
-rule exec_impersonation {
+rule planet_express_vip_impersonation {
   meta:
       author = "Sean Whalen"
       date = "2022-07-14"
-      category = "social engineering"
+      category = "fraud"
       description = "Impersonation of key employees of Planet Express in an external email"
 
   /*
-  /(Hubert|Hugh|Prof\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/
+  /(Hubert|Hugh|Prof\\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/
 
   Hubert Farnsworth
   Hugh Farnsworth
@@ -193,7 +193,7 @@ rule exec_impersonation {
   Prof. Hugh Farnsworth
   Prof Hugh Farnsworth
 
-  /Phil(ip)? (J\.? )?Fry/
+  /Phil(ip)? (J\\.? )?Fry/
 
   Philip Fry
   Philip J. Fry
@@ -204,12 +204,12 @@ rule exec_impersonation {
   */
 
   strings:
-      $external = "[EXT]" ascii wide nocase
-      $vip_ceo = /(Hubert|Hugh|Prof\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/ ascii wide nocase
+      $external = "[EXT]" ascii wide nocase // Whatever warns users that an email came from an external source
+      $vip_ceo = /(Hubert|Hugh|Prof\\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/ ascii wide nocase
       $vip_cfo = "Hermes Conrad" ascii wide nocase
       $vip_cto = "Turanga Leela" ascii wide nocase
       $vip_admin = "Amy Wong" ascii wide nocase
-      $svip_cdo = /Phil(ip)? (J\.? )?Fry/
+      $svip_cdo = /Phil(ip)? (J\\.? )?Fry/ ascii wide nocase
       $except_slug = "Brain Slug Fundraiser" ascii wide
 
   condition:
@@ -264,13 +264,13 @@ rule small_iso {
     author = "Sean Whalen"
     date = "2022-07-21"
     category = "malware"
-    discription = "Indentifies small ISO files"
+    discription = "Small ISO file"
 
   strings:
     $iso = {43 44 30 30 31} // Magic bytes for ISO files
 
   condition:
-    $iso at 0 and filesize < 100MB 
+    $iso at 0 and filesize < 100MB
 }
 ```
 
@@ -336,16 +336,15 @@ def escalate_to_incident_response(reported_email: Dict, priority: str):
     pass
 
 
-malicious_verdicts = ["social engineering", "credential harvesting",
-                      "fraud", "malware"]
+malicious_verdicts = ["credential harvesting", "fraud", "malware"]
 
 # Load list of trusted domains that require a safe YARA rule too
 with open("trusted_domains_yara_required.txt") as trusted_domains_file:
-    yara_required_trusted_domains = trusted_domains_file.read().split("\n")
+    yara_required_trusted_domains = trusted_domains_file.read().split("\\n")
 
 # Load list of trusted domains that *do not* require a safe YARA
 with open("trusted_domains.txt") as trusted_domains_file:
-    trusted_domains = trusted_domains_file.read().split("\n")
+    trusted_domains = trusted_domains_file.read().split("\\n")
 
 # Initialize the scanner
 scanner = None  # Avoid an IDE warning
