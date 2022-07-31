@@ -393,18 +393,17 @@ time, but the reduction in alert fatigue is well worth the effort.</p>
     <span class="n">m</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Escalating </span><span class="si">{</span><span class="n">priority</span><span class="si">}</span><span class="s2"> priority email: </span><span class="si">{</span><span class="n">reported_email</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
     <span class="c1"># TODO: Do something!</span>
-    <span class="k">pass</span>
 
 
 <span class="n">malicious_verdicts</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;credential harvesting&quot;</span><span class="p">,</span> <span class="s2">&quot;fraud&quot;</span><span class="p">,</span> <span class="s2">&quot;malware&quot;</span><span class="p">]</span>
 
 <span class="c1"># Load list of trusted domains that require a safe YARA rule too</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;trusted_domains_yara_required.txt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">trusted_domains_file</span><span class="p">:</span>
-    <span class="n">yara_required_trusted_domains</span> <span class="o">=</span> <span class="n">trusted_domains_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span><span class="p">)</span>
+    <span class="n">yara_required_trusted_domains</span> <span class="o">=</span> <span class="n">trusted_domains_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="c1"># Load list of trusted domains that *do not* require a safe YARA</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;trusted_domains.txt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">trusted_domains_file</span><span class="p">:</span>
-    <span class="n">trusted_domains</span> <span class="o">=</span> <span class="n">trusted_domains_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span><span class="p">)</span>
+    <span class="n">trusted_domains</span> <span class="o">=</span> <span class="n">trusted_domains_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="c1"># Initialize the scanner</span>
 <span class="n">scanner</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Avoid an IDE warning</span>
