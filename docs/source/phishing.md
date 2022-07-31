@@ -252,7 +252,8 @@ of a file). These file signatures are often called magic bytes or magic
 numbers.
 
 ```{tip}
-A helpful list of [file signatures][file signatures] can be found on Wikipedia.
+A helpful list of [file type signatures][file signatures] can be found on
+Wikipedia.
 ``` 
 ISO files contain the bytes `43 44 30 30 31` at offset `0`. This information
 can be combined with the special YARA variable `fiilesize` to look for small
