@@ -333,7 +333,6 @@ def escalate_to_incident_response(reported_email: Dict, priority: str):
     m = f"Escalating {priority} priority email: {reported_email['subject']}"
     logger.info(m)
     # TODO: Do something!
-    pass
 
 
 malicious_verdicts = ["credential harvesting", "fraud", "malware"]
