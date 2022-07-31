@@ -339,11 +339,11 @@ malicious_verdicts = ["credential harvesting", "fraud", "malware"]
 
 # Load list of trusted domains that require a safe YARA rule too
 with open("trusted_domains_yara_required.txt") as trusted_domains_file:
-    yara_required_trusted_domains = trusted_domains_file.read().split("\\n")
+    yara_required_trusted_domains = trusted_domains_file.read().split("\n")
 
 # Load list of trusted domains that *do not* require a safe YARA
 with open("trusted_domains.txt") as trusted_domains_file:
-    trusted_domains = trusted_domains_file.read().split("\\n")
+    trusted_domains = trusted_domains_file.read().split("\n")
 
 # Initialize the scanner
 scanner = None  # Avoid an IDE warning
