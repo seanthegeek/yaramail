@@ -330,9 +330,10 @@ from yaramail import MailScanner
 logger = logging.getLogger("scanner")
 
 
-def escalate_to_incident_response(reported_email: Dict, priority: str):
-    m = f"Escalating {priority} priority email: {reported_email['subject']}"
-    logger.info(m)
+def escalate_to_incident_response(_report_email: Dict,
+                                  priority: str = "normal"):
+    m = f"Escalating {priority} priority email"
+    logger.debug(m)
     # TODO: Do something!
 
 
@@ -357,24 +358,20 @@ except Exception as e:
     logger.error(f"Error parsing YARA rules: {e}")
     exit(-1)
 
-# TODO: Do something to fetch emails
-emails = []
 
-for email in emails:
-    # TODO: Send user a "Thanks for sending a report" email
+def scan_email(email_sample):
     verdict = None
-    parsed_email = parse_email(email)
     trusted_domain = from_trusted_domain(email, trusted_domains)
     trusted_domain_yara_safe_required = from_trusted_domain(
         email,
         yara_required_trusted_domains)
     matches = scanner.scan_email(email)
-    parsed_email["yara_matches"] = matches
+    email_sample["yara_matches"] = matches
     skip_auth_check = False
     categories = []
     for match in matches:
         if "from_domain" in match["meta"]:
-            sld = parsed_email["from"]["sld"]
+            sld = email_sample["from"]["sld"]
             if sld != get_sld(match["meta"]["from_domain"]):
                 continue
         if "skip_auth_check" in match["meta"] and not skip_auth_check:
@@ -393,21 +390,53 @@ for email in emails:
         verdict = "auth_pass_not_yara_safe"
     if verdict is None and authenticated:
         verdict = "safe"
-    parsed_email["verdict"] = verdict
-    if verdict == "safe":
+    email_sample["verdict"] = verdict
+    return email_sample
+
+
+# TODO: Do something to fetch emails
+emails = []
+
+for email in emails:
+    attached_email = None
+    report_email = parse_email(email)
+    valid_report = True
+    for attachment in report_email["attachments"]:
+        if attachment["filename"].lower().endswith(".eml"):
+            if attached_email:
+                # TODO: Tell the user to only send one attached email
+                valid_report = False
+                report_email["valid_report"] = valid_report
+                escalate_to_incident_response(report_email)
+                continue
+            attached_email = attachment
+    if attached_email is None:
+        # TODO: Tell use user how to properly send a sample as an attachment
+        escalate_to_incident_response(report_email)
+        continue
+    try:
+        sample = parse_email(attached_email["payload"])
+    except Exception as _e:
+        logger.warning(f"Invalid email sample: {_e}")
+
+        continue
+    sample = scan_email(sample)
+    report_email["sample"] = sample
+
+    if sample["verdict"] == "safe":
         # TODO: Let the user know the email is safe and close the ticket
         # TODO: Move the report to the trusted folder
         pass
-    elif verdict == "junk":
+    elif sample["verdict"] == "junk":
         # TODO: Tell the user how to add an address to their spam filter
         # TODO: Close the ticket and move the report to the junk folder
         pass
-    elif verdict in malicious_verdicts:
+    elif sample["verdict"] in malicious_verdicts:
         # TODO: Instruct the user to delete the malicious email
         # TODO: Maybe do something different for each verdict?
-        escalate_to_incident_response(parsed_email, "high")
+        escalate_to_incident_response(report_email, "high")
     else:
-        escalate_to_incident_response(parsed_email, "normal")
+        escalate_to_incident_response(report_email)
 
 ```
 
