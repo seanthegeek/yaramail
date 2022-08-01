@@ -408,31 +408,35 @@ for email in emails:
                 valid_report = False
                 report_email["valid_report"] = valid_report
                 escalate_to_incident_response(report_email)
+                # TODO: Move report email to the invalid folder or trash
                 continue
             attached_email = attachment
     if attached_email is None:
         # TODO: Tell use user how to properly send a sample as an attachment
         escalate_to_incident_response(report_email)
+        # TODO: Move report email to the invalid folder or trash
         continue
     try:
         sample = parse_email(attached_email["payload"])
     except Exception as _e:
         logger.warning(f"Invalid email sample: {_e}")
-
+        escalate_to_incident_response(report_email)
+        # TODO: Move report email to the invalid folder or trash
         continue
     sample = scan_email(sample)
     report_email["sample"] = sample
 
     if sample["verdict"] == "safe":
         # TODO: Let the user know the email is safe and close the ticket
-        # TODO: Move the report to the trusted folder
+        # TODO: Move the report to the safe folder or trash
         pass
     elif sample["verdict"] == "junk":
         # TODO: Tell the user how to add an address to their spam filter
-        # TODO: Close the ticket and move the report to the junk folder
+        # TODO: Close the ticket and move the report to the junk/trash folder
         pass
     elif sample["verdict"] in malicious_verdicts:
         # TODO: Instruct the user to delete the malicious email
+        # TODO: Move report email to the malicious folder or trash
         # TODO: Maybe do something different for each verdict?
         escalate_to_incident_response(report_email, "high")
     else:
