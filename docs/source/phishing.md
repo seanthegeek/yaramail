@@ -401,6 +401,9 @@ for email in emails:
     attached_email = None
     report_email = parse_email(email)
     valid_report = True
+    if report_email["automatic_reply"]:
+        # TODO: Move automatic replies to the trash
+        continue
     for attachment in report_email["attachments"]:
         if attachment["filename"].lower().endswith(".eml"):
             if attached_email:
