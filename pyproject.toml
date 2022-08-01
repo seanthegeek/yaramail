@@ -29,7 +29,7 @@ classifiers = [
 
 ]
 dependencies = [
-    "mailsuite>=1.9.3",
+    "mailsuite>=1.9.4",
     "pdftotext==2.2.2",
     "simplejson>=3.17.6",
     "yara-python>=4.2.0",
