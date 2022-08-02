@@ -323,8 +323,7 @@ Here's a complete example of triage code.
 import logging
 from typing import Dict
 
-from publicsuffix2 import get_sld
-from mailsuite.utils import parse_email, from_trusted_domain
+from mailsuite.utils import parse_email
 from yaramail import MailScanner
 
 logger = logging.getLogger("scanner")
@@ -337,62 +336,27 @@ def escalate_to_incident_response(_report_email: Dict,
     # TODO: Do something!
 
 
-malicious_verdicts = ["credential harvesting", "fraud", "malware"]
-
-# Load list of trusted domains that require a safe YARA rule too
-with open("trusted_domains_yara_required.txt") as trusted_domains_file:
-    yara_required_trusted_domains = trusted_domains_file.read().split("\n")
-
-# Load list of trusted domains that *do not* require a safe YARA
-with open("trusted_domains.txt") as trusted_domains_file:
-    trusted_domains = trusted_domains_file.read().split("\n")
+malicious_categories = ["credential harvesting", "fraud", "malware"]
+malicious_categories = set(malicious_categories)
 
 # Initialize the scanner
 scanner = None  # Avoid an IDE warning
 try:
-    scanner = MailScanner(header_rules="header.yar",
-                          body_rules="body.yar",
-                          header_body_rules="header_body.yar",
-                          attachment_rules="attachment.yar")
+    scanner = MailScanner(
+        header_rules="header.yar",
+        body_rules="body.yar",
+        header_body_rules="header_body.yar",
+        attachment_rules="attachment.yar",
+        trusted_domains="trusted_domains.txt",
+        trusted_domains_yara_safe_required="trusted_yara_safe_required.txt")
 except Exception as e:
     logger.error(f"Error parsing YARA rules: {e}")
     exit(-1)
 
 
 def scan_email(email_sample):
-    verdict = None
-    trusted_domain = from_trusted_domain(email, trusted_domains)
-    trusted_domain_yara_safe_required = from_trusted_domain(
-        email,
-        yara_required_trusted_domains)
-    matches = scanner.scan_email(email)
-    email_sample["yara_matches"] = matches
-    skip_auth_check = False
-    categories = []
-    for match in matches:
-        if "from_domain" in match["meta"]:
-            sld = email_sample["from"]["sld"]
-            if sld != get_sld(match["meta"]["from_domain"]):
-                continue
-        if "skip_auth_check" in match["meta"] and not skip_auth_check:
-            skip_auth_check = match["meta"]["skip_auth_check"]
-        if "category" in match["meta"]:
-            categories.append(match["meta"]["category"])
-    categories = list(set(categories))
-    # Ignore matches in multiple categories
-    if len(categories) == 1:
-        verdict = categories[0]
-    authenticated = any([trusted_domain, trusted_domain_yara_safe_required,
-                         skip_auth_check])
-    if verdict == "safe" and not authenticated:
-        verdict = "yara_safe_auth_fail"
-    if verdict != "safe" and trusted_domain_yara_safe_required:
-        verdict = "auth_pass_not_yara_safe"
-    if verdict is None and authenticated:
-        verdict = "safe"
-    email_sample["verdict"] = verdict
+    email_sample["yaramail"] = scanner.scan_email(email_sample)
     return email_sample
-
 
 # TODO: Do something to fetch emails
 emails = []
@@ -400,7 +364,6 @@ emails = []
 for email in emails:
     attached_email = None
     report_email = parse_email(email)
-    valid_report = True
     if report_email["automatic_reply"]:
         # TODO: Move automatic replies to the trash
         continue
@@ -408,8 +371,7 @@ for email in emails:
         if attachment["filename"].lower().endswith(".eml"):
             if attached_email:
                 # TODO: Tell the user to only send one attached email
-                valid_report = False
-                report_email["valid_report"] = valid_report
+                report_email["valid_report"] = False
                 escalate_to_incident_response(report_email)
                 # TODO: Move report email to the invalid folder or trash
                 continue
@@ -420,24 +382,31 @@ for email in emails:
         # TODO: Move report email to the invalid folder or trash
         continue
     try:
-        sample = parse_email(attached_email["payload"])
+        sample = scan_email(attached_email["payload"])
     except Exception as _e:
         logger.warning(f"Invalid email sample: {_e}")
+        report_email["valid_report"] = False
         escalate_to_incident_response(report_email)
         # TODO: Move report email to the invalid folder or trash
         continue
-    sample = scan_email(sample)
+
+    report_email["valid_report"] = True
+    categories = sample["yaramail"]["categories"]
+    verdict = sample["yaramail"]["verdict"]
     report_email["sample"] = sample
 
-    if sample["verdict"] == "safe":
+    is_malicious = bool(len(list(
+        malicious_categories.intersection(categories))))
+
+    if verdict == "safe":
         # TODO: Let the user know the email is safe and close the ticket
         # TODO: Move the report to the safe folder or trash
         pass
-    elif sample["verdict"] == "junk":
+    elif verdict == "junk":
         # TODO: Tell the user how to add an address to their spam filter
         # TODO: Close the ticket and move the report to the junk/trash folder
         pass
-    elif sample["verdict"] in malicious_verdicts:
+    elif is_malicious:
         # TODO: Instruct the user to delete the malicious email
         # TODO: Move report email to the malicious folder or trash
         # TODO: Maybe do something different for each verdict?
