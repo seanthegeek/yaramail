@@ -7,8 +7,9 @@ import zipfile
 
 import yara
 import pdftotext
+from publicsuffix2 import get_sld
 
-from mailsuite.utils import parse_email, decode_base64
+from mailsuite.utils import parse_email, from_trusted_domain, decode_base64
 
 formatter = logging.Formatter(
     fmt='%(levelname)8s:%(message)s',
@@ -19,7 +20,7 @@ handler.setFormatter(formatter)
 logger = logging.getLogger("yaramail")
 logger.addHandler(handler)
 
-__version__ = "1.1.1"
+__version__ = "2.0.0"
 
 
 def _match_to_dict(match: Union[yara.Match,
@@ -63,6 +64,19 @@ def _pdf_to_markdown(pdf_bytes: bytes) -> str:
         return "\n\n".join(pdftotext.PDF(f))
 
 
+def _input_to_str_list(_input: Union[list[str], str, IOBase]) -> list:
+    if _input is None:
+        return []
+    if isinstance(_input, list):
+        return _input
+    if isinstance(_input, str):
+        if path.exists(_input):
+            with open(_input) as f:
+                return f.read().split("\n")
+    if isinstance(_input, StringIO):
+        return _input.read().split("\n")
+
+
 def _compile_rules(rules: Union[yara.Rules, IOBase, str]) -> yara.Rules:
     if isinstance(rules, yara.Rules):
         return rules
@@ -85,7 +99,15 @@ class MailScanner(object):
     def __init__(self, header_rules: Union[str, IOBase, yara.Rules] = None,
                  body_rules: Union[str, IOBase, yara.Rules] = None,
                  header_body_rules: Union[str, IOBase, yara.Rules] = None,
-                 attachment_rules: Union[str, IOBase, yara.Rules] = None):
+                 attachment_rules: Union[str, IOBase, yara.Rules] = None,
+                 passwords: Union[List[str], IOBase, str] = None,
+                 max_zip_depth: int = None,
+                 trusted_domains: Union[List[str], IOBase, str] = None,
+                 trusted_domains_yara_safe_required: Union[List[str], IOBase,
+                                                           str] = None,
+                 include_sld_in_auth_check: bool = True,
+                 allow_multiple_authentication_results: bool = False,
+                 use_authentication_results_original: bool = False):
         """
         A YARA scanner for emails
 
@@ -96,6 +118,22 @@ class MailScanner(object):
             header and body content
             attachment_rules: Rules that only apply to file \
             attachment content
+            passwords: A list of passwords to use when attempting to scan \
+            password-protected files
+            max_zip_depth: Number of times to recurse into nested ZIP files
+            trusted_domains: A list of from domains that do not require a \
+            YARA safe verdict
+            trusted_domains_yara_safe_required: A list of from domains that \
+            require a YARA safe verdict
+            include_sld_in_auth_check: Check authentication results based on \
+            Second-Level Domain (SLD) in addition to the \
+            Fully-Qualified Domain Name (FQDN).
+            allow_multiple_authentication_results: Allow multiple
+            ``Authentication-Results-Original`` headers when checking
+            authentication results
+            use_authentication_results_original: Use the
+            ``Authentication-Results-Original`` header instead of the
+            ``Authentication-Results`` header
 
         .. note::
           Each ``_rules`` parameter can accept raw rule content, a path to a
@@ -105,6 +143,25 @@ class MailScanner(object):
           Use the ``include`` directive in the YARA rule files that you
           pass to ``MailScanner`` to include rules from other files. That
           way, rules can be divided into separate files as you see fit.
+
+
+        .. warning ::
+        Authentication results are based on the headers of the email sample,
+        so only trust authentication results on emails that have been
+        received by trusted mail servers, and not on third-party emails.
+
+        .. warning::
+          Set ``allow_multiple_authentication_results`` to ``True``
+          **if and only if** the receiving mail service splits the results
+          of each authentication method in separate ``Authentication-Results``
+          headers **and always** includes DMARC results.
+
+    .. warning::
+      Set ``use_authentication_results_original`` to ``True``
+      **if and only if** you use an email security gateway that adds an
+      ``Authentication-Results-Original`` header, such as Proofpoint or Cisco
+      IronPort. This **does not** include API-based email security solutions,
+      such as Abnormal Security.
         """
         self._header_rules = header_rules
         self._body_rules = body_rules
@@ -118,6 +175,19 @@ class MailScanner(object):
             self._header_body_rules = _compile_rules(header_body_rules)
         if attachment_rules:
             self._attachment_rules = _compile_rules(attachment_rules)
+        self.passwords = _input_to_str_list(passwords)
+        self.passwords += ["malware", "infected"]
+        self.passwords = list(set(self.passwords))
+        self.max_zip_depth = max_zip_depth
+        self.trusted_domains = _input_to_str_list(trusted_domains)
+        self.trusted_domains_yara_safe_required = _input_to_str_list(
+            trusted_domains_yara_safe_required
+        )
+        self.include_sld_in_auth_check = include_sld_in_auth_check
+        allow_multi_auth = allow_multiple_authentication_results
+        self.allow_multiple_authentication_results = allow_multi_auth
+        use_og_auth = use_authentication_results_original
+        self.use_authentication_results_original = use_og_auth
 
     def _scan_pdf_text(self, payload: Union[bytes, BytesIO]) -> List[Dict]:
         if isinstance(payload, BytesIO):
@@ -135,10 +205,7 @@ class MailScanner(object):
         return markdown_matches
 
     def _scan_zip(self, payload: Union[bytes, BytesIO, str],
-                  filename: str = None,
-                  passwords: Union[List[Union[None, str, bytes]],
-                                   IOBase, str] = None,
-                  max_depth: int = None, _current_depth: int = 0):
+                  filename: str = None, _current_depth: int = 0):
         if isinstance(payload, str):
             if not path.exists(payload):
                 raise FileNotFoundError(f"{payload} not found")
@@ -149,22 +216,12 @@ class MailScanner(object):
         if isinstance(payload, bytes):
             if not _is_zip(payload):
                 raise ValueError("Payload is not a ZIP file")
-        if isinstance(passwords, str):
-            if path.exists(payload):
-                with open(passwords) as f:
-                    passwords = f.read().split("\n")
-        if isinstance(passwords, StringIO):
-            passwords = passwords.read().split("\n")
         payload = BytesIO(payload)
         _current_depth += 1
         zip_matches = []
-        if passwords is None:
-            passwords = []
-        passwords += ["malware", "infected"]
-        passwords = list(set(passwords))
         with zipfile.ZipFile(payload) as zip_file:
             for name in zip_file.namelist():
-                for password in passwords:
+                for password in self.passwords:
                     if isinstance(password, str):
                         password = password.encode("utf-8")
                     member_content = None
@@ -202,22 +259,18 @@ class MailScanner(object):
                             f"{e} Scanning raw file content only"
                             ".")
                 elif _is_zip(member_content):
+                    max_depth = self.max_zip_depth
                     if max_depth is None or _current_depth > max_depth:
                         zip_matches += self._scan_zip(
                             member_content,
                             filename=name,
-                            max_depth=max_depth,
-                            passwords=passwords,
                             _current_depth=_current_depth)
                 for match in zip_matches:
                     match["tags"] = list(set(match["tags"] + tags))
 
                 return zip_matches
 
-    def _scan_attachments(self, attachments: Union[List, Dict],
-                          zip_passwords: Union[List[Union[None, str, bytes]],
-                                               BytesIO, str] = None,
-                          max_zip_depth: int = None) -> List[Dict]:
+    def _scan_attachments(self, attachments: Union[List, Dict]) -> List[Dict]:
         attachment_matches = []
         if isinstance(attachments, dict):
             attachments = [attachments]
@@ -244,9 +297,7 @@ class MailScanner(object):
                 try:
                     attachment_matches += self._scan_zip(
                         payload,
-                        filename=filename,
-                        passwords=zip_passwords,
-                        max_depth=max_zip_depth)
+                        filename=filename)
                 except UserWarning as e:
                     logger.warning(f"Unable to scan {filename}. {e}.")
             elif file_extension in ["eml", "msg"]:
@@ -268,10 +319,7 @@ class MailScanner(object):
 
     def scan_email(self, email: Union[str, IOBase, Dict],
                    use_raw_headers: bool = False,
-                   use_raw_body: bool = False,
-                   zip_passwords: Union[List[Union[None, str, bytes]],
-                                        IOBase, str] = None,
-                   max_zip_depth: int = None) -> List[Dict]:
+                   use_raw_body: bool = False) -> Dict:
         """
         Scans an email using YARA rules
 
@@ -282,13 +330,24 @@ class MailScanner(object):
             use_raw_headers: Scan headers with indentations included
             use_raw_body: Scan the raw email body instead of converting it to \
             Markdown first
-            zip_passwords: Passwords to try on encrypted ZIP files
-            max_zip_depth: Number of times to recurse into nested ZIP files
 
         .. note::
-          ``infected`` and ``malware`` are always tried as ZIP passwords.
+          ``infected`` and ``malware`` are always tried as passwords.
 
-        Returns: A list of rule matches
+        Returns: A dictionary
+
+        The returned dictionary contains the following key-value pairs:
+
+        - ``matches`` - A list of YARA match dictionaries
+        - ``categories`` - A list of categories of YARA matches
+        - ``verdict`` - The verdict of the scan
+
+        Possible verdicts include:
+
+         - ``None`` - No categories matched, or multiple categories matched
+         - ``safe`` - The email is considered safe
+         - ``yara_safe_auth_fail`` - Email authentication failed, YARA safe
+
 
         Each match dictionary in the returned list contains
         the following key-value pairs:
@@ -356,8 +415,49 @@ class MailScanner(object):
                 header_body_match["location"] = "header_body"
                 matches.append(header_body_match)
         if self._attachment_rules:
-            matches += self._scan_attachments(attachments,
-                                              zip_passwords=zip_passwords,
-                                              max_zip_depth=max_zip_depth)
+            matches += self._scan_attachments(attachments)
 
-        return matches
+        verdict = None
+        multi_auth_headers = self.allow_multiple_authentication_results
+        use_og_auth_results = self.use_authentication_results_original
+        trusted_domain = from_trusted_domain(
+            parsed_email, self.trusted_domains,
+            allow_multiple_authentication_results=multi_auth_headers,
+            use_authentication_results_original=use_og_auth_results
+        )
+        trusted_domain_yara_safe_required = from_trusted_domain(
+            parsed_email, self.trusted_domains_yara_safe_required,
+            allow_multiple_authentication_results=multi_auth_headers,
+            use_authentication_results_original=use_og_auth_results
+        )
+        auth_check_optional = False
+        categories = []
+        for match in matches:
+            if "from_domain" in match["meta"]:
+                sld = parsed_email["from"]["sld"]
+                if sld != get_sld(match["meta"]["from_domain"]):
+                    continue
+            if "auth_check_optional" in match["meta"] and not auth_check_optional:
+                auth_check_optional = match["meta"]["auth_check_optional"]
+            if "category" in match["meta"]:
+                categories.append(match["meta"]["category"])
+        categories = list(set(categories))
+        if len(categories) == 1:
+            verdict = categories[0]
+        elif len(categories) > 1:
+            verdict = "ambiguous"
+        authenticated = any([trusted_domain, trusted_domain_yara_safe_required,
+                             auth_check_optional])
+        if verdict == "safe" and not authenticated:
+            verdict = "yara_safe_auth_fail"
+        if verdict != "safe" and trusted_domain_yara_safe_required:
+            verdict = "auth_pass_not_yara_safe"
+        if verdict is None and authenticated:
+            verdict = "safe"
+
+        tdysr = trusted_domain_yara_safe_required
+        return dict(matches=matches, categories=categories,
+                    trusted_domain=trusted_domain,
+                    trusted_domain_yara_safe_required=tdysr,
+                    auth_check_optional=auth_check_optional,
+                    verdict=verdict)

@@ -1,5 +1,29 @@
 # Changelog
 
+## 2.0.0
+
+- Major refactoring
+  - Many arguments added to `MailScanner.__init__()` or moved from `MailScanner.scan_email()` to `MailScanner.__init__()`
+    - `passwords`
+    - `max_zip_depth`
+    - `trusted_domains`
+    - `trusted_domains_yara_safe_required`
+    - `include_sld_in_auth_check`
+    - `allow_multiple_authentication_results`
+    - `use_authentication_results_original`
+  - Instead of returning a list of matches, `MailScanner.scan_email()` now returns a dictionary with the following keys
+    - `matches` - The list of YARA matches
+    - `categories` - A deduplicated list of categories from the `catagory` meta value in YARA rule matches
+    - `trused_domain` - A boolean indicating if the authenticated from domain is in the `trusted_domains` list
+    - `trusted_domain_yara_safe_required` - A boolean indicating if the authenticated from domain is in the `trusted_domains_yara_safe_required` list
+    - `auth_check_optional` - A boolean indicating if the from domain authentication check is optional
+    - `verdict` a verdict based on the above
+- Added new options to the CLI
+  - Pass `-` as the scan path to scan a single email from standard input (stdin)
+  - `--passwords` - A path to a list of passwords to use when brute-forcing password-protected attachments
+  - `--trusted-domains-yara` - A path to a list of from domains that also require a YARA safe match
+  - `-t` `--test` - Test rules based on verdicts matching the folder a sample is in 
+
 ## 1.1.1
 
 - Fix encrypted ZIP scanning
