@@ -16,13 +16,13 @@
     - `categories` - A deduplicated list of categories from the `catagory` meta value in YARA rule matches
     - `trused_domain` - A boolean indicating if the authenticated from domain is in the `trusted_domains` list
     - `trusted_domain_yara_safe_required` - A boolean indicating if the authenticated from domain is in the `trusted_domains_yara_safe_required` list
-    - `auth_check_optional` - A boolean indicating if the from domain authentication check is optional
+    - `auth_optional` - A boolean indicating if the from domain authentication check is optional
     - `verdict` a verdict based on the above
 - Added new options to the CLI
   - Pass `-` as the scan path to scan a single email from standard input (stdin)
   - `--passwords` - A path to a list of passwords to use when brute-forcing password-protected attachments
   - `--trusted-domains-yara` - A path to a list of from domains that also require a YARA safe match
-  - `-t` `--test` - Test rules based on verdicts matching the folder a sample is in 
+  - `-t` `--test` - Test rules based on verdicts matching the name of the folder a sample is in 
 
 ## 1.1.1
 
