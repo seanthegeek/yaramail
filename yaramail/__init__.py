@@ -112,6 +112,7 @@ class MailScanner(object):
         A YARA scanner for emails
 
         Args:
+
             header_rules: Rules that only apply to email header content
             body_rules: Rules that only apply to email body content
             header_body_rules: Rules that apply to combined email \
@@ -128,11 +129,11 @@ class MailScanner(object):
             include_sld_in_auth_check: Check authentication results based on \
             Second-Level Domain (SLD) in addition to the \
             Fully-Qualified Domain Name (FQDN).
-            allow_multiple_authentication_results: Allow multiple
-            ``Authentication-Results-Original`` headers when checking
+            allow_multiple_authentication_results: Allow multiple \
+            ``Authentication-Results-Original`` headers when checking \
             authentication results
-            use_authentication_results_original: Use the
-            ``Authentication-Results-Original`` header instead of the
+            use_authentication_results_original: Use the \
+            ``Authentication-Results-Original`` header instead of the \
             ``Authentication-Results`` header
 
         .. note::
@@ -146,9 +147,9 @@ class MailScanner(object):
 
 
         .. warning ::
-        Authentication results are based on the headers of the email sample,
-        so only trust authentication results on emails that have been
-        received by trusted mail servers, and not on third-party emails.
+          Authentication results are based on the headers of the email sample,
+          so only trust authentication results on emails that have been
+          received by trusted mail servers, and not on third-party emails.
 
         .. warning::
           Set ``allow_multiple_authentication_results`` to ``True``
@@ -156,12 +157,12 @@ class MailScanner(object):
           of each authentication method in separate ``Authentication-Results``
           headers **and always** includes DMARC results.
 
-    .. warning::
-      Set ``use_authentication_results_original`` to ``True``
-      **if and only if** you use an email security gateway that adds an
-      ``Authentication-Results-Original`` header, such as Proofpoint or Cisco
-      IronPort. This **does not** include API-based email security solutions,
-      such as Abnormal Security.
+        .. warning::
+          Set ``use_authentication_results_original`` to ``True``
+          **if and only if** you use an email security gateway that adds an
+          ``Authentication-Results-Original`` header, such as Proofpoint or Cisco
+          IronPort. This **does not** include API-based email security solutions,
+          such as Abnormal Security.
         """
         self._header_rules = header_rules
         self._body_rules = body_rules

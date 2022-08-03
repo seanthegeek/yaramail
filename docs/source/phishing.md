@@ -37,12 +37,12 @@ Use the [include][include] directive in the YARA rule files that you pass to
 divided into separate files as you see fit.
 ```
 
-The `MailScanner` class in the [`yaramail` API][API] provides a YARA scanner
+The `MailScanner` class in the [`yaramail` API](api) provides a YARA scanner
 that is specifically designed for emails.
 
 To scan an email, pass the output from
 [mailsuite.utils.parse_email()][parse_email] to `MailScanner.scan_email()`,
-Take a look at the [API documentation][API] to learn about the returned value.
+Take a look at the [API documentation](api) to learn about the returned value.
 
 ## Practical examples
 
@@ -364,6 +364,7 @@ emails = []
 for email in emails:
     attached_email = None
     report_email = parse_email(email)
+    report_email["valid_report"] = True
     if report_email["automatic_reply"]:
         # TODO: Move automatic replies to the trash
         continue
@@ -374,9 +375,11 @@ for email in emails:
                 report_email["valid_report"] = False
                 escalate_to_incident_response(report_email)
                 # TODO: Move report email to the invalid folder or trash
-                continue
+                attachment = None
+                break
             attached_email = attachment
-    if attached_email is None:
+    if attached_email is None and report_email["valid_report"]:
+        report_email["valid_report"] = False
         # TODO: Tell use user how to properly send a sample as an attachment
         escalate_to_incident_response(report_email)
         # TODO: Move report email to the invalid folder or trash
@@ -390,23 +393,20 @@ for email in emails:
         # TODO: Move report email to the invalid folder or trash
         continue
 
-    report_email["valid_report"] = True
-    categories = sample["yaramail"]["categories"]
-    verdict = sample["yaramail"]["verdict"]
     report_email["sample"] = sample
 
     is_malicious = bool(len(list(
-        malicious_categories.intersection(categories))))
+        malicious_categories.intersection(sample["yaramail"]["categories"]))))
 
-    if verdict == "safe":
+    if sample["yaramail"]["verdict"] == "safe":
         # TODO: Let the user know the email is safe and close the ticket
         # TODO: Move the report to the safe folder or trash
         pass
-    elif verdict == "junk":
+    elif sample["yaramail"]["verdict"] == "junk":
         # TODO: Tell the user how to add an address to their spam filter
         # TODO: Close the ticket and move the report to the junk/trash folder
         pass
-    elif is_malicious:
+    elif sample["yaramail"]["verdict"]:
         # TODO: Instruct the user to delete the malicious email
         # TODO: Move report email to the malicious folder or trash
         # TODO: Maybe do something different for each verdict?
@@ -419,7 +419,6 @@ for email in emails:
 [mailsuite]: https://seanthegeek.github.io/mailsuite/
 [rules]: https://yara.readthedocs.io/en/stable/writingrules.html
 [include]: https://yara.readthedocs.io/en/stable/writingrules.html#including-files
-[API]: index.md#api
 [regex]: https://yara.readthedocs.io/en/stable/writingrules.html#regular-expressions
 [trusted]: https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.from_trusted_domain
 [mailsuite.utils]: https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.from_trusted_domain
