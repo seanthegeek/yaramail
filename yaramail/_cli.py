@@ -62,12 +62,16 @@ trusted_yara_help = "A path to a file containing a list of list of domains " \
 arg_parser.add_argument("--trusted-domains-yara", type=str,
                         help=trusted_yara_help,
                         default="trusted_domains_yara_safe_required.txt")
+test_help = "Test rules based on verdicts matching the name of the folder a " \
+            "sample is in"
+arg_parser.add_argument("-t", "--test", action="store_true",
+                        help=test_help)
 
 
 def _main():
     args = arg_parser.parse_args()
 
-    use_stdin = args.scan_path == "-"
+    use_stdin = args.scan_path[0] == "-"
     if not use_stdin:
         args.scan_path = glob(str(args.scan_path))
 
@@ -160,6 +164,46 @@ def _main():
         scanner = MailScanner()
         logger.error(f"Failed to parse YARA rules: {e}")
         exit(-1)
+
+    def test_rules(samples_dir):
+        """Test YARA rules against known email samples"""
+        if not os.path.isdir(samples_dir):
+            logger.error(f"{samples_dir} is not a directory")
+            exit(-1)
+        logger.info("Testing email rules...")
+        test_failures = 0
+        total = 0
+        for dirname, dirnames, filenames in os.walk(samples_dir):
+            for directory in dirnames:
+                category = directory
+                for dirname_, dirnames_, filenames_ in os.walk(
+                        os.path.join(samples_dir, directory)):
+                    for filename in filenames_:
+                        if not str(filename).lower().endswith(".eml"):
+                            continue
+                        msg_path = os.path.join(dirname_, filename)
+                        total += 1
+                        try:
+                            with open(msg_path, "r") as msg_file:
+                                email = msg_file.read()
+                            results = scanner.scan_email(email)
+                            verdict = results["verdict"]
+                            if verdict != category:
+                                logger.warning(
+                                    f"Fail: {msg_path} - verdict {verdict}; "
+                                    f"expected {category}: {results}")
+                                test_failures += 1
+                        except Exception as e_:
+                            logger.warning(f"{msg_path}: {e_}")
+                            test_failures += 1
+                            exit()
+
+        passed = total - test_failures
+        logger.info(f"\n{passed}/{total} emails passed\n")
+        exit(test_failures)
+
+    if args.test:
+        test_rules(args.scan_path[0])
 
     scanned_emails = {}
     for file_path in args.scan_path:

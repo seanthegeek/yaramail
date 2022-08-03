@@ -430,15 +430,15 @@ class MailScanner(object):
             allow_multiple_authentication_results=multi_auth_headers,
             use_authentication_results_original=use_og_auth_results
         )
-        auth_check_optional = False
+        auth_optional = False
         categories = []
         for match in matches:
             if "from_domain" in match["meta"]:
                 sld = parsed_email["from"]["sld"]
                 if sld != get_sld(match["meta"]["from_domain"]):
                     continue
-            if "auth_check_optional" in match["meta"] and not auth_check_optional:
-                auth_check_optional = match["meta"]["auth_check_optional"]
+            if "auth_optional" in match["meta"] and not auth_optional:
+                auth_optional = match["meta"]["auth_optional"]
             if "category" in match["meta"]:
                 categories.append(match["meta"]["category"])
         categories = list(set(categories))
@@ -447,7 +447,7 @@ class MailScanner(object):
         elif len(categories) > 1:
             verdict = "ambiguous"
         authenticated = any([trusted_domain, trusted_domain_yara_safe_required,
-                             auth_check_optional])
+                             auth_optional])
         if verdict == "safe" and not authenticated:
             verdict = "yara_safe_auth_fail"
         if verdict != "safe" and trusted_domain_yara_safe_required:
@@ -459,5 +459,5 @@ class MailScanner(object):
         return dict(matches=matches, categories=categories,
                     trusted_domain=trusted_domain,
                     trusted_domain_yara_safe_required=tdysr,
-                    auth_check_optional=auth_check_optional,
+                    auth_optional=auth_optional,
                     verdict=verdict)
