@@ -190,9 +190,10 @@ def _main():
                             results = scanner.scan_email(email)
                             verdict = results["verdict"]
                             if verdict != category:
-                                logger.warning(
-                                    f"Fail: {msg_path} - verdict {verdict}; "
-                                    f"expected {category}: {results}")
+                                results = simplejson.dumps(results)
+                                logger.error(
+                                    f"fail:path={msg_path}:verdict={verdict}:"
+                                    f"expected={category}:{results}")
                                 test_failures += 1
                         except Exception as e_:
                             logger.warning(f"{msg_path}: {e_}")
