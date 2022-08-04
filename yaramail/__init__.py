@@ -163,9 +163,12 @@ class MailScanner(object):
         .. warning::
           Set ``use_authentication_results_original`` to ``True``
           **if and only if** you use an email security gateway that adds an
-          ``Authentication-Results-Original`` header, such as Proofpoint or Cisco
-          IronPort. This **does not** include API-based email security solutions,
-          such as Abnormal Security.
+          ``Authentication-Results-Original`` header, such as Proofpoint or
+          Cisco IronPort. This **does not** include API-based email security
+          solutions, such as Abnormal Security.
+
+        .. note::
+          ``infected`` and ``malware`` are always tried as passwords.
         """
         self._header_rules = header_rules
         self._body_rules = body_rules
@@ -335,9 +338,6 @@ class MailScanner(object):
             use_raw_body: Scan the raw email body instead of converting it to \
             Markdown first
 
-        .. note::
-          ``infected`` and ``malware`` are always tried as passwords.
-
         Returns: A dictionary
 
         The returned dictionary contains the following key-value pairs:
@@ -353,7 +353,7 @@ class MailScanner(object):
          - ``yara_safe_auth_fail`` - Domain authentication failed, YARA safe
          - ``auth_pass_not_yara_safe`` - Domain auth passed, YARA failed
          - ``ambiguous`` - Multiple categories matched
-         - Any custom category specified by a YARA rule
+         - Any custom category specified in the meta section of a YARA rule
 
         Each match dictionary in the returned list contains
         the following key-value pairs:

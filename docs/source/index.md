@@ -27,11 +27,11 @@ yaramail scans all parts of an email via API or CLI
 ---
 maxdepth: 2
 ---
+installation
+tutorial
+collecting_samples
 api
 cli
-collecting_samples
-installation
-phishing
 regex
 ```
 
