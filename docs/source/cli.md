@@ -13,7 +13,7 @@ usage: A YARA scanner for emails [-h] [-V] [-v] [--output OUTPUT]
                                  scan_path
 
 positional arguments:
-  scan_path             The file(s) to scan. Wildcards allowed.Use - to read
+  scan_path             The file(s) to scan. Wildcards allowed. Use - to read
                         from stdin.
 
 options:
@@ -47,14 +47,17 @@ options:
                         YARAMAIL_PASSWORDS environment variable (default:
                         passwords.txt)
   --trusted-domains TRUSTED_DOMAINS
-                        A path to a file containing a list of trusted domains.
-                        Can be set by the YARAMAIL_TRUSTED_DOMAINS environment
-                        variable. (default: trusted_domains.txt)
+                        A path filename of a list of from domains that return
+                        a safe verdict if the domain is authenticated and no
+                        YARA categories match other than safe. Can be set by
+                        the YARAMAIL_TRUSTED_DOMAINS environment variable.
+                        (default: trusted_domains.txt)
   --trusted-domains-yara TRUSTED_DOMAINS_YARA
-                        A path to a file containing a list of list of domains
-                        that require a YARA safe match. Can be set by the
-                        YARAMAIL_TRUSTED_DOMAINS_YARA environment variable.
-                        (default: trusted_domains_yara_safe_required.txt)
+                        Filename a list of from domains that require an
+                        authenticated from domain and YARA safe verdict Can be
+                        set by the YARAMAIL_TRUSTED_DOMAINS_YARA environment
+                        variable. (default:
+                        trusted_domains_yara_safe_required.txt)
   -t, --test            Test rules based on verdicts matching the name of the
                         folder a sample is in (default: False)
 ```

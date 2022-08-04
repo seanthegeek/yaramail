@@ -109,7 +109,8 @@ class MailScanner(object):
                  allow_multiple_authentication_results: bool = False,
                  use_authentication_results_original: bool = False):
         """
-        A YARA scanner for emails
+        A YARA scanner for emails that can also check Authentication-Results
+        headers.
 
         Args:
 
@@ -122,13 +123,15 @@ class MailScanner(object):
             passwords: A list of passwords to use when attempting to scan \
             password-protected files
             max_zip_depth: Number of times to recurse into nested ZIP files
-            trusted_domains: A list of from domains that do not require a \
-            YARA safe verdict
+            trusted_domains: A list of from domains that return a ``safe`` \
+            verdict if the domain is authenticated and no YARA \
+            categories match other than ``safe``
             trusted_domains_yara_safe_required: A list of from domains that \
-            require a YARA safe verdict
+            require an authenticated from domain and no YARA match categories \
+            other than safe
             include_sld_in_auth_check: Check authentication results based on \
             Second-Level Domain (SLD) in addition to the \
-            Fully-Qualified Domain Name (FQDN).
+            Fully-Qualified Domain Name (FQDN)
             allow_multiple_authentication_results: Allow multiple \
             ``Authentication-Results-Original`` headers when checking \
             authentication results
@@ -345,10 +348,12 @@ class MailScanner(object):
 
         Possible verdicts include:
 
-         - ``None`` - No categories matched, or multiple categories matched
+         - ``None`` - No categories matched
          - ``safe`` - The email is considered safe
-         - ``yara_safe_auth_fail`` - Email authentication failed, YARA safe
-
+         - ``yara_safe_auth_fail`` - Domain authentication failed, YARA safe
+         - ``auth_pass_not_yara_safe`` - Domain auth passed, YARA failed
+         - ``ambiguous`` - Multiple categories matched
+         - Any custom category specified by a YARA rule
 
         Each match dictionary in the returned list contains
         the following key-value pairs:
@@ -358,6 +363,7 @@ class MailScanner(object):
         - ``meta`` - A dictionary of key-value pairs from the meta section.
         - ``tags`` - A list of the rule's tags.
         - ``strings`` - A list of identified strings or patterns that match.
+
           Each list item is also a list, with the following values:
 
               0. The location offset of the identified string/pattern

@@ -17,7 +17,7 @@ arg_parser = argparse.ArgumentParser(
     "A YARA scanner for emails",
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 arg_parser.add_argument("scan_path", type=str,
-                        help="The file(s) to scan. Wildcards allowed."
+                        help="The file(s) to scan. Wildcards allowed. "
                              "Use - to read from stdin.")
 arg_parser.add_argument("-V", "--version", action="version",
                         version=__version__)
@@ -52,14 +52,16 @@ passwords_help = "Filename of a list of passwords to try against " \
                  "YARAMAIL_PASSWORDS environment variable"
 arg_parser.add_argument("--passwords", type=str, help=passwords_help,
                         default="passwords.txt")
-trusted_help = "A path to a file containing a list of trusted domains. Can " \
-               "be set by the YARAMAIL_TRUSTED_DOMAINS environment " \
-               "variable."
+trusted_help = "A path filename of a list of from domains that return a " \
+               "safe verdict if the domain is authenticated and no YARA " \
+               "categories match other than safe. Can be set by the " \
+               "YARAMAIL_TRUSTED_DOMAINS environment variable."
 arg_parser.add_argument("--trusted-domains", type=str, help=trusted_help,
                         default="trusted_domains.txt")
-trusted_yara_help = "A path to a file containing a list of list of domains " \
-                    "that require a YARA safe match. Can be set by the " \
-                    "YARAMAIL_TRUSTED_DOMAINS_YARA environment variable."
+trusted_yara_help = "Filename a list of from domains that require an " \
+                    "authenticated from domain and YARA safe verdict Can be " \
+                    "set by the YARAMAIL_TRUSTED_DOMAINS_YARA environment " \
+                    "variable."
 arg_parser.add_argument("--trusted-domains-yara", type=str,
                         help=trusted_yara_help,
                         default="trusted_domains_yara_safe_required.txt")
