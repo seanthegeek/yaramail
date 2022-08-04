@@ -1,15 +1,20 @@
-# Automating phishing report inbox triage
+# Tutorial
 
-Through a combination authentication header parsing and YARA rules,
-[mailsuite][mailsuite] and `yaramail` can be used to create customized
-automation for triaging phishing reports from users. `mailsuite` is installed
-as a dependency of `yaramail`.
+Stop drowning in fake phish! Anyone who has spent much time in a SOC knows a
+paradox — the more successful your Security Awareness program is, the more
+your phishing reporting inbox will receive non-phishing emails. Those who are
+tasked with triaging the inbox often wade through sales pitches,
+organization announcements, and even email quarantine digests before
+occasionally finding a phish. It doesn't need to be this way.
 
-## Getting started
+`yaramail` is a Python package and CLI utility for automating the triage of
+phishing report inbox.
 
-It is **strongly recommended** to develop, store, and maintain YARA rules,
-trusted domain lists, and sample emails in a private Git repository
-(GitHub is great!), for a number of reasons.
+## Best practices
+
+it is **strongly recommended** to create a private Git repository as a place
+to develop, store, and maintain  YARA rules, trusted domain lists, and sample
+emails, for a number of reasons.
 
 - Version control tracks who made what change when, with easy rollback
 - Automations can (and should) pull a fresh copy of the repository
@@ -17,63 +22,54 @@ trusted domain lists, and sample emails in a private Git repository
 - CI/CD workflows can run tests against a collection of emails samples before
   allowing the rules into production
 
-When automating phishing inbox triage, it is **vital** to continually build
-and maintain a collection of real-world malicious, safe, and junk emails
-that have been sent to the inbox. That way new samples can be tested against
-existing automation, and changes in automation can be checked for effectiveness
-against new samples and regressions with existing samples.
+When automating phishing inbox triage, it is **vital** to continually [build
+and maintain a collection](collecting_samples) of real-world malicious, safe,
+and junk emails that have been sent to the inbox. That way, new samples can be
+tested against existing automation processes, and changes in automation can be
+checked for regressions with existing samples.
 
-Production material should be kept in the `master` branch. Any development
+Production material should be kept in the `main` branch. Any development
 should be done in a rule developer's fork of the repository. New samples for
 testing must always be added when adjusting for new content. Each commit should
 trigger automated testing of the changes. Whe the rule  developer is ready to
 submit their changes for review, they create a Pull Request, and a project
 maintainer reviews the proposed  changes before squashing and merging commits
-into the upstream `master` branch.
+into the upstream `main` branch.
 
-```{tip}
-Use the [include][include] directive in the YARA rule files that you pass to
-`MailScanner` to include rules from other files. That way, rules can be
-divided into separate files as you see fit.
-```
+## Methodology
 
-The `MailScanner` class in the [`yaramail` API](api) provides a YARA scanner
-that is specifically designed for emails.
+The `yaramail` module contains a `MailScanner` class. When `MailScanner` scans
+an email, it attempts to use a combination of email authentication results and
+YARA rule matches to categorize an email and reach a `verdict`. To do this, it
+does several things. First, it scans the contents of the email headers, body,
+and attachments with user-provided YARA rules. Then, the `meta` section of each
+matching rule is checked for a `catagory` value. Each match category is added
+to a deduplicated list of `categories`. If a single category is listed the
+`verdict` is set to that category. If multiple categories are listed the
+verdict is set to `ambigious`.
 
-To scan an email, pass the output from
-[mailsuite.utils.parse_email()][parse_email] to `MailScanner.scan_email()`,
-Take a look at the [API documentation](api) to learn about the returned value.
-
-## Practical examples
-
-### Checking if an email is trusted
-
-Use the [from_trusted_domain()][trusted] function in
-[mailsuite.utils][mailsuite.utils] to check the results of DKIM and/or DMARC
-in the `Authentication-Results` header against a list of trusted domains.
-
-```{warning}
-Authentication results are not verified by this function, so only use it on
-emails that have been received by trusted mail servers, and not on
-third-party emails.
-```
-
-The `Authentication-Results` header is added by the receiving mail server
-as a way of logging the results of authentication checks that prove that
-the domain in the message `From` header was not spoofed. Most email services
-— including Microsoft 365 and Gmail — use a single `Authentication-Results`
-header to log the results of all authentication checks. By default,
-[from_trusted_domain()][trusted] will return `False` if multiple
-`Authentication-Results` headers are found in an email. This is done to
-avoid false positives when an attacker adds their own
-`Authentication-Results` header to an email before it reaches the destination
-mail server.
+Then, the `Authentication-Results` of the email is parsed. The
+`Authentication-Results` header is added by the receiving mail server as a way
+of logging the results of authentication checks that prove that the domain
+in the message `From` header was not spoofed. Most email services — including
+Microsoft 365 and Gmail — use a single `Authentication-Results` header 
+to log the results of all authentication checks. By default,
+all `Authentication-Results` headers will be ignored if multiple
+`Authentication-Results` headers are found in an email. This is done to avoid
+false positives when an attacker adds their own`Authentication-Results`
+header to an email before it reaches the destination mail server.
 
 Postfix mail servers use a separate `Authentication-Results` header for each
 authentication check. If your mail service does this, set the
 `allow_multiple_authentication_results` parameter to `True`.
-This allows multiple headers, but will return `False` if multiple DMARC
-results are found, to avoid malicious results.
+This allows multiple headers, but all `Authentication-Results` headers will
+be ignored if multiple DMARC results are found, to avoid spoofed results.
+
+```{warning}
+Authentication results are not verified by `yaramail`, so only use it on
+emails that have been received by trusted mail servers, and not on
+third-party emails.
+```
 
 ```{warning}
 Set `allow_multiple_authentication_results` to `True` **if and only if**
@@ -90,13 +86,70 @@ IronPort. This **does not** include API-based email security solutions,
 such as Abnormal Security.
 ```
 
-For stronger security, check the content of emails in addition to checking
-authentication results. This adds another layer of defense when phishing emails
-are sent by a trusted sender. [YARA rules][rules] provide a flexable method of
+The `safe` verdict is special. In order to reach a `safe` verdict, one of the
+following sets of conditions must be met.
+
+1. An authenticated domain is in the `trusted_domains` list **and** the categories list is empty **or** only contains `safe`
+2. **Any** of the matching rules have a meta value `auth_optional` set to `true` **and** the categories list contains one value, `safe`
+3. An authenticated domain is in the `trusted_domains_yara_safe_required` list **and** the categories list contains one value, `safe`
+
+The first scenario is useful in situations where the sending domain is
+trusted, but the email content is not consistent enough for a YARA rule.
+
+The second scenario is useful is situations where the sender can't or won't
+use DKIM or DMARC, but very specific email content traits can be identified.
+
+The third scenario is the most trusted, because the email from domain has been
+authenticated **and** the email includes known safe content.
+
+## Getting started
+
+Follow the [installation guide](installation).
+
+Import `MailScanner` from `yaramail`, and create a new 
+[`MailScanner` object](api)
+
+```python
+import logging
+
+from yaramail import MailScanner
+
+logger = logging.getLogger("scanner")
+
+# Initialize the scanner
+scanner = None  # Avoid an IDE warning
+try:
+    scanner = MailScanner(
+        header_rules="header.yar",
+        body_rules="body.yar",
+        header_body_rules="header_body.yar",
+        attachment_rules="attachment.yar",
+        trusted_domains="trusted_domains.txt",
+        trusted_domains_yara_safe_required="trusted_yara_safe_required.txt")
+except Exception as e:
+    logger.error(f"Could not initialize the scanner: {e}")
+    exit(-1)
+```
+
+```{tip}
+Use the [include][include] directive in the YARA rule files that you pass to
+`MailScanner` to include rules from other files. That way, rules can be
+divided into separate files as you see fit.
+```
+
+To scan an email, pass email content, a file-like object, or a file path to 
+`MailScanner.scan_email()`. Take a look at the [API documentation](api) to
+learn about the returned objects.
+
+## Practical YARA rule examples
+
+[YARA rules][rules] provide a flexable method of
 checking the contents of email headers, body, and attachment content against
 known malicious and trusted patterns.
 
-For example, the following YARA body rule could be used to ensure that all URLs
+### Checking if an email is safe
+
+The following YARA body rule could be used to ensure that all URLs
 in an email body match the domain of a vendor.
 
 ```yara
@@ -350,7 +403,7 @@ try:
         trusted_domains="trusted_domains.txt",
         trusted_domains_yara_safe_required="trusted_yara_safe_required.txt")
 except Exception as e:
-    logger.error(f"Error parsing YARA rules: {e}")
+    logger.error(f"Could not initialize the scanner: {e}")
     exit(-1)
 
 
