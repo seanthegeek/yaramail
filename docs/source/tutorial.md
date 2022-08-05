@@ -78,6 +78,10 @@ IronPort. This **does not** include API-based email security solutions,
 such as Abnormal Security.
 ```
 
+```{tip}
+Read [Demystifying DMARC][DMARC] for more details about SPF, DKIM, and DMARC.
+```
+
 The `safe` verdict is special. In order to reach a `safe` verdict, one of the
 following sets of conditions must be met.
 
@@ -533,13 +537,10 @@ for email in emails:
 
 ```
 
-[mailsuite]: https://seanthegeek.github.io/mailsuite/
+[DMARC]: https://seanthegeek.net/459/demystifying-dmarc/
 [rules]: https://yara.readthedocs.io/en/stable/writingrules.html
 [include]: https://yara.readthedocs.io/en/stable/writingrules.html#including-files
 [regex]: https://yara.readthedocs.io/en/stable/writingrules.html#regular-expressions
-[trusted]: https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.from_trusted_domain
-[mailsuite.utils]: https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.from_trusted_domain
-[parse_email]: https://seanthegeek.github.io/mailsuite/api.html#mailsuite.utils.parse_email
 [CyberChef]: https://github.com/gchq/CyberChef/releases
 [EDGAR]: https://www.sec.gov/edgar/searchedgar/companysearch.html
 [file signatures]: https://en.wikipedia.org/wiki/List_of_file_signatures
