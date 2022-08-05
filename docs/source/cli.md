@@ -53,8 +53,8 @@ options:
                         (default: trusted_domains.txt)
   --trusted-domains-yara TRUSTED_DOMAINS_YARA
                         Filename a list of from domains that require an
-                        authenticated from domain and YARA safe verdict Can be
-                        set by the YARAMAIL_TRUSTED_DOMAINS_YARA environment
-                        variable. (default:
+                        authenticated from domain and YARA safe verdict. Can
+                        be set by the YARAMAIL_TRUSTED_DOMAINS_YARA
+                        environment variable. (default:
                         trusted_domains_yara_safe_required.txt)
 ```

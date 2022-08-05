@@ -63,9 +63,9 @@ trusted_help = "Filename of a list of from domains that return a " \
 arg_parser.add_argument("--trusted-domains", type=str, help=trusted_help,
                         default="trusted_domains.txt")
 trusted_yara_help = "Filename a list of from domains that require an " \
-                    "authenticated from domain and YARA safe verdict Can be " \
-                    "set by the YARAMAIL_TRUSTED_DOMAINS_YARA environment " \
-                    "variable."
+                    "authenticated from domain and YARA safe verdict. Can " \
+                    "be set by the YARAMAIL_TRUSTED_DOMAINS_YARA " \
+                    "environment variable."
 arg_parser.add_argument("--trusted-domains-yara", type=str,
                         help=trusted_yara_help,
                         default="trusted_domains_yara_safe_required.txt")
