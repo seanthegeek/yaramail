@@ -23,7 +23,11 @@ arg_parser.add_argument("-V", "--version", action="version",
                         version=__version__)
 arg_parser.add_argument("-v", "--verbose", action="store_true",
                         help="Output the entire parsed email")
-arg_parser.add_argument("--output", "-o", type=str,
+test_help = "Test rules based on verdicts matching the name of the folder a " \
+            "sample is in"
+arg_parser.add_argument("-t", "--test", action="store_true",
+                        help=test_help)
+arg_parser.add_argument("--output", type=str,
                         help="Redirect output to a file")
 rules_help = "A path to a directory that contains YARA rules. Can be " \
              "set by the YARA_RULES_DIR environment variable."
@@ -52,7 +56,7 @@ passwords_help = "Filename of a list of passwords to try against " \
                  "YARAMAIL_PASSWORDS environment variable"
 arg_parser.add_argument("--passwords", type=str, help=passwords_help,
                         default="passwords.txt")
-trusted_help = "A path filename of a list of from domains that return a " \
+trusted_help = "Filename of a list of from domains that return a " \
                "safe verdict if the domain is authenticated and no YARA " \
                "categories match other than safe. Can be set by the " \
                "YARAMAIL_TRUSTED_DOMAINS environment variable."
@@ -65,10 +69,6 @@ trusted_yara_help = "Filename a list of from domains that require an " \
 arg_parser.add_argument("--trusted-domains-yara", type=str,
                         help=trusted_yara_help,
                         default="trusted_domains_yara_safe_required.txt")
-test_help = "Test rules based on verdicts matching the name of the folder a " \
-            "sample is in"
-arg_parser.add_argument("-t", "--test", action="store_true",
-                        help=test_help)
 
 
 def _main():
