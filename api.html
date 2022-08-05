@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API &mdash; yaramail 2.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CLI" href="cli.html" />
+    <link rel="prev" title="Collecting email samples" href="collecting_samples.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html">
+            <img src="_static/yaramail-logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="collecting_samples.html">Collecting email samples</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="regex.html">regex quick reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">yaramail</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-yaramail">
+<span id="api"></span><h1>API<a class="headerlink" href="#module-yaramail" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="yaramail.MailScanner">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">yaramail.</span></span><span class="sig-name descname"><span class="pre">MailScanner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">header_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Rules</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Rules</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_body_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Rules</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attachment_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Rules</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">passwords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_zip_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trusted_domains</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trusted_domains_yara_safe_required</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_sld_in_auth_check</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_multiple_authentication_results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_authentication_results_original</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaramail.html#MailScanner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaramail.MailScanner" title="Permalink to this definition"></a></dt>
+<dd><p>A YARA scanner for emails that can also check Authentication-Results
+headers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>header_rules</strong> – Rules that only apply to email header content</p></li>
+<li><p><strong>body_rules</strong> – Rules that only apply to email body content</p></li>
+<li><p><strong>header_body_rules</strong> – Rules that apply to combined email             header and body content</p></li>
+<li><p><strong>attachment_rules</strong> – Rules that only apply to file             attachment content</p></li>
+<li><p><strong>passwords</strong> – A list of passwords to use when attempting to scan             password-protected files</p></li>
+<li><p><strong>max_zip_depth</strong> – Number of times to recurse into nested ZIP files</p></li>
+<li><p><strong>trusted_domains</strong> – A list of message From domains that return a             <code class="docutils literal notranslate"><span class="pre">safe</span></code> verdict if the domain is authenticated and no YARA             categories match other than <code class="docutils literal notranslate"><span class="pre">safe</span></code></p></li>
+<li><p><strong>trusted_domains_yara_safe_required</strong> – A list of message From             domains that return a <code class="docutils literal notranslate"><span class="pre">safe</span></code> verdict if the domain is             authenticated <strong>and</strong> the email itself has a YARA <code class="docutils literal notranslate"><span class="pre">safe</span></code> verdict</p></li>
+<li><p><strong>include_sld_in_auth_check</strong> – Check authentication results based on             Second-Level Domain (SLD) in addition to the             Fully-Qualified Domain Name (FQDN)</p></li>
+<li><p><strong>allow_multiple_authentication_results</strong> – Allow multiple             <code class="docutils literal notranslate"><span class="pre">Authentication-Results-Original</span></code> headers when checking             authentication results</p></li>
+<li><p><strong>use_authentication_results_original</strong> – Use the             <code class="docutils literal notranslate"><span class="pre">Authentication-Results-Original</span></code> header instead of the             <code class="docutils literal notranslate"><span class="pre">Authentication-Results</span></code> header</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Each <code class="docutils literal notranslate"><span class="pre">_rules</span></code> parameter can accept raw rule content, a path to a
+rules file, a file-like object, or a <code class="docutils literal notranslate"><span class="pre">yara.Rule</span></code> object.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">include</span></code> directive in the YARA rule files that you
+pass to <code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> to include rules from other files. That
+way, rules can be divided into separate files as you see fit.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Authentication results are based on the headers of the email sample,
+so only trust authentication results on emails that have been
+received by trusted mail servers, and not on third-party emails.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Set <code class="docutils literal notranslate"><span class="pre">allow_multiple_authentication_results</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code>
+<strong>if and only if</strong> the receiving mail service splits the results
+of each authentication method in separate <code class="docutils literal notranslate"><span class="pre">Authentication-Results</span></code>
+headers <strong>and always</strong> includes DMARC results.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Set <code class="docutils literal notranslate"><span class="pre">use_authentication_results_original</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code>
+<strong>if and only if</strong> you use an email security gateway that adds an
+<code class="docutils literal notranslate"><span class="pre">Authentication-Results-Original</span></code> header, such as Proofpoint or
+Cisco IronPort. This <strong>does not</strong> include API-based email security
+solutions, such as Abnormal Security.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">infected</span></code> and <code class="docutils literal notranslate"><span class="pre">malware</span></code> are always tried as passwords.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="yaramail.MailScanner.scan_email">
+<span class="sig-name descname"><span class="pre">scan_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_raw_headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_raw_body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="_modules/yaramail.html#MailScanner.scan_email"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaramail.MailScanner.scan_email" title="Permalink to this definition"></a></dt>
+<dd><p>Scans an email using YARA rules</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email</strong> – Email file content, a path to an email             file, a file-like object, or output from             <code class="docutils literal notranslate"><span class="pre">mailsuite.utils.parse_email()</span></code></p></li>
+<li><p><strong>use_raw_headers</strong> – Scan headers with indentations included</p></li>
+<li><p><strong>use_raw_body</strong> – Scan the raw email body instead of converting it to             Markdown first</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns: A dictionary</p>
+<p>The returned dictionary contains the following key-value pairs:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">matches</span></code> - A list of YARA match dictionaries</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">categories</span></code> - A list of categories of YARA matches</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verdict</span></code> - The verdict of the scan</p></li>
+</ul>
+<p>Possible verdicts include:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> - No categories matched</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">safe</span></code> - The email is considered safe</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">yara_safe_auth_fail</span></code> - Domain authentication failed, YARA safe</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">auth_pass_not_yara_safe</span></code> - Domain auth passed, YARA failed</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ambiguous</span></code> - Multiple categories matched</p></li>
+<li><p>Any custom category specified in the meta section of a YARA rule</p></li>
+</ul>
+</div></blockquote>
+<p>Each match dictionary in the returned list contains
+the following key-value pairs:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> - The name of the rule.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">namespace</span></code> - The namespace of the rule.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">meta</span></code> - A dictionary of key-value pairs from the meta section.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tags</span></code> - A list of the rule’s tags.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strings</span></code> - A list of identified strings or patterns that match.</p>
+<p>Each list item is also a list, with the following values:</p>
+<blockquote>
+<div><ol class="arabic simple" start="0">
+<li><p>The location offset of the identified string/pattern</p></li>
+<li><p>The variable name of the string/pattern in the rule</p></li>
+<li><p>The matching string/pattern content</p></li>
+</ol>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">location</span></code> - The part of the email where the match was found</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">header</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">body</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">header_body</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">attachment:filename</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">attachment:example.zip:evil.js</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">attachment:first.zip:nested.zip:evil.js</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">attachment:evil.eml:attachment:example.zip:evil.js</span></code></p></li>
+</ul>
+</li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="collecting_samples.html" class="btn btn-neutral float-left" title="Collecting email samples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cli.html" class="btn btn-neutral float-right" title="CLI" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Sean Whalen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
