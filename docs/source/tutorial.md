@@ -1,15 +1,5 @@
 # Tutorial
 
-Stop drowning in fake phish! Anyone who has spent much time in a SOC knows a
-paradox — the more successful your Security Awareness program is, the more
-your phishing reporting inbox will receive non-phishing emails. Those who are
-tasked with triaging the inbox often wade through sales pitches,
-organization announcements, and even email quarantine digests before
-occasionally finding a phish. It doesn't need to be this way.
-
-`yaramail` is a Python package and CLI utility for automating the triage of
-phishing report inbox.
-
 ## Best practices
 
 it is **strongly recommended** to create a private Git repository as a place
@@ -155,42 +145,66 @@ in an email body match the domain of a vendor.
 ```yara
 rule all_urls_example_vendor : urls {
 
-// YARA rules can include C-style comments like this one
-
-/*
-The " : urls" after the rule name sets an optional namespace
-that can be useful for organizing rules.
-The default namespace is "default".
-
-The meta section contains arbitrary key-value pairs that are
-included in matches. That way the scanner has more context about
-the meaning of the rule.
-*/
-
-meta:
-  author = "Sean Whalen"
-  date = "2022-07-13"
-  category = "safe"
-  from_domain = "example.com" // Optionally make a rule only apply to a specific email from domain 
-  description = "All URLs point to the example.com domain"
-
-/*
-The strings section defines the patterns that can be used in the rule.
-These can be strings, byte patterns, or even regular expressions!
-*/
-
-strings:
-  // Match ASCII and wide strings and ignore the case
-  $http = "http" ascii wide nocase
-  $example_url = "https://example.com" ascii wide nocase
-
-condition:
+  // YARA rules can include C-style comments like this one
+  
+  /*
+  The " : urls" after the rule name sets an optional namespace
+  that can be useful for organizing rules.
+  The default namespace is "default".
+  
+  The meta section contains arbitrary key-value pairs that are
+  included in matches. That way the scanner has more context about
+  the meaning of the rule.
+  */
+    
+  meta:
+    author = "Sean Whalen"
+    date = "2022-07-13"
+    category = "safe"
+    from_domain = "example.com" // Optionally make a rule only apply to a specific email from domain 
+    description = "All URLs point to the example.com domain"
+    
+  /*
+  The strings section defines the patterns that can be used in the rule.
+  These can be strings, byte patterns, or even regular expressions!
+  */
+    
+  strings:
+    // Match ASCII and wide strings and ignore the case
+    $http = "http" ascii wide nocase
+    $example_url = "https://example.com" ascii wide nocase
+  
   /*
   The total number of URLs must match the number of example.com URls
   Require at least one URL for this rule, otherwise all email with no URLs
-  would match*/
+  would match
+  */
+  
+  condition:
+    #http > 0 and #http == #example
+}
+```
 
-  #http > 0 and #http == #example
+
+### Informational rules
+
+To add additional context without affecting categorization or verdicts, write
+a rule without including a `category` value in the `meta` section. Any matches 
+will still appear in the returned `matches`.
+
+
+```yara
+rule short_url {
+  meta:
+    author = "Sean Whalen"
+    date = "2022-08-04"
+    discription = "Contains a short URL"
+  
+  strings:
+    $short_url = /https?:\/\/[\w.]{3,12}\/\w{5,14}[\s|"|)|#|>]/ ascii wide nocase
+  
+  condition:
+    any of them
 }
 ```
 
@@ -217,23 +231,17 @@ with false positives. An exemption to a malicious rule **does not** mean that
 the content is safe — it only means that the rule cannot be used for that
 content.
 
-```{tip}
-If an external email tag is not in use, an alternative approach is using the
-previously mentioned `from_trusted_domain()` function in Python when an
-analyzing an email.
-```
-
 ```yara
 rule planet_express_vip_impersonation {
   meta:
-      author = "Sean Whalen"
-      date = "2022-07-14"
-      category = "fraud"
-      description = "Impersonation of key employees of Planet Express in an external email"
+    author = "Sean Whalen"
+    date = "2022-07-14"
+    category = "fraud"
+    description = "Impersonation of key employees of Planet Express in an external email"
 
   /*
   /(Hubert|Hugh|Prof\\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/
-
+ 
   Hubert Farnsworth
   Hugh Farnsworth
   Professor Farnsworth
@@ -245,9 +253,9 @@ rule planet_express_vip_impersonation {
   Prof Hubert Farnsworth
   Prof. Hugh Farnsworth
   Prof Hugh Farnsworth
-
+ 
   /Phil(ip)? (J\\.? )?Fry/
-
+ 
   Philip Fry
   Philip J. Fry
   Philip J Fry
@@ -257,16 +265,16 @@ rule planet_express_vip_impersonation {
   */
 
   strings:
-      $external = "[EXT]" ascii wide nocase // Whatever warns users that an email came from an external source
-      $vip_ceo = /(Hubert|Hugh|Prof\\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/ ascii wide nocase
-      $vip_cfo = "Hermes Conrad" ascii wide nocase
-      $vip_cto = "Turanga Leela" ascii wide nocase
-      $vip_admin = "Amy Wong" ascii wide nocase
-      $svip_cdo = /Phil(ip)? (J\\.? )?Fry/ ascii wide nocase
-      $except_slug = "Brain Slug Fundraiser" ascii wide
+    $external = "[EXT]" ascii wide nocase // Whatever warns users that an email came from an external source
+    $vip_ceo = /(Hubert|Hugh|Prof\\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/ ascii wide nocase
+    $vip_cfo = "Hermes Conrad" ascii wide nocase
+    $vip_cto = "Turanga Leela" ascii wide nocase
+    $vip_admin = "Amy Wong" ascii wide nocase
+    $svip_cdo = /Phil(ip)? (J\\.? )?Fry/ ascii wide nocase
+    $except_slug = "Brain Slug Fundraiser" ascii wide
 
   condition:
-      $external and any of ($vip_*) and not any of ($except_*)
+    $external and any of ($vip_*) and not any of ($except_*)
 }
 ```
 
@@ -319,10 +327,10 @@ rule small_iso {
     date = "2022-07-21"
     category = "malware"
     discription = "Small ISO file"
-
+  
   strings:
     $iso = {43 44 30 30 31} // Magic bytes for ISO files
-
+  
   condition:
     $iso at 0 and filesize < 100MB
 }
@@ -368,7 +376,17 @@ links, and maybe even a tracking image.
 Finding the right combination of strings and condition logic may take some
 time, but the reduction in alert fatigue is well worth the effort.
 
-### Putting it all together
+## Testing
+
+the [`yaramail` CLI](cli) has built in support of testing rules against
+individual samples, or across an entire collection of samples.
+
+## Testing an individual samples
+
+## Testing a collection of samples
+
+
+## Putting it all together
 
 Here's a complete example of triage code.
 
@@ -450,8 +468,13 @@ for email in emails:
 
     is_malicious = bool(len(list(
         malicious_categories.intersection(sample["yaramail"]["categories"]))))
-
-    if sample["yaramail"]["verdict"] == "safe":
+    
+    if is_malicious:
+        # TODO: Instruct the user to delete the malicious email
+        # TODO: Move report email to the malicious folder or trash
+        # TODO: Maybe do something different for each verdict?
+        escalate_to_incident_response(report_email, "high")
+    elif sample["yaramail"]["verdict"] == "safe":
         # TODO: Let the user know the email is safe and close the ticket
         # TODO: Move the report to the safe folder or trash
         pass
@@ -459,11 +482,6 @@ for email in emails:
         # TODO: Tell the user how to add an address to their spam filter
         # TODO: Close the ticket and move the report to the junk/trash folder
         pass
-    elif sample["yaramail"]["verdict"]:
-        # TODO: Instruct the user to delete the malicious email
-        # TODO: Move report email to the malicious folder or trash
-        # TODO: Maybe do something different for each verdict?
-        escalate_to_incident_response(report_email, "high")
     else:
         escalate_to_incident_response(report_email)
 
