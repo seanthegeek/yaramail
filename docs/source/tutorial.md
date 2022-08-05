@@ -182,7 +182,7 @@ rule all_urls_example_vendor : urls {
     
     /*
     The total number of URLs must match the number of example.com URls.
-    Require at least one URL for this rule, otherwise all email with no URLs would match
+    Require at least one URL for this rule, otherwise all email with no URLs would match.
     */
     
     condition:
