@@ -202,7 +202,7 @@ rule short_url {
     meta:
     author = "Sean Whalen"
     date = "2022-08-04"
-    discription = "Contains a short URL"
+    description = "Contains a short URL"
     
     strings:
     $short_url = /https?:\/\/[\w.]{3,12}\/\w{5,14}[\s|"|)|#|>]/ ascii wide nocase
