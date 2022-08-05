@@ -331,7 +331,7 @@ rule small_iso {
     author = "Sean Whalen"
     date = "2022-07-21"
     category = "malware"
-    discription = "Small ISO file"
+    discription = "A small ISO file"
     
     strings:
     $iso = {43 44 30 30 31} // Magic bytes for ISO files
