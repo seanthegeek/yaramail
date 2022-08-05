@@ -8,18 +8,18 @@ yaramail is a Python package and command line utility for scanning emails with
 
 ## Features
 
-yaramail scans all parts of an email via API or CLI
-
-- Headers
-  -  Removes header indents by default for consistent scanning
-- Plain text and HTML body content
-  - Converts body content to Markdown by default for consistent scanning
-- Attachments
-  - Raw file content
-  - Emails attached to emails
-  - PDF document text
-  - ZIP file contents, including nested ZIP files
-    - Customizable list of passwords to use when attempting to scan encrypted ZIP files
+- Scans all parts of an email via API or CLI
+  - Headers
+    -  Removes header indents by default for consistent scanning
+  - Plain text and HTML body content
+    - Converts body content to Markdown by default for consistent scanning
+  - Attachments
+    - Raw file content
+    - Emails attached to emails
+    - PDF document text
+    - ZIP file contents, including nested ZIP files
+      - Customizable list of passwords to use when attempting to scan encrypted ZIP files
+- Provides a built-in methodology for categorizing emails
 
 ## Further reading
 
