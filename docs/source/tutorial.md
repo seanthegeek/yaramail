@@ -11,8 +11,9 @@ emails, for a number of reasons.
 - Version control tracks who made what change when, with easy rollback
 - Automations can (and should) pull a fresh copy of the repository
   before scanning
-- CI/CD workflows can run tests against a collection of emails samples before
-  allowing the rules into production
+- CI/CD workflows can [run tests](#testing-a-collection-of-samples)
+  against a collection of emails samples before allowing the rules into
+  production
 
 When automating phishing inbox triage, it is **vital** to continually [build
 and maintain a collection](collecting_samples) of real-world malicious, safe,
