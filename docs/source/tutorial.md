@@ -1,5 +1,7 @@
 # Tutorial
 
+`yaramail` provides a workflow for automated triaging phishing reports.
+
 ## Best practices
 
 it is **strongly recommended** to create a private Git repository as a place
@@ -21,9 +23,9 @@ checked for regressions with existing samples.
 Production material should be kept in the `main` branch. Any development
 should be done in a rule developer's fork of the repository. New samples for
 testing must always be added when adjusting for new content. Each commit should
-trigger automated testing of the changes. Whe the rule  developer is ready to
+trigger automated testing of the changes. When the rule developer is ready to
 submit their changes for review, they create a Pull Request, and a project
-maintainer reviews the proposed  changes before squashing and merging commits
+maintainer reviews the proposed changes before squashing and merging commits
 into the upstream `main` branch.
 
 ## Methodology
@@ -145,42 +147,42 @@ in an email body match the domain of a vendor.
 ```yara
 rule all_urls_example_vendor : urls {
 
-  // YARA rules can include C-style comments like this one
-  
-  /*
-  The " : urls" after the rule name sets an optional namespace
-  that can be useful for organizing rules.
-  The default namespace is "default".
-  
-  The meta section contains arbitrary key-value pairs that are
-  included in matches. That way the scanner has more context about
-  the meaning of the rule.
-  */
+    // YARA rules can include C-style comments like this one
     
-  meta:
+    /*
+    The " : urls" after the rule name sets an optional namespace
+    that can be useful for organizing rules.
+    The default namespace is "default".
+    
+    The meta section contains arbitrary key-value pairs that are
+    included in matches. That way the scanner has more context about
+    the meaning of the rule.
+    */
+    
+    meta:
     author = "Sean Whalen"
     date = "2022-07-13"
     category = "safe"
     from_domain = "example.com" // Optionally make a rule only apply to a specific email from domain 
     description = "All URLs point to the example.com domain"
     
-  /*
-  The strings section defines the patterns that can be used in the rule.
-  These can be strings, byte patterns, or even regular expressions!
-  */
+    /*
+    The strings section defines the patterns that can be used in the rule.
+    These can be strings, byte patterns, or even regular expressions!
+    */
     
-  strings:
+    strings:
     // Match ASCII and wide strings and ignore the case
     $http = "http" ascii wide nocase
     $example_url = "https://example.com" ascii wide nocase
-  
-  /*
-  The total number of URLs must match the number of example.com URls
-  Require at least one URL for this rule, otherwise all email with no URLs
-  would match
-  */
-  
-  condition:
+    
+    /*
+    The total number of URLs must match the number of example.com URls
+    Require at least one URL for this rule, otherwise all email with no URLs
+    would match
+    */
+    
+    condition:
     #http > 0 and #http == #example
 }
 ```
@@ -195,15 +197,15 @@ will still appear in the returned `matches`.
 
 ```yara
 rule short_url {
-  meta:
+    meta:
     author = "Sean Whalen"
     date = "2022-08-04"
     discription = "Contains a short URL"
-  
-  strings:
+    
+    strings:
     $short_url = /https?:\/\/[\w.]{3,12}\/\w{5,14}[\s|"|)|#|>]/ ascii wide nocase
-  
-  condition:
+    
+    condition:
     any of them
 }
 ```
@@ -233,38 +235,38 @@ content.
 
 ```yara
 rule planet_express_vip_impersonation {
-  meta:
+    meta:
     author = "Sean Whalen"
     date = "2022-07-14"
     category = "fraud"
     description = "Impersonation of key employees of Planet Express in an external email"
-
-  /*
-  /(Hubert|Hugh|Prof\\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/
- 
-  Hubert Farnsworth
-  Hugh Farnsworth
-  Professor Farnsworth
-  Prof. Farnsworth
-  Prof Farnsworth
-  Professor Hubert Farnsworth
-  Professor Hugh Farnsworth
-  Prof. Hubert Farnsworth
-  Prof Hubert Farnsworth
-  Prof. Hugh Farnsworth
-  Prof Hugh Farnsworth
- 
-  /Phil(ip)? (J\\.? )?Fry/
- 
-  Philip Fry
-  Philip J. Fry
-  Philip J Fry
-  Phil Fry
-  Phil J. Fry
-  Phil J Fry
-  */
-
-  strings:
+    
+    /*
+    /(Hubert|Hugh|Prof\\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/
+    
+    Hubert Farnsworth
+    Hugh Farnsworth
+    Professor Farnsworth
+    Prof. Farnsworth
+    Prof Farnsworth
+    Professor Hubert Farnsworth
+    Professor Hugh Farnsworth
+    Prof. Hubert Farnsworth
+    Prof Hubert Farnsworth
+    Prof. Hugh Farnsworth
+    Prof Hugh Farnsworth
+    
+    /Phil(ip)? (J\\.? )?Fry/
+    
+    Philip Fry
+    Philip J. Fry
+    Philip J Fry
+    Phil Fry
+    Phil J. Fry
+    Phil J Fry
+    */
+    
+    strings:
     $external = "[EXT]" ascii wide nocase // Whatever warns users that an email came from an external source
     $vip_ceo = /(Hubert|Hugh|Prof\\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/ ascii wide nocase
     $vip_cfo = "Hermes Conrad" ascii wide nocase
@@ -272,8 +274,8 @@ rule planet_express_vip_impersonation {
     $vip_admin = "Amy Wong" ascii wide nocase
     $svip_cdo = /Phil(ip)? (J\\.? )?Fry/ ascii wide nocase
     $except_slug = "Brain Slug Fundraiser" ascii wide
-
-  condition:
+    
+    condition:
     $external and any of ($vip_*) and not any of ($except_*)
 }
 ```
@@ -322,16 +324,16 @@ ISO files
 
 ```yara
 rule small_iso {
-  meta:
+    meta:
     author = "Sean Whalen"
     date = "2022-07-21"
     category = "malware"
     discription = "Small ISO file"
-  
-  strings:
+    
+    strings:
     $iso = {43 44 30 30 31} // Magic bytes for ISO files
-  
-  condition:
+    
+    condition:
     $iso at 0 and filesize < 100MB
 }
 ```
@@ -381,9 +383,9 @@ time, but the reduction in alert fatigue is well worth the effort.
 the [`yaramail` CLI](cli) has built in support of testing rules against
 individual samples, or across an entire collection of samples.
 
-## Testing an individual samples
+### Testing an individual sample
 
-## Testing a collection of samples
+### Testing a collection of samples
 
 
 ## Putting it all together
