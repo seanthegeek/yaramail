@@ -36,10 +36,10 @@ an email, it attempts to use a combination of email authentication results and
 YARA rule matches to categorize an email and reach a `verdict`. To do this, it
 does several things. First, it scans the contents of the email headers, body,
 and attachments with user-provided YARA rules. Then, the `meta` section of each
-matching rule is checked for a `catagory` value. Each match category is added
+matching rule is checked for a `category` value. Each match category is added
 to a deduplicated list of `categories`. If a single category is listed the
 `verdict` is set to that category. If multiple categories are listed the
-verdict is set to `ambigious`.
+verdict is set to `ambiguous`.
 
 Then, the `Authentication-Results` of the email is parsed. The
 `Authentication-Results` header is added by the receiving mail server as a way
