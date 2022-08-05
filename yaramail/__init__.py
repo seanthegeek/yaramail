@@ -64,7 +64,7 @@ def _pdf_to_markdown(pdf_bytes: bytes) -> str:
         return "\n\n".join(pdftotext.PDF(f))
 
 
-def _input_to_str_list(_input: Union[list[str], str, IOBase]) -> list:
+def _input_to_str_list(_input: Union[List[str], str, IOBase]) -> list:
     if _input is None:
         return []
     if isinstance(_input, list):
