@@ -123,12 +123,12 @@ class MailScanner(object):
             passwords: A list of passwords to use when attempting to scan \
             password-protected files
             max_zip_depth: Number of times to recurse into nested ZIP files
-            trusted_domains: A list of from domains that return a ``safe`` \
-            verdict if the domain is authenticated and no YARA \
+            trusted_domains: A list of message From domains that return a \
+            ``safe`` verdict if the domain is authenticated and no YARA \
             categories match other than ``safe``
-            trusted_domains_yara_safe_required: A list of from domains that \
-            require an authenticated from domain and no YARA match categories \
-            other than safe
+            trusted_domains_yara_safe_required: A list of message From \
+            domains that return a ``safe`` verdict if the domain is \
+            authenticated **and** the email itself has a YARA ``safe`` verdict
             include_sld_in_auth_check: Check authentication results based on \
             Second-Level Domain (SLD) in addition to the \
             Fully-Qualified Domain Name (FQDN)

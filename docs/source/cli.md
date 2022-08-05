@@ -40,21 +40,22 @@ options:
   --attachment-rules ATTACHMENT_RULES
                         Filename of the body rules file. Can be set by the
                         YARAMAIL_BODY_RULES environment variable. (default:
+                        attachment.yar)
   --passwords PASSWORDS
                         Filename of a list of passwords to try against
                         password-protected files. Can be set by the
                         YARAMAIL_PASSWORDS environment variable (default:
                         passwords.txt)
   --trusted-domains TRUSTED_DOMAINS
-                        A path filename of a list of from domains that return
+                        Filename of a list of message From domains that return
                         a safe verdict if the domain is authenticated and no
                         YARA categories match other than safe. Can be set by
                         the YARAMAIL_TRUSTED_DOMAINS environment variable.
                         (default: trusted_domains.txt)
   --trusted-domains-yara TRUSTED_DOMAINS_YARA
-                        Filename a list of from domains that require an
-                        authenticated from domain and YARA safe verdict. Can
-                        be set by the YARAMAIL_TRUSTED_DOMAINS_YARA
-                        environment variable. (default:
-                        trusted_domains_yara_safe_required.txt)
+                        Filename of a list of message From domains that
+                        require an authenticated from domain and YARA safe
+                        verdict. Can be set by the
+                        YARAMAIL_TRUSTED_DOMAINS_YARA environment variable.
+                        (default: trusted_domains_yara_safe_required.txt)
 ```
