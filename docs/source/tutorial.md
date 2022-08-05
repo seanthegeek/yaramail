@@ -1,6 +1,6 @@
 # Tutorial
 
-`yaramail` provides a workflow for automated triaging phishing reports.
+`yaramail` provides a workflow for automated triage of phishing reports.
 
 ## Best practices
 
@@ -89,7 +89,7 @@ The first scenario is useful in situations where the sending domain is
 trusted, but the email content is not consistent enough for a YARA rule.
 
 The second scenario is useful is situations where the sender can't or won't
-use DKIM or DMARC, but very specific email content traits can be identified.
+use DKIM properly, but very specific email content traits can be identified.
 
 The third scenario is the most trusted, because the email from domain has been
 authenticated **and** the email includes known safe content.
@@ -135,9 +135,8 @@ learn about the returned objects.
 
 ## Practical YARA rule examples
 
-[YARA rules][rules] provide a flexable method of
-checking the contents of email headers, body, and attachment content against
-known malicious and trusted patterns.
+[YARA rules][rules] provide a flexable method of checking email header, body,
+and attachment content against known malicious and trusted patterns.
 
 ### Checking if an email is safe
 
@@ -292,7 +291,7 @@ header display name and/or the email body.
 
 This was a very simple, practical example. YARA was developed to identify and
 classify malware, so it is capable of much more complex pattern matching.
-That the time to read over YARA's documentation and other resources.
+Take the time to read over YARA's documentation and other resources.
 
 ### Checking attachment content
 
@@ -383,8 +382,8 @@ the [`yaramail` CLI](cli) has built-in support for scanning  individual
 samples, or an entire collection of samples.
 
 ```{tip}
-Most CLI options can also be set using enviorment veriablies. See the CLI
-documentation for details
+Most CLI options can also be set using environment variables. See the CLI
+documentation for details.
 ```
 
 Use the `--rules`option to specify a path to a directory where the following 
@@ -399,7 +398,8 @@ files can be found:
 - `trusted_domains_yara_safe_required.txt` - A list of message From domains that return a `safe` verdict if the domain is authenticated *and* the email itself has a YARA `safe` verdict
 
 ```{note}
-The expected names of these files can be changed using command-lane arguments or enviorment varibles.
+The expected names of these files can be changed using command-line arguments
+or environment variables.
 ```
 
 ```{note}
@@ -419,7 +419,7 @@ To scan standard input (stdin) use `-` as the path to scan.
 ### Scanning multiple samples
 
 The `yaramail CLI` accepts wildcards (i.e., `*`) in the scan path to scan
-multiple files at once. This is useful for seeing 
+multiple files at once. This is useful for seeing what samples have in common.
 
 ### Testing a collection of samples
 
