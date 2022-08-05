@@ -383,7 +383,27 @@ time, but the reduction in alert fatigue is well worth the effort.
 the [`yaramail` CLI](cli) has built in support of testing rules against
 individual samples, or across an entire collection of samples.
 
+```{tip}
+Most CLI options can also be set using enviorment veriablies. See the CLI
+documentation for details
+```
+
+Use the `--rules`option to specify a path to a directory where the following 
+files can be found:
+
+- `header.yar` - Rules that apply to email header content
+- `body.yar` - Rules that apply to email body content
+- `header_body.yar` - Rules that apply to header and/or body content
+- `attachments.yar` - Rules that apply to email attachment content
+- `passwords.txt` - A list of passwords to try on password-protected attachments
+- `trusted_domains.txt` - A list of from domains that return a safe verdict if the domain is authenticated and no YARA categories match other than safe
+- 
+
 ### Testing an individual sample
+
+To test an individual sample, pass a path to the sample to `yaramail`, 
+
+
 
 ### Testing a collection of samples
 

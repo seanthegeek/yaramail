@@ -1,7 +1,7 @@
 # CLI
 
 ```text
-usage: A YARA scanner for emails [-h] [-V] [-v] [--output OUTPUT]
+usage: A YARA scanner for emails [-h] [-V] [-v] [-t] [--output OUTPUT]
                                  [--rules RULES] [--header-rules HEADER_RULES]
                                  [--body-rules BODY_RULES]
                                  [--header-body-rules HEADER_BODY_RULES]
@@ -9,7 +9,6 @@ usage: A YARA scanner for emails [-h] [-V] [-v] [--output OUTPUT]
                                  [--passwords PASSWORDS]
                                  [--trusted-domains TRUSTED_DOMAINS]
                                  [--trusted-domains-yara TRUSTED_DOMAINS_YARA]
-                                 [-t]
                                  scan_path
 
 positional arguments:
@@ -20,8 +19,9 @@ options:
   -h, --help            show this help message and exit
   -V, --version         show program's version number and exit
   -v, --verbose         Output the entire parsed email (default: False)
-  --output OUTPUT, -o OUTPUT
-                        Redirect output to a file (default: None)
+  -t, --test            Test rules based on verdicts matching the name of the
+                        folder a sample is in (default: False)
+  --output OUTPUT       Redirect output to a file (default: None)
   --rules RULES         A path to a directory that contains YARA rules. Can be
                         set by the YARA_RULES_DIR environment variable.
                         (default: .)
@@ -40,7 +40,6 @@ options:
   --attachment-rules ATTACHMENT_RULES
                         Filename of the body rules file. Can be set by the
                         YARAMAIL_BODY_RULES environment variable. (default:
-                        attachment.yar)
   --passwords PASSWORDS
                         Filename of a list of passwords to try against
                         password-protected files. Can be set by the
@@ -58,6 +57,4 @@ options:
                         set by the YARAMAIL_TRUSTED_DOMAINS_YARA environment
                         variable. (default:
                         trusted_domains_yara_safe_required.txt)
-  -t, --test            Test rules based on verdicts matching the name of the
-                        folder a sample is in (default: False)
 ```
