@@ -187,7 +187,6 @@ rule all_urls_example_vendor : urls {
 }
 ```
 
-
 ### Informational rules
 
 To add additional context without affecting categorization or verdicts, write
@@ -378,10 +377,10 @@ links, and maybe even a tracking image.
 Finding the right combination of strings and condition logic may take some
 time, but the reduction in alert fatigue is well worth the effort.
 
-## Testing
+## Using the CLI
 
-the [`yaramail` CLI](cli) has built in support of testing rules against
-individual samples, or across an entire collection of samples.
+the [`yaramail` CLI](cli) has built-in support for scanning  individual
+samples, or an entire collection of samples.
 
 ```{tip}
 Most CLI options can also be set using enviorment veriablies. See the CLI
@@ -396,19 +395,44 @@ files can be found:
 - `header_body.yar` - Rules that apply to header and/or body content
 - `attachments.yar` - Rules that apply to email attachment content
 - `passwords.txt` - A list of passwords to try on password-protected attachments
-- `trusted_domains.txt` - A list of from domains that return a safe verdict if the domain is authenticated and no YARA categories match other than safe
-- 
+- `trusted_domains.txt` - A list of message from domains that return a `safe` verdict if the domain is authenticated and no YARA categories match other than safe
+- `trusted_domains_yara_safe_required.txt` - A list of message From domains that return a `safe` verdict if the domain is authenticated *and* the email itself has a YARA `safe` verdict
 
-### Testing an individual sample
+```{note}
+The expected names of these files can be changed using command-lane arguments or enviorment varibles.
+```
 
-To test an individual sample, pass a path to the sample to `yaramail`, 
+```{note}
+If any of these files are missing or blank, the CLI will issue a warning, but
+the scanner will still run using the data it does have.
+```
 
+### Scanning an individual sample
 
+To scan an individual sample, pass a path to the sample to `yaramail`.
+The scan results will be printed to the terminal's standard output.
+
+```{tip}
+To scan standard input (stdin) use `-` as the path to scan.
+```
+
+### Scanning multiple samples
+
+The `yaramail CLI` accepts wildcards (i.e., `*`) in the scan path to scan
+multiple files at once. This is useful for seeing 
 
 ### Testing a collection of samples
 
+To test `verdict` values across an entire collection of email samples, use the
+`-t/--test` option, and pass in a path to a directory of samples that are
+sorted into subdirectories by expected verdict.
 
-## Putting it all together
+`yaramail` will print any test failures to standard error (stderr), print 
+passed/total numbers to standard output (stdout), and use the number of test
+failures as the return code. This is designed for developer use, and for CI/CD
+testing pipelines.
+
+## Automating phishing report triage
 
 Here's a complete example of triage code.
 
