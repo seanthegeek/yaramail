@@ -41,7 +41,7 @@ brew install pkg-config poppler python
    ```
    conda install -c conda-forge poppler
    ```
-7. Configure your Python IDE/project to use the Anaconda Environment
+7. Configure your Python IDE/project to use the Anaconda Environment 
 
 ## Install yaramail
 
@@ -52,10 +52,32 @@ used there][pypi-name-issue], so the PyPI project name for `yaramail` is
 `yara-mail`.
 ```
 
-In a terminal, run
+```{warning}
+**Never** install Python packages as `root` or with `sudo`. Not only is it a
+huge security risk, but doing that will also pollute the system Python
+enviorment.
+```
+
+It is recommended to create a separate Python [virtual environment][venv]
+for any project that will use `yaramail`.
+
+```{note}
+Conda environments are a type of virtual environment, so if you are using a
+Conda environment, there is no need to create a virtual environment.
+```
+
+Once the virtual environment has been created and activated, use `pip` to
+install `yaramail`.
 
 ```
 pip3 install -U yaramail
+```
+
+Alternatively, if you would like to install the `yaramail` CLI as a user tool,
+run this command **outside** a virtual environment:
+
+```
+pip3 install --user -U yaramail
 ```
 
 [homebrew]: https://brew.sh/
