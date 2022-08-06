@@ -20,7 +20,7 @@ handler.setFormatter(formatter)
 logger = logging.getLogger("yaramail")
 logger.addHandler(handler)
 
-__version__ = "2.0.0"
+__version__ = "2.0.1"
 
 
 def _match_to_dict(match: Union[yara.Match,
@@ -444,10 +444,11 @@ class MailScanner(object):
                 sld = parsed_email["from"]["sld"]
                 if sld != get_sld(match["meta"]["from_domain"]):
                     continue
-            if "auth_optional" in match["meta"] and not auth_optional:
-                auth_optional = match["meta"]["auth_optional"]
             if "category" in match["meta"]:
                 categories.append(match["meta"]["category"])
+                if match["meta"]["category"] == "safe":
+                    if "auth_optional" in match["meta"] and not auth_optional:
+                        auth_optional = match["meta"]["auth_optional"]
         categories = list(set(categories))
         if len(categories) == 1:
             verdict = categories[0]

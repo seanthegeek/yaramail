@@ -186,7 +186,7 @@ rule all_urls_example_vendor : urls {
     */
     
     condition:
-    #http > 0 and #http == #example
+    #http > 0 and #http == #example_url
 }
 ```
 
@@ -385,11 +385,6 @@ time, but the reduction in alert fatigue is well worth the effort.
 the [`yaramail` CLI](cli) has built-in support for scanning  individual
 samples, or an entire collection of samples.
 
-```{tip}
-Most CLI options can also be set using environment variables. See the CLI
-documentation for details.
-```
-
 Use the `--rules`option to specify a path to a directory where the following 
 files can be found:
 
@@ -402,8 +397,7 @@ files can be found:
 - `trusted_domains_yara_safe_required.txt` - A list of message From domains that return a `safe` verdict if the domain is authenticated *and* the email itself has a YARA `safe` verdict
 
 ```{note}
-The expected names of these files can be changed using command-line arguments
-or environment variables.
+The expected names of these files can be changed using command-line arguments.
 ```
 
 ```{note}
