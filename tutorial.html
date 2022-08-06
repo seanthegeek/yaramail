@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorial &mdash; yaramail 2.0.0 documentation</title>
+  <title>Tutorial &mdash; yaramail 2.0.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -267,7 +267,7 @@ in an email body match the domain of a vendor.</p>
     */
     
     condition:
-    #http &gt; 0 and #http == #example
+    #http &gt; 0 and #http == #example_url
 }
 </pre></div>
 </div>
@@ -455,11 +455,6 @@ time, but the reduction in alert fatigue is well worth the effort.</p>
 <h2>Using the CLI<a class="headerlink" href="#using-the-cli" title="Permalink to this heading"></a></h2>
 <p>the <a class="reference internal" href="cli.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">yaramail</span></code> CLI</span></a> has built-in support for scanning  individual
 samples, or an entire collection of samples.</p>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>Most CLI options can also be set using environment variables. See the CLI
-documentation for details.</p>
-</div>
 <p>Use the <code class="docutils literal notranslate"><span class="pre">--rules</span></code>option to specify a path to a directory where the following
 files can be found:</p>
 <ul class="simple">
@@ -473,8 +468,7 @@ files can be found:</p>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The expected names of these files can be changed using command-line arguments
-or environment variables.</p>
+<p>The expected names of these files can be changed using command-line arguments.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
