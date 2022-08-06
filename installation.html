@@ -138,8 +138,27 @@ Unfortunately, the Python Package Index (PyPI) <a class="reference external" hre
 used there</a>, so the PyPI project name for <code class="docutils literal notranslate"><span class="pre">yaramail</span></code> is
 <code class="docutils literal notranslate"><span class="pre">yara-mail</span></code>.</p>
 </div>
-<p>In a terminal, run</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><strong>Never</strong> install Python packages as <code class="docutils literal notranslate"><span class="pre">root</span></code> or with <code class="docutils literal notranslate"><span class="pre">sudo</span></code>. Not only is it a
+huge security risk, but doing that will also pollute the system Python
+enviorment.</p>
+</div>
+<p>It is recommended to create a separate Python [virtual environment][venv]
+for any project that will use <code class="docutils literal notranslate"><span class="pre">yaramail</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Conda environments are a type of virtual environment, so if you are using a
+Conda environment, there is no need to create a virtual environment.</p>
+</div>
+<p>Once the virtual environment has been created and activated, use <code class="docutils literal notranslate"><span class="pre">pip</span></code> to
+install <code class="docutils literal notranslate"><span class="pre">yaramail</span></code>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">yaramail</span>
+</pre></div>
+</div>
+<p>Alternatively, if you would like to install the <code class="docutils literal notranslate"><span class="pre">yaramail</span></code> CLI as a user tool,
+run this command <strong>outside</strong> a virtual environment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="o">--</span><span class="n">user</span> <span class="o">-</span><span class="n">U</span> <span class="n">yaramail</span>
 </pre></div>
 </div>
 </section>
