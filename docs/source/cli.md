@@ -1,8 +1,9 @@
 # CLI
 
 ```text
-usage: A YARA scanner for emails [-h] [-V] [-v] [-t] [--output OUTPUT]
-                                 [--rules RULES] [--header-rules HEADER_RULES]
+usage: A YARA scanner for emails [-h] [-V] [-v] [-m] [-o] [-t]
+                                 [--output OUTPUT] [--rules RULES]
+                                 [--header-rules HEADER_RULES]
                                  [--body-rules BODY_RULES]
                                  [--header-body-rules HEADER_BODY_RULES]
                                  [--attachment-rules ATTACHMENT_RULES]
@@ -19,43 +20,37 @@ options:
   -h, --help            show this help message and exit
   -V, --version         show program's version number and exit
   -v, --verbose         Output the entire parsed email (default: False)
+  -m                    Allow multiple Authentication-Results headers
+                        (default: False)
+  -o                    Use Authentication-Results-Original instead of
+                        Authentication-Results (default: False)
   -t, --test            Test rules based on verdicts matching the name of the
                         folder a sample is in (default: False)
   --output OUTPUT       Redirect output to a file (default: None)
-  --rules RULES         A path to a directory that contains YARA rules. Can be
-                        set by the YARA_RULES_DIR environment variable.
+  --rules RULES         A path to a directory that contains YARA rules
                         (default: .)
   --header-rules HEADER_RULES
-                        Filename of the header rules file. Can be set by the
-                        YARA_HEADER_RULES environment variable. (default:
+                        Filename of the header rules file (default:
                         header.yar)
   --body-rules BODY_RULES
-                        Filename of the body rules file. Can be set by the
-                        YARAMAIL_BODY_RULES environment variable. (default:
-                        body.yar)
+                        Filename of the body rules file (default: body.yar)
   --header-body-rules HEADER_BODY_RULES
-                        Filename of the header_body rules file. Can be set by
-                        the YARAMAIL_HEADER_BODY_RULES environment variable.
-                        (default: header_body.yar)
+                        Filename of the header_body rules file (default:
+                        header_body.yar)
   --attachment-rules ATTACHMENT_RULES
-                        Filename of the body rules file. Can be set by the
-                        YARAMAIL_BODY_RULES environment variable. (default:
+                        Filename of the attachment rules file (default:
                         attachment.yar)
   --passwords PASSWORDS
                         Filename of a list of passwords to try against
-                        password-protected files. Can be set by the
-                        YARAMAIL_PASSWORDS environment variable (default:
-                        passwords.txt)
+                        password-protected files (default: passwords.txt)
   --trusted-domains TRUSTED_DOMAINS
                         Filename of a list of message From domains that return
                         a safe verdict if the domain is authenticated and no
-                        YARA categories match other than safe. Can be set by
-                        the YARAMAIL_TRUSTED_DOMAINS environment variable.
-                        (default: trusted_domains.txt)
+                        YARA categories match other than safe (default:
+                        trusted_domains.txt)
   --trusted-domains-yara TRUSTED_DOMAINS_YARA
                         Filename of a list of message From domains that
                         require an authenticated from domain and YARA safe
-                        verdict. Can be set by the
-                        YARAMAIL_TRUSTED_DOMAINS_YARA environment variable.
-                        (default: trusted_domains_yara_safe_required.txt)
+                        verdict (default:
+                        trusted_domains_yara_safe_required.txt)
 ```

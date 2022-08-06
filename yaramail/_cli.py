@@ -23,51 +23,45 @@ arg_parser.add_argument("-V", "--version", action="version",
                         version=__version__)
 arg_parser.add_argument("-v", "--verbose", action="store_true",
                         help="Output the entire parsed email")
-test_help = "Test rules based on verdicts matching the name of the folder a " \
-            "sample is in"
+arg_parser.add_argument("-m", dest="multi_auth",  action="store_true",
+                        help="Allow multiple Authentication-Results headers")
+arg_parser.add_argument("-o", dest="auth_original", action="store_true",
+                        help="Use Authentication-Results-Original instead of "
+                             "Authentication-Results")
 arg_parser.add_argument("-t", "--test", action="store_true",
-                        help=test_help)
+                        help="Test rules based on verdicts matching the name "
+                             "of the folder a sample is in")
 arg_parser.add_argument("--output", type=str,
                         help="Redirect output to a file")
-rules_help = "A path to a directory that contains YARA rules. Can be " \
-             "set by the YARA_RULES_DIR environment variable."
-arg_parser.add_argument("--rules", type=str, help=rules_help,
+arg_parser.add_argument("--rules", type=str,
+                        help="A path to a directory that contains YARA rules",
                         default=".")
-header_help = "Filename of the header rules file. Can be set by the " \
-              "YARA_HEADER_RULES environment variable."
-arg_parser.add_argument("--header-rules", type=str, help=header_help,
+arg_parser.add_argument("--header-rules", type=str,
+                        help="Filename of the header rules file",
                         default="header.yar")
-body_help = "Filename of the body rules file. Can be set by the " \
-            "YARAMAIL_BODY_RULES environment variable."
-arg_parser.add_argument("--body-rules", type=str, help=body_help,
+arg_parser.add_argument("--body-rules", type=str,
+                        help="Filename of the body rules file",
                         default="body.yar")
-header_body_help = "Filename of the header_body rules file. Can be " \
-                   "set by the YARAMAIL_HEADER_BODY_RULES " \
-                   "environment variable."
 arg_parser.add_argument("--header-body-rules", type=str,
-                        help=header_body_help,
+                        help="Filename of the header_body rules file",
                         default="header_body.yar")
-attachment_help = "Filename of the attachment rules file. Can be set" \
-                  "by the YARAMAIL_ATTACHMENT_RULES environment variable."
-arg_parser.add_argument("--attachment-rules", type=str, help=body_help,
+arg_parser.add_argument("--attachment-rules", type=str,
+                        help="Filename of the attachment rules file",
                         default="attachment.yar")
-passwords_help = "Filename of a list of passwords to try against " \
-                 "password-protected files. Can be set by the " \
-                 "YARAMAIL_PASSWORDS environment variable"
-arg_parser.add_argument("--passwords", type=str, help=passwords_help,
+arg_parser.add_argument("--passwords", type=str,
+                        help="Filename of a list of passwords to try against "
+                             "password-protected files",
                         default="passwords.txt")
-trusted_help = "Filename of a list of message From domains that return a " \
-               "safe verdict if the domain is authenticated and no YARA " \
-               "categories match other than safe. Can be set by the " \
-               "YARAMAIL_TRUSTED_DOMAINS environment variable."
-arg_parser.add_argument("--trusted-domains", type=str, help=trusted_help,
+arg_parser.add_argument("--trusted-domains", type=str,
+                        help="Filename of a list of message From domains that "
+                             "return a safe verdict if the domain is "
+                             "authenticated and no YARA categories match "
+                             "other than safe",
                         default="trusted_domains.txt")
-trusted_yara_help = "Filename of a list of message From domains that " \
-                    "require an authenticated from domain and YARA " \
-                    "safe verdict. Can be set by the " \
-                    "YARAMAIL_TRUSTED_DOMAINS_YARA environment variable."
 arg_parser.add_argument("--trusted-domains-yara", type=str,
-                        help=trusted_yara_help,
+                        help="Filename of a list of message From domains that "
+                             "require an authenticated from domain and YARA "
+                             "safe verdict",
                         default="trusted_domains_yara_safe_required.txt")
 
 
@@ -78,64 +72,42 @@ def _main():
     if not use_stdin:
         args.scan_path = glob(str(args.scan_path))
 
-    if "YARAMAIL_RULES_DIR" in os.environ:
-        args.rules = os.environ["YARAMAIL_RULES_DIR"]
-    if "YARAMAIL_HEADER_RULES" in os.environ:
-        args.header_rules = os.environ["YARAMAIL_HEADER_RULES"]
     args.header_rules = os.path.join(args.rules, args.header_rules)
     if not os.path.exists(args.header_rules):
-        error = f"{args.header_rules} does not exist. Skipping " \
-                f"header-only scans."
-        logger.warning(error)
+        logger.warning(f"{args.header_rules} does not exist. Skipping "
+                       f"header-only scans.")
         args.header_rules = None
-    if "YARAMAIL_BODY_RULES" in os.environ:
-        args.body_rules = os.environ["YARAMAIL_BODY_RULES"]
     args.body_rules = os.path.join(args.rules, args.body_rules)
     if not os.path.exists(args.body_rules):
-        error = f"{args.body_rules} does not exist. Skipping body-only scans."
-        logger.warning(error)
+        logger.warning(f"{args.body_rules} does not exist. Skipping body-only "
+                       f"scans.")
         args.body_rules = None
-    if "YARAMAIL_HEADER_BODY_RULES" in os.environ:
-        args.header_body_rules = os.environ["YARAMAIL_HEADER_BODY_RULES"]
     args.header_body_rules = os.path.join(args.rules, args.header_body_rules)
     if not os.path.exists(args.header_body_rules):
-        error = f"{args.header_body_rules} does not exist. Skipping " \
-                f"header_body scans."
-        logger.warning(error)
+        logger.warning(f"{args.header_body_rules} does not exist. Skipping "
+                       f"header_body scans.")
         args.header_body_rules = None
-    if "YARAMAIL_ATTACHMENT_RULES" in os.environ:
-        args.attachment_rules = os.environ["YARAMAIL_ATTACHMENT_RULES"]
     args.attachment_rules = os.path.join(args.rules, args.attachment_rules)
     if not os.path.exists(args.attachment_rules):
-        error = f"{args.attachment_rules} does not exist. Skipping " \
-                f"attachment scans."
-        logger.warning(error)
+        logger.warning(f"{args.attachment_rules} does not exist. Skipping "
+                       f"attachment scans.")
         args.attachment_rules = None
-    if "YARAMAIL_PASSWORDS" in os.environ:
-        args.passwords = os.environ["YARAMAIL_PASSWORDS"]
     args.passwords = os.path.join(args.rules, args.passwords)
-    if args.passwords and not os.path.exists(args.passwords):
-        error = f"{args.passwords} does not exist. Skipping password " \
-                f"brute force attempts."
-        logger.warning(error)
+    if not os.path.exists(args.passwords):
+        logger.warning(f"{args.passwords} does not exist. Skipping password "
+                       f"brute force attempts.")
         args.passwords = None
-    if "YARAMAIL_TRUSTED_DOMAINS" in os.environ:
-        args.trusted_domains = os.environ["YARAMAIL_TRUSTED_DOMAINS"]
     args.trusted_domains = os.path.join(args.rules, args.trusted_domains)
-    if args.trusted_domains and not os.path.exists(args.trusted_domains):
-        error = f"{args.trusted_domains} does not exist. Skipping trusted " \
-                f"domain check."
-        logger.warning(error)
+    if not os.path.exists(args.trusted_domains):
+        logger.warning(f"{args.trusted_domains} does not exist. Skipping "
+                       f"trusted domain check.")
         args.trusted_domains = None
-    if "YARAMAIL_TRUSTED_DOMAINS_YARA" in os.environ:
-        args.trusted_domains_yara = os.environ["YARAMAIL_TRUSTED_DOMAINS_YARA"]
     args.trusted_domains_yara = os.path.join(args.rules,
                                              args.trusted_domains_yara)
-    if args.trusted_domains_yara and not os.path.exists(
-            args.trusted_domains_yara):
-        error = f"{args.trusted_domains_yara} does not exist. Skipping " \
-                f"trusted domain check with required safe YARA verdict."
-        logger.warning(error)
+    if not os.path.exists(args.trusted_domains_yara):
+        logger.warning(f"{args.trusted_domains_yara} does not exist. Skipping "
+                       f"trusted domain check with required safe YARA "
+                       f"verdict.")
         args.trusted_domains_yara = None
 
     trusted_domains = []
@@ -160,9 +132,13 @@ def _main():
             header_rules=args.header_rules,
             body_rules=args.body_rules,
             header_body_rules=args.header_body_rules,
+            attachment_rules=args.attachment_rules,
             passwords=args.passwords,
             trusted_domains=trusted_domains,
-            trusted_domains_yara_safe_required=trusted_domains_yara_safe)
+            trusted_domains_yara_safe_required=trusted_domains_yara_safe,
+            allow_multiple_authentication_results=args.multi_auth,
+            use_authentication_results_original=args.auth_original
+        )
     except Exception as e:
         scanner = MailScanner()
         logger.error(f"Failed to parse YARA rules: {e}")
@@ -195,7 +171,7 @@ def _main():
                                 results = simplejson.dumps(results)
                                 logger.error(
                                     f"fail:path={msg_path}:verdict={verdict}:"
-                                    f"expected={category}:{results}")
+                                    f"expected={category}:results={results}")
                                 test_failures += 1
                         except Exception as e_:
                             logger.warning(f"{msg_path}: {e_}")
@@ -203,7 +179,7 @@ def _main():
                             exit()
 
         passed = total - test_failures
-        logger.info(f"\n{passed}/{total} emails passed\n")
+        logger.info(f"{passed}/{total} emails passed\n")
         exit(test_failures)
 
     if args.test:

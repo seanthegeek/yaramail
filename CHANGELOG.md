@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.1
+
+- Remove CLI environment variables
+- Add CLI options `-m` and `-o`
+- Only honor `auth_optional` rule `meta` value if rule `meta` value `category` is `safe`
+- Fix attachment rules not being used in the CLI
+
 ## 2.0.0
 
 - Major refactoring
