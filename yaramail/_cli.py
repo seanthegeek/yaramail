@@ -28,6 +28,11 @@ arg_parser.add_argument("-m", "--multi-auth",  action="store_true",
 arg_parser.add_argument("-o", "--auth-original", action="store_true",
                         help="Use Authentication-Results-Original instead of "
                              "Authentication-Results")
+arg_parser.add_argument("-r", "--raw-headers", action="store_true",
+                        help="Scan headers with indentations included")
+arg_parser.add_argument("-b", "--raw-body",
+                        help="Scan the raw email body instead of converting "
+                             "it to Markdown first")
 arg_parser.add_argument("-s", "--sld", action="store_true",
                         help="Use From domain the Second-Level Domain (SLD) "
                              "for authentication in addition to the "
@@ -174,7 +179,10 @@ def _main():
                         try:
                             with open(msg_path, "r") as msg_file:
                                 email = msg_file.read()
-                            results = scanner.scan_email(email)
+                            results = scanner.scan_email(
+                                email,
+                                use_raw_headers=args.raw_headers,
+                                use_raw_body=args.raw_body)
                             verdict = results["verdict"]
                             if verdict != category:
                                 results = simplejson.dumps(results)
@@ -208,7 +216,10 @@ def _main():
             logger.error(f"Failed to parse email at {file_path}: {e}")
             continue
         try:
-            scan_results = scanner.scan_email(parsed_email)
+            scan_results = scanner.scan_email(
+                parsed_email,
+                use_raw_headers=args.raw_headers,
+                use_raw_body=args.raw_body)
             parsed_email["yaramail"] = scan_results
         except Exception as e:
             logger.error(f"Failed to scan {file_path}: {e}")
