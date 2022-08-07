@@ -1,8 +1,8 @@
 # CLI
 
 ```text
-usage: A YARA scanner for emails [-h] [-V] [-v] [-m] [-o] [-s] [-t]
-                                 [--output OUTPUT] [--rules RULES]
+usage: A YARA scanner for emails [-h] [-V] [-v] [-m] [-o] [-r] [-b RAW_BODY]
+                                 [-s] [-t] [--output OUTPUT] [--rules RULES]
                                  [--header-rules HEADER_RULES]
                                  [--body-rules BODY_RULES]
                                  [--header-body-rules HEADER_BODY_RULES]
@@ -25,6 +25,11 @@ options:
                         (default: False)
   -o, --auth-original   Use Authentication-Results-Original instead of
                         Authentication-Results (default: False)
+  -r, --raw-headers     Scan headers with indentations included (default:
+                        False)
+  -b RAW_BODY, --raw-body RAW_BODY
+                        Scan the raw email body instead of converting it to
+                        Markdown first (default: None)
   -s, --sld             Use From domain the Second-Level Domain (SLD) for
                         authentication in addition to the Fully-Qualified
                         Domain Name (FQDN) (default: False)
