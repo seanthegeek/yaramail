@@ -274,7 +274,7 @@ rule planet_express_vip_impersonation {
     $vip_cfo = "Hermes Conrad" ascii wide nocase
     $vip_cto = "Turanga Leela" ascii wide nocase
     $vip_admin = "Amy Wong" ascii wide nocase
-    $svip_cdo = /Phil(ip)? (J\\.? )?Fry/ ascii wide nocase
+    $vip_cdo = /Phil(ip)? (J\\.? )?Fry/ ascii wide nocase
     $except_slug = "Brain Slug Fundraiser" ascii wide
     
     condition:

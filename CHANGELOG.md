@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.3
+
+- Add `-r`/`--raw-headers` and `-b`/`--raw-body` options to the CLI
+
 ## 2.0.2
 
 - The `include_sld_in_auth_check` parameter in `MailScanner.__init__()` is now `False` by default
