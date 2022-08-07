@@ -37,9 +37,14 @@ YARA rule matches to categorize an email and reach a `verdict`. To do this, it
 does several things. First, it scans the contents of the email headers, body,
 and attachments with user-provided YARA rules. Then, the `meta` section of each
 matching rule is checked for a `category` value. Each match category is added
-to a deduplicated list of `categories`. If a single category is listed the
-`verdict` is set to that category. If multiple categories are listed the
-verdict is set to `ambiguous`.
+to a deduplicated list of `categories`. If a `from_domain` value exists in the
+`meta` section of a rule, the `category` of the rule is only added to the list
+of `categories` if the message `From` domain of the email matches the
+`from_domain` value. 
+
+If a single category is in the list of `categories`, the `verdict` is set to
+that category. If multiple categories are listed, the verdict is set to
+`ambiguous`. If no categories are listed, the verdict is set to `None`. 
 
 Then, the `Authentication-Results` of the email is parsed. The
 `Authentication-Results` header is added by the receiving mail server as a way
