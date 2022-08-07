@@ -23,11 +23,15 @@ arg_parser.add_argument("-V", "--version", action="version",
                         version=__version__)
 arg_parser.add_argument("-v", "--verbose", action="store_true",
                         help="Output the entire parsed email")
-arg_parser.add_argument("-m", dest="multi_auth",  action="store_true",
+arg_parser.add_argument("-m", "--multi-auth",  action="store_true",
                         help="Allow multiple Authentication-Results headers")
-arg_parser.add_argument("-o", dest="auth_original", action="store_true",
+arg_parser.add_argument("-o", "--auth-original", action="store_true",
                         help="Use Authentication-Results-Original instead of "
                              "Authentication-Results")
+arg_parser.add_argument("-s", "--sld", action="store_true",
+                        help="Use From domain the Second-Level Domain (SLD) "
+                             "for authentication in addition to the "
+                             "Fully-Qualified Domain Name (FQDN)")
 arg_parser.add_argument("-t", "--test", action="store_true",
                         help="Test rules based on verdicts matching the name "
                              "of the folder a sample is in")
@@ -63,6 +67,9 @@ arg_parser.add_argument("--trusted-domains-yara", type=str,
                              "require an authenticated from domain and YARA "
                              "safe verdict",
                         default="trusted_domains_yara_safe_required.txt")
+arg_parser.add_argument("--max-zip-depth", type=int,
+                        help="The maximum number of times to recurse into "
+                             "nested ZIP files")
 
 
 def _main():
@@ -137,7 +144,9 @@ def _main():
             trusted_domains=trusted_domains,
             trusted_domains_yara_safe_required=trusted_domains_yara_safe,
             allow_multiple_authentication_results=args.multi_auth,
-            use_authentication_results_original=args.auth_original
+            use_authentication_results_original=args.auth_original,
+            include_sld_in_auth_check=args.sld,
+            max_zip_depth=args.max_zip_depth
         )
     except Exception as e:
         scanner = MailScanner()

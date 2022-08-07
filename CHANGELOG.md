@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.2
+
+- The `include_sld_in_auth_check` parameter in `MailScanner.__init__()` is now `False` by default
+- Added `-s/--sld` and `--max-zip-depth` options to the CLI
+- Removed CLI and installation documentation from `README.md`
+
 ## 2.0.1
 
 - Remove CLI environment variables

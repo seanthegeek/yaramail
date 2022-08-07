@@ -1,7 +1,7 @@
 # CLI
 
 ```text
-usage: A YARA scanner for emails [-h] [-V] [-v] [-m] [-o] [-t]
+usage: A YARA scanner for emails [-h] [-V] [-v] [-m] [-o] [-s] [-t]
                                  [--output OUTPUT] [--rules RULES]
                                  [--header-rules HEADER_RULES]
                                  [--body-rules BODY_RULES]
@@ -10,6 +10,7 @@ usage: A YARA scanner for emails [-h] [-V] [-v] [-m] [-o] [-t]
                                  [--passwords PASSWORDS]
                                  [--trusted-domains TRUSTED_DOMAINS]
                                  [--trusted-domains-yara TRUSTED_DOMAINS_YARA]
+                                 [--max-zip-depth MAX_ZIP_DEPTH]
                                  scan_path
 
 positional arguments:
@@ -20,10 +21,13 @@ options:
   -h, --help            show this help message and exit
   -V, --version         show program's version number and exit
   -v, --verbose         Output the entire parsed email (default: False)
-  -m                    Allow multiple Authentication-Results headers
+  -m, --multi-auth      Allow multiple Authentication-Results headers
                         (default: False)
-  -o                    Use Authentication-Results-Original instead of
+  -o, --auth-original   Use Authentication-Results-Original instead of
                         Authentication-Results (default: False)
+  -s, --sld             Use From domain the Second-Level Domain (SLD) for
+                        authentication in addition to the Fully-Qualified
+                        Domain Name (FQDN) (default: False)
   -t, --test            Test rules based on verdicts matching the name of the
                         folder a sample is in (default: False)
   --output OUTPUT       Redirect output to a file (default: None)
@@ -53,4 +57,7 @@ options:
                         require an authenticated from domain and YARA safe
                         verdict (default:
                         trusted_domains_yara_safe_required.txt)
+  --max-zip-depth MAX_ZIP_DEPTH
+                        The maximum number of times to recurse into nested ZIP
+                        files (default: None)
 ```
