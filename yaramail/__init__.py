@@ -20,7 +20,7 @@ handler.setFormatter(formatter)
 logger = logging.getLogger("yaramail")
 logger.addHandler(handler)
 
-__version__ = "2.0.1"
+__version__ = "2.0.2"
 
 
 def _match_to_dict(match: Union[yara.Match,
@@ -105,7 +105,7 @@ class MailScanner(object):
                  trusted_domains: Union[List[str], IOBase, str] = None,
                  trusted_domains_yara_safe_required: Union[List[str], IOBase,
                                                            str] = None,
-                 include_sld_in_auth_check: bool = True,
+                 include_sld_in_auth_check: bool = False,
                  allow_multiple_authentication_results: bool = False,
                  use_authentication_results_original: bool = False):
         """
@@ -430,12 +430,14 @@ class MailScanner(object):
         trusted_domain = from_trusted_domain(
             parsed_email, self.trusted_domains,
             allow_multiple_authentication_results=multi_auth_headers,
-            use_authentication_results_original=use_og_auth_results
+            use_authentication_results_original=use_og_auth_results,
+            include_sld=self.include_sld_in_auth_check
         )
         trusted_domain_yara_safe_required = from_trusted_domain(
             parsed_email, self.trusted_domains_yara_safe_required,
             allow_multiple_authentication_results=multi_auth_headers,
-            use_authentication_results_original=use_og_auth_results
+            use_authentication_results_original=use_og_auth_results,
+            include_sld=self.include_sld_in_auth_check
         )
         auth_optional = False
         categories = []
