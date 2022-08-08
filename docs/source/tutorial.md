@@ -40,17 +40,17 @@ matching rule is checked for a `category` value. Each match category is added
 to a deduplicated list of `categories`. If a `from_domain` value exists in the
 `meta` section of a rule, the `category` of the rule is only added to the list
 of `categories` if the message `From` domain of the email matches the
-`from_domain` value. 
+`from_domain` value.
 
 If a single category is in the list of `categories`, the `verdict` is set to
 that category. If multiple categories are listed, the verdict is set to
-`ambiguous`. If no categories are listed, the verdict is set to `None`. 
+`ambiguous`. If no categories are listed, the verdict is set to `None`.
 
 Then, the `Authentication-Results` of the email is parsed. The
 `Authentication-Results` header is added by the receiving mail server as a way
 of logging the results of authentication checks that prove that the domain
 in the message `From` header was not spoofed. Most email services — including
-Microsoft 365 and Gmail — use a single `Authentication-Results` header 
+Microsoft 365 and Gmail — use a single `Authentication-Results` header
 to log the results of all authentication checks. By default,
 all `Authentication-Results` headers will be ignored if multiple
 `Authentication-Results` headers are found in an email. This is done to avoid
@@ -108,7 +108,7 @@ authenticated **and** the email includes known safe content.
 
 Follow the [installation guide](installation).
 
-Import `MailScanner` from `yaramail`, and create a new 
+Import `MailScanner` from `yaramail`, and create a new
 [`MailScanner` object](api)
 
 ```python
@@ -134,19 +134,54 @@ except Exception as e:
 ```
 
 ```{tip}
-Use the [include][include] directive in the YARA rule files that you pass to
-`MailScanner` to include rules from other files. That way, rules can be
+Use the [include][yara_include] directive in the YARA rule files that you pass
+to `MailScanner` to include rules from other files. That way, rules can be
 divided into separate files as you see fit.
 ```
 
-To scan an email, pass email content, a file-like object, or a file path to 
+To scan an email, pass email content, a file-like object, or a file path to
 `MailScanner.scan_email()`. Take a look at the [API documentation](api) to
 learn about the returned objects.
 
+## Anatomy of a YARA rule
+
+[YARA rules][yara_rules] provide a flexable method of checking email header,
+body, and attachment content against known malicious and trusted patterns. The
+rules consist of three sections: `meta`, `strings`, and `condition`.
+
+### meta
+
+The meta section specifies arbitrary key-value pairs of metadata that can be
+useful to humans and/or the scanner application. `yaramail` uses a few special
+fields:
+
+| Field            | Description                                                                                                                                                                           |
+|------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `category`       | The `category` of the rule. This can be any string, but the value `safe` is special. Rules without a `category` are considered informational, and do not contribute to the `verdict`. |
+| `from_domain`    | If this value is set, the rule’s `category` only applies to emails with the specified message From domain.                                                                            |
+| `auth_optional`  | Do not factor authentication into the `verdict` if the rule matches AND the rule’s category is `safe`.                                                                                |
+| `no_attachments` | If this value is true, the rule’s category only applies to emails with no attachments.                                                                                                |
+| `no_attachment`  | Alias of `no_attachment`.                                                                                                                                                             |
+
+### strings
+
+The [strings section][yara_strings] specifies strings to match.
+
+- [Text strings][yara_text_strings] are surrounded by `"`
+- [Hexadecimal strings][yara_hex_strings] are surrounded by `{}`
+- [Regular expressions][yara_regex] are surrounded by `/`
+
+[String modifiers][yara_string_modifiers] set case sensitivity, full word match
+only, and more.
+
+### condition
+
+The [condition section][yara_condition] consists of a Boolean expression that
+describes when the rule should match.
+
 ## Practical YARA rule examples
 
-[YARA rules][rules] provide a flexable method of checking email header, body,
-and attachment content against known malicious and trusted patterns.
+Here are some of the ways YARA can be put to good use.
 
 ### Checking if an email is safe
 
@@ -155,65 +190,49 @@ in an email body match the domain of a vendor.
 
 ```yara
 rule all_urls_example_vendor : urls {
-
     // YARA rules can include C-style comments like this one
     
     /*
     The " : urls" after the rule name sets an optional namespace
     that can be useful for organizing rules.
     The default namespace is "default".
-    
-    The meta section contains arbitrary key-value pairs that are
-    included in matches. That way the scanner has more context about
-    the meaning of the rule.
     */
-    
     meta:
-    author = "Sean Whalen"
-    date = "2022-07-13"
-    category = "safe"
-    from_domain = "example.com" // Optionally make a rule only apply to a specific email from domain 
-    description = "All URLs point to the example.com domain"
-    
-    /*
-    The strings section defines the patterns that can be used in the rule.
-    These can be strings, byte patterns, or even regular expressions!
-    */
-    
+        author = "Sean Whalen"
+        date = "2022-07-13"
+        category = "safe"
+        from_domain = "example.com" // Only applies to emails from example.com
+        description = "All URLs point to the example.com domain"
     strings:
-    // Match ASCII and wide strings and ignore the case
-    $http = "http" ascii wide nocase
-    $example_url = "https://example.com" ascii wide nocase
-    
-    /*
-    The total number of URLs must match the number of example.com URls.
-    Require at least one URL for this rule, otherwise all email with no URLs would match.
-    */
-    
+        $http = "http" ascii wide nocase
+        $example_url = "https://example.com" ascii wide nocase
     condition:
-    #http > 0 and #http == #example_url
+        /*
+        The total number of URLs must match the number of example.com URls.
+        Require at least one URL for this rule, otherwise all email with no
+        URLs would match.
+        */
+        #http > 0 and #http == #example_url
 }
 ```
 
 ### Informational rules
 
 To add additional context without affecting categorization or verdicts, write
-a rule without including a `category` value in the `meta` section. Any matches 
+a rule without including a `category` value in the `meta` section. Any matches
 will still appear in the returned `matches`.
 
 
 ```yara
 rule short_url {
     meta:
-    author = "Sean Whalen"
-    date = "2022-08-04"
-    description = "Contains a short URL"
-    
+        author = "Sean Whalen"
+        date = "2022-08-04"
+        description = "Contains a short URL"
     strings:
-    $short_url = /https?:\/\/[\w.]{3,12}\/\w{5,14}[\s|"|)|#|>]/ ascii wide nocase
-    
+        $s = /https?:\/\/[\w.]{3,12}\/\w{5,14}[\s|"|)|#|>]/ ascii wide nocase
     condition:
-    any of them
+        any of them
 }
 ```
 
@@ -223,8 +242,8 @@ Impersonating a top executive is a classic social engineering technique. Even
 if a target organisation has fully implemented DMARC to prevent domain
 spoofing, people can still be impersonated in the display name of the
 message `From` header, or in the email body. A YARA rule can check for this.
-[Regular Expressions][regex] (regex) are handy, because one string can match a
-wide variety of name variations.
+[regular expressions][yara_regex] (regex) are handy, because one string can
+match a wide range of name variations.
 
 ```{tip}
 Use a local copy of [CyberChef][CyberChef] to quickly and privately test
@@ -243,47 +262,44 @@ content.
 ```yara
 rule planet_express_vip_impersonation {
     meta:
-    author = "Sean Whalen"
-    date = "2022-07-14"
-    category = "fraud"
-    description = "Impersonation of key employees of Planet Express in an external email"
-    
-    /*
-    /(Hubert|Hugh|Prof\\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/
-    
-    Hubert Farnsworth
-    Hugh Farnsworth
-    Professor Farnsworth
-    Prof. Farnsworth
-    Prof Farnsworth
-    Professor Hubert Farnsworth
-    Professor Hugh Farnsworth
-    Prof. Hubert Farnsworth
-    Prof Hubert Farnsworth
-    Prof. Hugh Farnsworth
-    Prof Hugh Farnsworth
-    
-    /Phil(ip)? (J\\.? )?Fry/
-    
-    Philip Fry
-    Philip J. Fry
-    Philip J Fry
-    Phil Fry
-    Phil J. Fry
-    Phil J Fry
-    */
-    
+        author = "Sean Whalen"
+        date = "2022-07-14"
+        category = "fraud"
+        description = "Impersonation of key employees of Planet Express"
     strings:
-    $external = "[EXT]" ascii wide nocase // Whatever warns users that an email came from an external source
-    $vip_ceo = /(Hubert|Hugh|Prof\\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/ ascii wide nocase
-    $vip_cfo = "Hermes Conrad" ascii wide nocase
-    $vip_cto = "Turanga Leela" ascii wide nocase
-    $vip_admin = "Amy Wong" ascii wide nocase
-    $vip_cdo = /Phil(ip)? (J\\.? )?Fry/ ascii wide nocase
-    $except_slug = "Brain Slug Fundraiser" ascii wide
-    
+        /*
+        /(Hubert|Hugh|Prof\\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/
+        
+        Hubert Farnsworth
+        Hugh Farnsworth
+        Professor Farnsworth
+        Prof. Farnsworth
+        Prof Farnsworth
+        Professor Hubert Farnsworth
+        Professor Hugh Farnsworth
+        Prof. Hubert Farnsworth
+        Prof Hubert Farnsworth
+        Prof. Hugh Farnsworth
+        Prof Hugh Farnsworth
+        
+        /Phil(ip)? (J\\.? )?Fry/
+        
+        Philip Fry
+        Philip J. Fry
+        Philip J Fry
+        Phil Fry
+        Phil J. Fry
+        Phil J Fry
+        */
+        $external = "[EXT]" ascii wide nocase // External email warning
+        $vip_ceo = /(Hubert|Hugh|Prof\\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/ ascii wide nocase
+        $vip_cfo = "Hermes Conrad" ascii wide nocase
+        $vip_cto = "Turanga Leela" ascii wide nocase
+        $vip_admin = "Amy Wong" ascii wide nocase
+        $vip_cdo = /Phil(ip)? (J\\.? )?Fry/ ascii wide nocase
+        $except_slug = "Brain Slug Fundraiser" ascii wide
     condition:
-    $external and any of ($vip_*) and not any of ($except_*)
+        $external and any of ($vip_*) and not any of ($except_*)
 }
 ```
 
@@ -332,16 +348,14 @@ ISO files
 ```yara
 rule small_iso {
     meta:
-    author = "Sean Whalen"
-    date = "2022-07-21"
-    category = "malware"
-    discription = "A small ISO file"
-    
+        author = "Sean Whalen"
+        date = "2022-07-21"
+        category = "malware"
+        discription = "A small ISO file"
     strings:
-    $iso = {43 44 30 30 31} // Magic bytes for ISO files
-    
+        $iso = {43 44 30 30 31} // Magic bytes for ISO files
     condition:
-    $iso at 0 and filesize < 100MB
+        $iso at 0 and filesize < 100MB
 }
 ```
 
@@ -349,6 +363,42 @@ rule small_iso {
 These types of conditions can also help to make YARA more efficient when it is
 being used as a filesystem scanner.
 ```
+
+### Real world example: Workday
+
+Workday is a SaaS platform for HR management that is used by many large
+enterprises. Emails from Workday are very consistent.
+
+Every Workday notification email
+
+- Has the message `From` domain `myworkday.com`
+- Is DKIM signed by a key at the domain `myworkday.com`
+- Contains at least one link, and all links start with `https://www.myworkday.com/`
+- Contains the string "Powered by Workday: A New Day, A Better Way."
+
+Because of this, `myworkday.com` can be added to the
+`trusted_domains_yara_safe_required_list`, and a `body` YARA rule can be used
+to verify that the emails contain the expected content, with no unexpected
+links or attachments.
+
+```yara
+rule workday {
+    meta:
+        author = "Sean Whalen"
+        date = "2022-08-08"
+        category = "safe"
+        from_domain = "myworkday.com"
+        no_attachments = true
+    strings:
+        $footer = "Powered by Workday: A New Day, A Better Way."
+        $url = "http"
+        // Add your org's name in Workday to the end of this URL
+        $workday_url = "https://www.myworkday.com/"
+    condition:
+        $footer and #url > 0 and #url == #workday_url
+}
+```
+
 
 ### Checking if an email is junk
 
@@ -390,7 +440,7 @@ time, but the reduction in alert fatigue is well worth the effort.
 the [`yaramail` CLI](cli) has built-in support for scanning  individual
 samples, or an entire collection of samples.
 
-Use the `--rules`option to specify a path to a directory where the following 
+Use the `--rules`option to specify a path to a directory where the following
 files can be found:
 
 - `header.yar` - Rules that apply to email header content
@@ -430,7 +480,7 @@ To test `verdict` values across an entire collection of email samples, use the
 `-t/--test` option, and pass in a path to a directory of samples that are
 sorted into subdirectories by expected verdict.
 
-`yaramail` will print any test failures to standard error (stderr), print 
+`yaramail` will print any test failures to standard error (stderr), print
 passed/total numbers to standard output (stdout), and use the number of test
 failures as the return code. This is designed for developer use, and for CI/CD
 testing pipelines.
@@ -517,7 +567,7 @@ for email in emails:
 
     is_malicious = bool(len(list(
         malicious_categories.intersection(sample["yaramail"]["categories"]))))
-    
+
     if is_malicious:
         # TODO: Instruct the user to delete the malicious email
         # TODO: Move report email to the malicious folder or trash
@@ -537,9 +587,14 @@ for email in emails:
 ```
 
 [DMARC]: https://seanthegeek.net/459/demystifying-dmarc/
-[rules]: https://yara.readthedocs.io/en/stable/writingrules.html
-[include]: https://yara.readthedocs.io/en/stable/writingrules.html#including-files
-[regex]: https://yara.readthedocs.io/en/stable/writingrules.html#regular-expressions
+[yara_rules]: https://yara.readthedocs.io/en/stable/writingrules.html
+[yara_include]: https://yara.readthedocs.io/en/stable/writingrules.html#including-files
+[yara_strings]: https://yara.readthedocs.io/en/stable/writingrules.html#strings
+[yara_text_strings]: https://yara.readthedocs.io/en/stable/writingrules.html#text-strings
+[yara_hex_strings]: https://yara.readthedocs.io/en/stable/writingrules.html#hexadecimal-strings
+[yara_regex]: https://yara.readthedocs.io/en/stable/writingrules.html#regular-expressions
+[yara_string_modifiers]: https://yara.readthedocs.io/en/stable/writingrules.html#string-modifier-summary
+[yara_condition]: https://yara.readthedocs.io/en/stable/writingrules.html#conditions
 [CyberChef]: https://github.com/gchq/CyberChef/releases
 [EDGAR]: https://www.sec.gov/edgar/searchedgar/companysearch.html
 [file signatures]: https://en.wikipedia.org/wiki/List_of_file_signatures
