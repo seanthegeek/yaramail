@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CLI &mdash; yaramail 2.0.3 documentation</title>
+  <title>CLI &mdash; yaramail 2.0.4 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -74,8 +74,8 @@
              
   <section id="cli">
 <h1>CLI<a class="headerlink" href="#cli" title="Permalink to this heading"></a></h1>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>usage: A YARA scanner for emails [-h] [-V] [-v] [-m] [-o] [-r] [-b RAW_BODY]
-                                 [-s] [-t] [--output OUTPUT] [--rules RULES]
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>usage: A YARA scanner for emails [-h] [-V] [-v] [-m] [-o] [-r] [-b] [-s] [-t]
+                                 [--output OUTPUT] [--rules RULES]
                                  [--header-rules HEADER_RULES]
                                  [--body-rules BODY_RULES]
                                  [--header-body-rules HEADER_BODY_RULES]
@@ -88,7 +88,9 @@
 
 positional arguments:
   scan_path             The file(s) to scan. Wildcards allowed. Use - to read
-                        from stdin.
+                        from stdin. When used with -t/--test, this must be the
+                        directory where samples are stored, instead of an
+                        individual file or wildcard path.
 
 options:
   -h, --help            show this help message and exit
@@ -100,14 +102,13 @@ options:
                         Authentication-Results (default: False)
   -r, --raw-headers     Scan headers with indentations included (default:
                         False)
-  -b RAW_BODY, --raw-body RAW_BODY
-                        Scan the raw email body instead of converting it to
-                        Markdown first (default: None)
+  -b, --raw-body        Scan the raw email body instead of converting it to
+                        Markdown first (default: False)
   -s, --sld             Use From domain the Second-Level Domain (SLD) for
                         authentication in addition to the Fully-Qualified
                         Domain Name (FQDN) (default: False)
   -t, --test            Test rules based on verdicts matching the name of the
-                        folder a sample is in (default: False)
+                        subdirectory a sample is in (default: False)
   --output OUTPUT       Redirect output to a file (default: None)
   --rules RULES         A path to a directory that contains YARA rules
                         (default: .)
