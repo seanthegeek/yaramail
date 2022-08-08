@@ -36,11 +36,13 @@ an email, it attempts to use a combination of email authentication results and
 YARA rule matches to categorize an email and reach a `verdict`. To do this, it
 does several things. First, it scans the contents of the email headers, body,
 and attachments with user-provided YARA rules. Then, the `meta` section of each
-matching rule is checked for a `category` value. Each match category is added
-to a deduplicated list of `categories`. If a `from_domain` value exists in the
-`meta` section of a rule, the `category` of the rule is only added to the list
-of `categories` if the message `From` domain of the email matches the
-`from_domain` value.
+matching rule is checked for a `category` identifier. Each match category is
+added to a deduplicated list of `categories`. If a `from_domain` identifier
+exists in the `meta` section of a rule, the `category` of the rule is only
+added to the list of `categories` if the message `From` domain of the email 
+matches the `from_domain` value. If a meta identifier named `no_attachments`
+is set to `true`,  the `category` of the rule is only  added to the list of
+`categories` if the email as no attachments.
 
 If a single category is in the list of `categories`, the `verdict` is set to
 that category. If multiple categories are listed, the verdict is set to
@@ -151,11 +153,11 @@ rules consist of three sections: `meta`, `strings`, and `condition`.
 
 ### meta
 
-The meta section specifies arbitrary key-value pairs of metadata that can be
-useful to humans and/or the scanner application. `yaramail` uses a few special
-fields:
+The [meta section][yara_meta] specifies arbitrary metadata identifier-value
+pairs of metadata that can be useful to humans and/or the scanner application.
+`yaramail` uses a few special metadata identifies:
 
-| Field            | Description                                                                                                                                                                           |
+| Identifier       | Description                                                                                                                                                                           |
 |------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `category`       | The `category` of the rule. This can be any string, but the value `safe` is special. Rules without a `category` are considered informational, and do not contribute to the `verdict`. |
 | `from_domain`    | If this value is set, the rule’s `category` only applies to emails with the specified message From domain.                                                                            |
@@ -589,6 +591,7 @@ for email in emails:
 [DMARC]: https://seanthegeek.net/459/demystifying-dmarc/
 [yara_rules]: https://yara.readthedocs.io/en/stable/writingrules.html
 [yara_include]: https://yara.readthedocs.io/en/stable/writingrules.html#including-files
+[yara_meta]: https://yara.readthedocs.io/en/stable/writingrules.html#metadata
 [yara_strings]: https://yara.readthedocs.io/en/stable/writingrules.html#strings
 [yara_text_strings]: https://yara.readthedocs.io/en/stable/writingrules.html#text-strings
 [yara_hex_strings]: https://yara.readthedocs.io/en/stable/writingrules.html#hexadecimal-strings
