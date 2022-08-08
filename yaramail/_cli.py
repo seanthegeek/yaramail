@@ -18,7 +18,10 @@ arg_parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 arg_parser.add_argument("scan_path", type=str,
                         help="The file(s) to scan. Wildcards allowed. "
-                             "Use - to read from stdin.")
+                             "Use - to read from stdin. When used with "
+                             "-t/--test, this must be the directory where "
+                             "samples are stored, instead of an individual "
+                             "file or wildcard path.")
 arg_parser.add_argument("-V", "--version", action="version",
                         version=__version__)
 arg_parser.add_argument("-v", "--verbose", action="store_true",
@@ -30,7 +33,7 @@ arg_parser.add_argument("-o", "--auth-original", action="store_true",
                              "Authentication-Results")
 arg_parser.add_argument("-r", "--raw-headers", action="store_true",
                         help="Scan headers with indentations included")
-arg_parser.add_argument("-b", "--raw-body",
+arg_parser.add_argument("-b", "--raw-body", action="store_true",
                         help="Scan the raw email body instead of converting "
                              "it to Markdown first")
 arg_parser.add_argument("-s", "--sld", action="store_true",
@@ -39,7 +42,7 @@ arg_parser.add_argument("-s", "--sld", action="store_true",
                              "Fully-Qualified Domain Name (FQDN)")
 arg_parser.add_argument("-t", "--test", action="store_true",
                         help="Test rules based on verdicts matching the name "
-                             "of the folder a sample is in")
+                             "of the subdirectory a sample is in")
 arg_parser.add_argument("--output", type=str,
                         help="Redirect output to a file")
 arg_parser.add_argument("--rules", type=str,

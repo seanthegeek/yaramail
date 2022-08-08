@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.4
+
+- Fix  `-b`/`--raw-body` CLI option
+- Add `no_attachments` option for YARA rule meta sections
+
 ## 2.0.3
 
 - Add `-r`/`--raw-headers` and `-b`/`--raw-body` options to the CLI
