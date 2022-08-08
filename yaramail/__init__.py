@@ -20,7 +20,7 @@ handler.setFormatter(formatter)
 logger = logging.getLogger("yaramail")
 logger.addHandler(handler)
 
-__version__ = "2.0.3"
+__version__ = "2.0.4"
 
 
 def _match_to_dict(match: Union[yara.Match,
@@ -441,7 +441,14 @@ class MailScanner(object):
         )
         auth_optional = False
         categories = []
+        num_attachments = len(parsed_email["attachments"])
         for match in matches:
+            if "no_attachments" in match["meta"]:
+                if match["meta"]["no_attachments"] and num_attachments:
+                    continue
+            if "no_attachment" in match["meta"]:
+                if match["meta"]["no_attachment"] and num_attachments:
+                    continue
             if "from_domain" in match["meta"]:
                 sld = parsed_email["from"]["sld"]
                 if sld != get_sld(match["meta"]["from_domain"]):

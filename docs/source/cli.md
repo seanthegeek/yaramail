@@ -1,8 +1,8 @@
 # CLI
 
 ```text
-usage: A YARA scanner for emails [-h] [-V] [-v] [-m] [-o] [-r] [-b RAW_BODY]
-                                 [-s] [-t] [--output OUTPUT] [--rules RULES]
+usage: A YARA scanner for emails [-h] [-V] [-v] [-m] [-o] [-r] [-b] [-s] [-t]
+                                 [--output OUTPUT] [--rules RULES]
                                  [--header-rules HEADER_RULES]
                                  [--body-rules BODY_RULES]
                                  [--header-body-rules HEADER_BODY_RULES]
@@ -15,7 +15,9 @@ usage: A YARA scanner for emails [-h] [-V] [-v] [-m] [-o] [-r] [-b RAW_BODY]
 
 positional arguments:
   scan_path             The file(s) to scan. Wildcards allowed. Use - to read
-                        from stdin.
+                        from stdin. When used with -t/--test, this must be the
+                        directory where samples are stored, instead of an
+                        individual file or wildcard path.
 
 options:
   -h, --help            show this help message and exit
@@ -27,14 +29,13 @@ options:
                         Authentication-Results (default: False)
   -r, --raw-headers     Scan headers with indentations included (default:
                         False)
-  -b RAW_BODY, --raw-body RAW_BODY
-                        Scan the raw email body instead of converting it to
-                        Markdown first (default: None)
+  -b, --raw-body        Scan the raw email body instead of converting it to
+                        Markdown first (default: False)
   -s, --sld             Use From domain the Second-Level Domain (SLD) for
                         authentication in addition to the Fully-Qualified
                         Domain Name (FQDN) (default: False)
   -t, --test            Test rules based on verdicts matching the name of the
-                        folder a sample is in (default: False)
+                        subdirectory a sample is in (default: False)
   --output OUTPUT       Redirect output to a file (default: None)
   --rules RULES         A path to a directory that contains YARA rules
                         (default: .)
@@ -65,4 +66,3 @@ options:
   --max-zip-depth MAX_ZIP_DEPTH
                         The maximum number of times to recurse into nested ZIP
                         files (default: None)
-```
