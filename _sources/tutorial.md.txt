@@ -375,6 +375,7 @@ Every Workday notification email
 
 - Has the message `From` domain `myworkday.com`
 - Is DKIM signed by a key at the domain `myworkday.com`
+- The organisation's logo as a remote image
 - Contains at least one link, and all links start with `https://www.myworkday.com/`
 - Contains the string "Powered by Workday: A New Day, A Better Way."
 
@@ -394,10 +395,12 @@ rule workday {
     strings:
         $footer = "Powered by Workday: A New Day, A Better Way."
         $url = "http"
+        // Account for company logo
+        $img = /!\[.*\]\(http/ nocase
         // Add your org's name in Workday to the end of this URL
         $workday_url = "https://www.myworkday.com/"
     condition:
-        $footer and #url > 0 and #url == #workday_url
+        $footer and #url > 0 and #img == 1 and #url == #workday_url + #img
 }
 ```
 

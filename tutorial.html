@@ -469,6 +469,7 @@ enterprises. Emails from Workday are very consistent.</p>
 <ul class="simple">
 <li><p>Has the message <code class="docutils literal notranslate"><span class="pre">From</span></code> domain <code class="docutils literal notranslate"><span class="pre">myworkday.com</span></code></p></li>
 <li><p>Is DKIM signed by a key at the domain <code class="docutils literal notranslate"><span class="pre">myworkday.com</span></code></p></li>
+<li><p>The organisation’s logo as a remote image</p></li>
 <li><p>Contains at least one link, and all links start with <code class="docutils literal notranslate"><span class="pre">https://www.myworkday.com/</span></code></p></li>
 <li><p>Contains the string “Powered by Workday: A New Day, A Better Way.”</p></li>
 </ul>
@@ -486,10 +487,12 @@ links or attachments.</p>
     strings:
         $footer = &quot;Powered by Workday: A New Day, A Better Way.&quot;
         $url = &quot;http&quot;
+        // Account for company logo
+        $img = /!\[.*\]\(http/ nocase
         // Add your org&#39;s name in Workday to the end of this URL
         $workday_url = &quot;https://www.myworkday.com/&quot;
     condition:
-        $footer and #url &gt; 0 and #url == #workday_url
+        $footer and #url &gt; 0 and #img == 1 and #url == #workday_url + #img
 }
 </pre></div>
 </div>
