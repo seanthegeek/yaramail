@@ -141,11 +141,11 @@ does several things. First, it scans the contents of the email headers, body,
 and attachments with user-provided YARA rules. Then, the <code class="docutils literal notranslate"><span class="pre">meta</span></code> section of each
 matching rule is checked for a <code class="docutils literal notranslate"><span class="pre">category</span></code> key. Each match category is
 added to a deduplicated list of <code class="docutils literal notranslate"><span class="pre">categories</span></code>. If a <code class="docutils literal notranslate"><span class="pre">from_domain</span></code> key
-exists in the <code class="docutils literal notranslate"><span class="pre">meta</span></code> section of a rule, the <code class="docutils literal notranslate"><span class="pre">category</span></code> of the rule is only
-added to the list of <code class="docutils literal notranslate"><span class="pre">categories</span></code> if the message <code class="docutils literal notranslate"><span class="pre">From</span></code> domain of the email
-matches the <code class="docutils literal notranslate"><span class="pre">from_domain</span></code> value. If a meta key named <code class="docutils literal notranslate"><span class="pre">no_attachments</span></code>
-is set to <code class="docutils literal notranslate"><span class="pre">true</span></code>,  the <code class="docutils literal notranslate"><span class="pre">category</span></code> of the rule is only  added to the list of
-<code class="docutils literal notranslate"><span class="pre">categories</span></code> if the email as no attachments.</p>
+exists in the <code class="docutils literal notranslate"><span class="pre">meta</span></code> section of a matching rule, the <code class="docutils literal notranslate"><span class="pre">category</span></code> of the rule is
+only added to the list of <code class="docutils literal notranslate"><span class="pre">categories</span></code> if the message <code class="docutils literal notranslate"><span class="pre">From</span></code> domain of the
+email matches the <code class="docutils literal notranslate"><span class="pre">from_domain</span></code> value. If a <code class="docutils literal notranslate"><span class="pre">meta</span></code> key named <code class="docutils literal notranslate"><span class="pre">no_attachments</span></code>
+is set to <code class="docutils literal notranslate"><span class="pre">true</span></code>,  the <code class="docutils literal notranslate"><span class="pre">category</span></code> of the matching rule is only added to the
+list of<code class="docutils literal notranslate"><span class="pre">categories</span></code> if the email as no attachments.</p>
 <p>If a single category is in the list of <code class="docutils literal notranslate"><span class="pre">categories</span></code>, the <code class="docutils literal notranslate"><span class="pre">verdict</span></code> is set to
 that category. If multiple categories are listed, the verdict is set to
 <code class="docutils literal notranslate"><span class="pre">ambiguous</span></code>. If no categories are listed, the verdict is set to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
