@@ -395,7 +395,7 @@ rule workday {
     strings:
         $footer = "Powered by Workday: A New Day, A Better Way."
         $url = "http"
-        // Account for company logos
+        // Account for company logo
         $img = /!\[.*\]\(http/ nocase
         // Add your org's name in Workday to the end of this URL
         $workday_url = "https://www.myworkday.com/"
