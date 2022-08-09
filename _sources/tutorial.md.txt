@@ -155,7 +155,7 @@ rules consist of three sections: `meta`, `strings`, and `condition`.
 
 The [meta section][yara_meta] specifies arbitrary metadata key-value
 pairs of metadata that can be useful to humans and/or the scanner application.
-`yaramail` uses a few special metadata identifies:
+`yaramail` uses a few specific metadata keys:
 
 | Key              | Description                                                                                                                                                                           |
 |------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
