@@ -36,11 +36,11 @@ an email, it attempts to use a combination of email authentication results and
 YARA rule matches to categorize an email and reach a `verdict`. To do this, it
 does several things. First, it scans the contents of the email headers, body,
 and attachments with user-provided YARA rules. Then, the `meta` section of each
-matching rule is checked for a `category` identifier. Each match category is
-added to a deduplicated list of `categories`. If a `from_domain` identifier
+matching rule is checked for a `category` key. Each match category is
+added to a deduplicated list of `categories`. If a `from_domain` key
 exists in the `meta` section of a rule, the `category` of the rule is only
 added to the list of `categories` if the message `From` domain of the email 
-matches the `from_domain` value. If a meta identifier named `no_attachments`
+matches the `from_domain` value. If a meta key named `no_attachments`
 is set to `true`,  the `category` of the rule is only  added to the list of
 `categories` if the email as no attachments.
 
@@ -153,11 +153,11 @@ rules consist of three sections: `meta`, `strings`, and `condition`.
 
 ### meta
 
-The [meta section][yara_meta] specifies arbitrary metadata identifier-value
+The [meta section][yara_meta] specifies arbitrary metadata key-value
 pairs of metadata that can be useful to humans and/or the scanner application.
 `yaramail` uses a few special metadata identifies:
 
-| Identifier       | Description                                                                                                                                                                           |
+| Key              | Description                                                                                                                                                                           |
 |------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `category`       | The `category` of the rule. This can be any string, but the value `safe` is special. Rules without a `category` are considered informational, and do not contribute to the `verdict`. |
 | `from_domain`    | If this value is set, the rule’s `category` only applies to emails with the specified message From domain.                                                                            |
@@ -324,6 +324,20 @@ Take the time to read over YARA's documentation and other resources.
 
 As demonstrated by the previous examples, YARA rules don't need
 to be complex to be effective. The same is true for file/attachment rules.
+
+File types can be identified by looking for a known sequence of bytes at a
+particular location/offset in a file (usually at offset `0`, the very beginning
+of a file). These file signatures are often called magic bytes or magic
+numbers. YARA rules can use these file signatures to target specific file
+types.
+
+```{tip}
+A helpful list of [file type signatures][file signatures] can be found on
+Wikipedia.
+``` 
+
+#### Small ISO files 
+
 Sometimes attackers will store malicious files inside ISO files, because the
 content of ISO files are often not scanned by email security controls.
 Although `yaramail` does not scan the contents of malicious ISO files, it can
@@ -334,18 +348,9 @@ used as bootable operating system installers that range from hundreds of
 megabytes to several gigabytes in size. Malicious ISO files are much
 smaller, because they only contain malware payloads.
 
-File types can be identified by looking for a known sequence of bytes at a
-particular location/offset in a file (usually at offset `0`, the very beginning
-of a file). These file signatures are often called magic bytes or magic
-numbers.
-
-```{tip}
-A helpful list of [file type signatures][file signatures] can be found on
-Wikipedia.
-``` 
 ISO files contain the bytes `43 44 30 30 31` at offset `0`. This information
 can be combined with the special YARA variable `fiilesize` to look for small
-ISO files
+ISO files.
 
 ```yara
 rule small_iso {
@@ -364,6 +369,45 @@ rule small_iso {
 ```{tip}
 These types of conditions can also help to make YARA more efficient when it is
 being used as a filesystem scanner.
+```
+
+#### Credential harvesting PDFs
+
+Attackers will sometimes create phishing lures and links inside an attached
+PDF file instead of the email body. If attackers are not careful about their
+Operational Security (OPSEC) when creating PDFs, file metadata will be
+embedded into the document, including an `author` field. Even if this field
+value is not a real name, it can still be used as a weak method of attribution
+if it is used in multiple PDFs in a campaign.
+
+```{tip}
+[exiftool][exiftool] can show metadata for a wide varity of file
+types, including PDFs.
+```
+
+The YARA rule below identifies PDFs created by `The Robot Devil` that contain
+at least one clickable link.
+
+```yara
+rule robot_devil_pdf {
+    meta:
+        author = "Sean Whalen"
+        date = "2022-08-09"
+        category = "credential harvesting"
+        description = "Robot Devil credential harvesting PDF"
+    strings:
+        $pdf = {25 50 44 46 2D}
+        $s_author = "Author(The Robot Devil)" ascii wide
+        $s_uri = /URI\(.+\)/
+    condition:
+        $pdf at 0 and all of ($s_*)
+}
+```
+
+```{note}
+Although `/URI(` as a text string could have been used to check for clickable
+links, using a regular expression is better in this situation, because it will
+show full URLs in the list of matches.
 ```
 
 ### Real world example: Workday
@@ -605,3 +649,4 @@ for email in emails:
 [EDGAR]: https://www.sec.gov/edgar/searchedgar/companysearch.html
 [file signatures]: https://en.wikipedia.org/wiki/List_of_file_signatures
 [filesize]: https://yara.readthedocs.io/en/stable/writingrules.html#file-size
+[exiftool]: https://exiftool.org/
