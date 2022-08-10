@@ -20,7 +20,7 @@ handler.setFormatter(formatter)
 logger = logging.getLogger("yaramail")
 logger.addHandler(handler)
 
-__version__ = "2.0.4"
+__version__ = "2.0.5"
 
 
 def _match_to_dict(match: Union[yara.Match,
@@ -65,16 +65,22 @@ def _pdf_to_markdown(pdf_bytes: bytes) -> str:
 
 
 def _input_to_str_list(_input: Union[List[str], str, IOBase]) -> list:
+    _list = []
     if _input is None:
-        return []
+        return _list
     if isinstance(_input, list):
-        return _input
+        _list = _input
     if isinstance(_input, str):
         if path.exists(_input):
             with open(_input) as f:
-                return f.read().split("\n")
+                _list = f.read().split("\n")
     if isinstance(_input, StringIO):
-        return _input.read().split("\n")
+        _list = _input.read().split("\n")
+    try:
+        _list.remove("")
+    except ValueError:
+        pass
+    return _list
 
 
 def _compile_rules(rules: Union[yara.Rules, IOBase, str]) -> yara.Rules:
@@ -441,13 +447,13 @@ class MailScanner(object):
         )
         auth_optional = False
         categories = []
-        num_attachments = len(parsed_email["attachments"])
+        has_attachment = len(parsed_email["attachments"]) > 1
         for match in matches:
             if "no_attachments" in match["meta"]:
-                if match["meta"]["no_attachments"] and num_attachments:
+                if match["meta"]["no_attachments"] and has_attachment:
                     continue
             if "no_attachment" in match["meta"]:
-                if match["meta"]["no_attachment"] and num_attachments:
+                if match["meta"]["no_attachment"] and has_attachment:
                     continue
             if "from_domain" in match["meta"]:
                 sld = parsed_email["from"]["sld"]
@@ -477,4 +483,5 @@ class MailScanner(object):
                     trusted_domain=trusted_domain,
                     trusted_domain_yara_safe_required=tdysr,
                     auth_optional=auth_optional,
+                    has_attachment=has_attachment,
                     verdict=verdict)
