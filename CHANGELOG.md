@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.5
+
+- Fix bug where lists from empty files returned `[""]` instead of `[]`
+- Add `has_attachment` Boolean to the dictionary returned by `MailScanner.scan_email()` for easy troubleshooting of rules with `no_attachment = true` set
+
 ## 2.0.4
 
 - Fix  `-b`/`--raw-body` CLI option
