@@ -393,7 +393,7 @@ rule robot_devil_pdf {
     meta:
         author = "Sean Whalen"
         date = "2022-08-09"
-        category = "credential harvesting"
+        category = "credential-harvesting"
         description = "Robot Devil credential harvesting PDF"
     strings:
         $pdf = {25 50 44 46 2D}
@@ -555,7 +555,7 @@ def escalate_to_incident_response(_report_email: Dict,
     # TODO: Do something!
 
 
-malicious_categories = ["credential harvesting", "fraud", "malware"]
+malicious_categories = ["credential-harvesting", "fraud", "malware"]
 malicious_categories = set(malicious_categories)
 
 # Initialize the scanner
