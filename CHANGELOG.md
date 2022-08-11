@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.7
+
+- Update the docstring of `MailScanner.scan_email()` again
+
 ## 2.0.6
 
 - Update the docstring of `MailScanner.scan_email()`

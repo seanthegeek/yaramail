@@ -20,7 +20,7 @@ handler.setFormatter(formatter)
 logger = logging.getLogger("yaramail")
 logger.addHandler(handler)
 
-__version__ = "2.0.6"
+__version__ = "2.0.7"
 
 
 def _match_to_dict(match: Union[yara.Match,
@@ -351,11 +351,13 @@ class MailScanner(object):
         - ``matches`` - A list of YARA match dictionaries
         - ``categories`` - A list of categories of YARA matches
         - ``trusted_domain`` - The message From domain is in the
-          ``trusted_domains`` list
+          ``trusted_domains`` list **AND** is authenticated
         - ``trusted_domain_yara_safe_required`` - The message From domain is
-          in the ``trusted_domain_yara_safe_required`` list
-        - ``auth_optional`` - At least one matching rule has
-          ``auth_optional = true`` and ``category = safe`` in its metadata
+          in the ``trusted_domain_yara_safe_required`` list **AND** is
+          is authenticated
+        - ``auth_optional`` - At least one matching YARA rule has
+          ``auth_optional = true`` **AND** ``category = safe`` in its ``meta``
+          section
         - ``has_attachment`` - The email sample has an attachment
         - ``verdict`` - The verdict of the scan
 
@@ -363,10 +365,13 @@ class MailScanner(object):
 
          - ``None`` - No categories matched
          - ``safe`` - The email is considered safe
-         - ``yara_safe_auth_fail`` - Domain authentication failed, YARA safe
-         - ``auth_pass_not_yara_safe`` - Domain auth passed, YARA failed
+         - ``yara_safe_auth_fail`` -  Categorized at ``safe`` by YARA, but
+           domain authentication failed
+         - ``auth_pass_not_yara_safe`` - Domain authentication passed, but YARA
+           did not returnn the required ``safe`` categorization
          - ``ambiguous`` - Multiple categories matched
-         - Any custom category specified in the meta section of a YARA rule
+         - Any custom ``category`` specified in the ``meta`` section of a YARA
+           rule
 
         Each match dictionary in the returned list contains
         the following key-value pairs:
@@ -377,9 +382,9 @@ class MailScanner(object):
         - ``tags`` - A list of the rule's tags.
         - ``strings`` - A list of identified strings or patterns that match.
 
-          Each list item is also a list, with the following values:
+          Each ``strings`` list item is also a list, with the following values:
 
-              0. The location offset of the identified string/pattern
+              0. The location/offset of the identified string
               1. The variable name of the string/pattern in the rule
               2. The matching string/pattern content
 
