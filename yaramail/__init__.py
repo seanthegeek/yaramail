@@ -350,6 +350,13 @@ class MailScanner(object):
 
         - ``matches`` - A list of YARA match dictionaries
         - ``categories`` - A list of categories of YARA matches
+        - ``trusted_domain`` - The message From domain is in the
+          ``trusted_domains`` list
+        - ``trusted_domain_yara_safe_required`` - The message From domain is
+          in the ``trusted_domain_yara_safe_required`` list
+        - ``auth_optional`` - At least one matching rule has
+          ``auth_optional = true`` and ``category = safe`` in its metadata
+        - ``has_attachment`` - The email sample has an attachment
         - ``verdict`` - The verdict of the scan
 
         Possible verdicts include:
