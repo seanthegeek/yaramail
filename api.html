@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API &mdash; yaramail 2.0.6 documentation</title>
+  <title>API &mdash; yaramail 2.0.7 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -151,11 +151,13 @@ solutions, such as Abnormal Security.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">matches</span></code> - A list of YARA match dictionaries</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">categories</span></code> - A list of categories of YARA matches</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">trusted_domain</span></code> - The message From domain is in the
-<code class="docutils literal notranslate"><span class="pre">trusted_domains</span></code> list</p></li>
+<code class="docutils literal notranslate"><span class="pre">trusted_domains</span></code> list <strong>AND</strong> is authenticated</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">trusted_domain_yara_safe_required</span></code> - The message From domain is
-in the <code class="docutils literal notranslate"><span class="pre">trusted_domain_yara_safe_required</span></code> list</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">auth_optional</span></code> - At least one matching rule has
-<code class="docutils literal notranslate"><span class="pre">auth_optional</span> <span class="pre">=</span> <span class="pre">true</span></code> and <code class="docutils literal notranslate"><span class="pre">category</span> <span class="pre">=</span> <span class="pre">safe</span></code> in its metadata</p></li>
+in the <code class="docutils literal notranslate"><span class="pre">trusted_domain_yara_safe_required</span></code> list <strong>AND</strong> is
+is authenticated</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">auth_optional</span></code> - At least one matching YARA rule has
+<code class="docutils literal notranslate"><span class="pre">auth_optional</span> <span class="pre">=</span> <span class="pre">true</span></code> <strong>AND</strong> <code class="docutils literal notranslate"><span class="pre">category</span> <span class="pre">=</span> <span class="pre">safe</span></code> in its <code class="docutils literal notranslate"><span class="pre">meta</span></code>
+section</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">has_attachment</span></code> - The email sample has an attachment</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">verdict</span></code> - The verdict of the scan</p></li>
 </ul>
@@ -164,10 +166,13 @@ in the <code class="docutils literal notranslate"><span class="pre">trusted_doma
 <div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> - No categories matched</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">safe</span></code> - The email is considered safe</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">yara_safe_auth_fail</span></code> - Domain authentication failed, YARA safe</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">auth_pass_not_yara_safe</span></code> - Domain auth passed, YARA failed</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">yara_safe_auth_fail</span></code> -  Categorized at <code class="docutils literal notranslate"><span class="pre">safe</span></code> by YARA, but
+domain authentication failed</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">auth_pass_not_yara_safe</span></code> - Domain authentication passed, but YARA
+did not returnn the required <code class="docutils literal notranslate"><span class="pre">safe</span></code> categorization</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ambiguous</span></code> - Multiple categories matched</p></li>
-<li><p>Any custom category specified in the meta section of a YARA rule</p></li>
+<li><p>Any custom <code class="docutils literal notranslate"><span class="pre">category</span></code> specified in the <code class="docutils literal notranslate"><span class="pre">meta</span></code> section of a YARA
+rule</p></li>
 </ul>
 </div></blockquote>
 <p>Each match dictionary in the returned list contains
@@ -178,10 +183,10 @@ the following key-value pairs:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">meta</span></code> - A dictionary of key-value pairs from the meta section.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tags</span></code> - A list of the rule’s tags.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">strings</span></code> - A list of identified strings or patterns that match.</p>
-<p>Each list item is also a list, with the following values:</p>
+<p>Each <code class="docutils literal notranslate"><span class="pre">strings</span></code> list item is also a list, with the following values:</p>
 <blockquote>
 <div><ol class="arabic simple" start="0">
-<li><p>The location offset of the identified string/pattern</p></li>
+<li><p>The location/offset of the identified string</p></li>
 <li><p>The variable name of the string/pattern in the rule</p></li>
 <li><p>The matching string/pattern content</p></li>
 </ol>
