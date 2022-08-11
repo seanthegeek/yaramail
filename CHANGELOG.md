@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.6
+
+- Update the docstring of `MailScanner.scan_email()`
+
 ## 2.0.5
 
 - Fix bug where lists from empty files returned `[""]` instead of `[]`
