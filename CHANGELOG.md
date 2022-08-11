@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.8
+
+- Fix `has_attachment` Boolean (PR #5)
+
 ## 2.0.7
 
 - Update the docstring of `MailScanner.scan_email()` again
