@@ -422,6 +422,13 @@
 
 <span class="sd">        - ``matches`` - A list of YARA match dictionaries</span>
 <span class="sd">        - ``categories`` - A list of categories of YARA matches</span>
+<span class="sd">        - ``trusted_domain`` - The message From domain is in the</span>
+<span class="sd">          ``trusted_domains`` list</span>
+<span class="sd">        - ``trusted_domain_yara_safe_required`` - The message From domain is</span>
+<span class="sd">          in the ``trusted_domain_yara_safe_required`` list</span>
+<span class="sd">        - ``auth_optional`` - At least one matching rule has</span>
+<span class="sd">          ``auth_optional = true`` and ``category = safe`` in its metadata</span>
+<span class="sd">        - ``has_attachment`` - The email sample has an attachment</span>
 <span class="sd">        - ``verdict`` - The verdict of the scan</span>
 
 <span class="sd">        Possible verdicts include:</span>

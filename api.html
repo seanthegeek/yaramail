@@ -150,6 +150,13 @@ solutions, such as Abnormal Security.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">matches</span></code> - A list of YARA match dictionaries</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">categories</span></code> - A list of categories of YARA matches</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trusted_domain</span></code> - The message From domain is in the
+<code class="docutils literal notranslate"><span class="pre">trusted_domains</span></code> list</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trusted_domain_yara_safe_required</span></code> - The message From domain is
+in the <code class="docutils literal notranslate"><span class="pre">trusted_domain_yara_safe_required</span></code> list</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">auth_optional</span></code> - At least one matching rule has
+<code class="docutils literal notranslate"><span class="pre">auth_optional</span> <span class="pre">=</span> <span class="pre">true</span></code> and <code class="docutils literal notranslate"><span class="pre">category</span> <span class="pre">=</span> <span class="pre">safe</span></code> in its metadata</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">has_attachment</span></code> - The email sample has an attachment</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">verdict</span></code> - The verdict of the scan</p></li>
 </ul>
 <p>Possible verdicts include:</p>
