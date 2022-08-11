@@ -459,7 +459,7 @@ class MailScanner(object):
         )
         auth_optional = False
         categories = []
-        has_attachment = len(parsed_email["attachments"]) > 1
+        has_attachment = len(attachments) >= 1
         for match in matches:
             if "no_attachments" in match["meta"]:
                 if match["meta"]["no_attachments"] and has_attachment:
