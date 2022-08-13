@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.9
+
+- Bump `mailsuite` required version to `>=1.9.5`
+
 ## 2.0.8
 
 - Fix `has_attachment` Boolean (PR #5)
