@@ -20,7 +20,7 @@ handler.setFormatter(formatter)
 logger = logging.getLogger("yaramail")
 logger.addHandler(handler)
 
-__version__ = "2.0.8"
+__version__ = "2.0.9"
 
 
 def _match_to_dict(match: Union[yara.Match,
