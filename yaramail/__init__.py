@@ -20,7 +20,7 @@ handler.setFormatter(formatter)
 logger = logging.getLogger("yaramail")
 logger.addHandler(handler)
 
-__version__ = "2.0.10"
+__version__ = "2.0.11"
 
 
 def _match_to_dict(match: Union[yara.Match,
@@ -360,6 +360,7 @@ class MailScanner(object):
 
         - ``matches`` - A list of YARA match dictionaries
         - ``categories`` - A list of categories of YARA matches
+        - ``msg_from_domain`` - The message From domain
         - ``trusted_domain`` - The message From domain is in the
           ``trusted_domains`` list **AND** is authenticated
         - ``trusted_domain_yara_safe_required`` - The message From domain is
@@ -416,6 +417,9 @@ class MailScanner(object):
             parsed_email = email
         else:
             parsed_email = parse_email(email)
+        msg_from_domain = None
+        if "from" in parsed_email:
+            msg_from_domain = parsed_email["from"]["domain"]
         if use_raw_headers:
             headers = parsed_email["raw_headers"]
         else:
@@ -502,6 +506,7 @@ class MailScanner(object):
 
         tdysr = trusted_domain_yara_safe_required
         return dict(matches=matches, categories=categories,
+                    msg_from_domain=msg_from_domain,
                     trusted_domain=trusted_domain,
                     trusted_domain_yara_safe_required=tdysr,
                     auth_optional=auth_optional,
