@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.11
+
+- Add `msg_from_domain` to the dictionary returned by `MailScanner.scan_email()`
+
 ## 2.0.10
 
 - Fix invalid `location` when an email has multiple attachments
