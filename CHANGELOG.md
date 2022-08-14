@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.10
+
+- Fix invalid `location` when an email has multiple attachments
+
 ## 2.0.9
 
 - Bump `mailsuite` required version to `>=1.9.5`

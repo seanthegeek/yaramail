@@ -20,7 +20,7 @@ handler.setFormatter(formatter)
 logger = logging.getLogger("yaramail")
 logger.addHandler(handler)
 
-__version__ = "2.0.9"
+__version__ = "2.0.10"
 
 
 def _match_to_dict(match: Union[yara.Match,
@@ -284,7 +284,17 @@ class MailScanner(object):
                 return zip_matches
 
     def _scan_attachments(self, attachments: Union[List, Dict]) -> List[Dict]:
-        attachment_matches = []
+        def add_location(_attachment_matches: List[Dict], _filename: str):
+            for match in _attachment_matches:
+                base_location = f"attachment:{filename}"
+                if "location" in match:
+                    og_location = match["location"]
+                    match["location"] = f"{base_location}:{og_location}"
+                else:
+                    match["location"] = base_location
+            return _attachment_matches
+
+        combined_attachment_matches = []
         if isinstance(attachments, dict):
             attachments = [attachments]
         for attachment in attachments:
@@ -297,11 +307,16 @@ class MailScanner(object):
                     payload = decode_base64(attachment["payload"])
                 except binascii.Error:
                     pass
-            attachment_matches += _match_to_dict(
+            attachment_matches = _match_to_dict(
                 self._attachment_rules.match(data=payload))
+            attachment_matches = add_location(attachment_matches, filename)
+            combined_attachment_matches += attachment_matches
             if is_binary and _is_pdf(payload):
                 try:
-                    attachment_matches += self._scan_pdf_text(payload)
+                    attachment_matches = self._scan_pdf_text(payload)
+                    attachment_matches = add_location(attachment_matches,
+                                                      filename)
+                    combined_attachment_matches += attachment_matches
                 except Exception as e:
                     logger.warning(
                         f"Unable to convert {filename} to markdown. {e}. "
@@ -311,24 +326,19 @@ class MailScanner(object):
                     attachment_matches += self._scan_zip(
                         payload,
                         filename=filename)
+                    attachment_matches = add_location(attachment_matches,
+                                                      filename)
+                    combined_attachment_matches += attachment_matches
                 except UserWarning as e:
                     logger.warning(f"Unable to scan {filename}. {e}.")
             elif file_extension in ["eml", "msg"]:
                 try:
                     matches = self.scan_email(parse_email(payload))
-                    attachment_matches += matches
+                    combined_attachment_matches += matches
                 except UserWarning as e:
                     logger.warning(f"Unable to scan {filename}. {e}.")
 
-            for match in attachment_matches:
-                base_location = f"attachment:{filename}"
-                if "location" in match:
-                    og_location = match["location"]
-                    match["location"] = f"{base_location}:{og_location}"
-                else:
-                    match["location"] = base_location
-
-        return attachment_matches
+        return combined_attachment_matches
 
     def scan_email(self, email: Union[str, IOBase, Dict],
                    use_raw_headers: bool = False,
