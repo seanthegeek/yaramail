@@ -25,7 +25,9 @@ arg_parser.add_argument("scan_path", type=str,
 arg_parser.add_argument("-V", "--version", action="version",
                         version=__version__)
 arg_parser.add_argument("-v", "--verbose", action="store_true",
-                        help="Output the entire parsed email")
+                        help="Output the entire parsed email. "
+                             "When used with -t/--test, this option outputs "
+                             "passing results along with failing results.")
 arg_parser.add_argument("-m", "--multi-auth",  action="store_true",
                         help="Allow multiple Authentication-Results headers")
 arg_parser.add_argument("-o", "--auth-original", action="store_true",
@@ -161,7 +163,7 @@ def _main():
         logger.error(f"Failed to parse YARA rules: {e}")
         exit(-1)
 
-    def test_rules(samples_dir):
+    def _test_rules(samples_dir, verbose=False):
         """Test YARA rules against known email samples"""
         if not os.path.isdir(samples_dir):
             logger.error(f"{samples_dir} is not a directory")
@@ -193,6 +195,10 @@ def _main():
                                     f"fail:path={msg_path}:verdict={verdict}:"
                                     f"expected={category}:results={results}")
                                 test_failures += 1
+                            elif verbose:
+                                logger.info(
+                                    f"pass:path={msg_path}:verdict={verdict}:"
+                                    f"expected={category}:results={results}")
                         except Exception as e_:
                             logger.warning(f"{msg_path}: {e_}")
                             test_failures += 1
@@ -203,7 +209,7 @@ def _main():
         exit(test_failures)
 
     if args.test:
-        test_rules(args.scan_path[0])
+        _test_rules(args.scan_path[0], verbose=args.verbose)
 
     scanned_emails = {}
     for file_path in args.scan_path:
