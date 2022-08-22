@@ -22,7 +22,9 @@ positional arguments:
 options:
   -h, --help            show this help message and exit
   -V, --version         show program's version number and exit
-  -v, --verbose         Output the entire parsed email (default: False)
+  -v, --verbose         Output the entire parsed email. When used with
+                        -t/--test, this option outputs passing results along
+                        with failing results. (default: False)
   -m, --multi-auth      Allow multiple Authentication-Results headers
                         (default: False)
   -o, --auth-original   Use Authentication-Results-Original instead of
@@ -66,3 +68,4 @@ options:
   --max-zip-depth MAX_ZIP_DEPTH
                         The maximum number of times to recurse into nested ZIP
                         files (default: None)
+```
