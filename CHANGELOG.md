@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.13
+
+- Fix multiple ZIP scanning bugs
 
 ## 2.0.12
 

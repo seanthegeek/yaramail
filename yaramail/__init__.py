@@ -20,7 +20,15 @@ handler.setFormatter(formatter)
 logger = logging.getLogger("yaramail")
 logger.addHandler(handler)
 
-__version__ = "2.0.12"
+__version__ = "2.0.13"
+
+
+def _deduplicate_list(og_list: list):
+    new_list = []
+    for item in og_list:
+        if item not in new_list:
+            new_list.append(item)
+    return new_list
 
 
 def _match_to_dict(match: Union[yara.Match,
@@ -190,7 +198,7 @@ class MailScanner(object):
             self._attachment_rules = _compile_rules(attachment_rules)
         self.passwords = _input_to_str_list(passwords)
         self.passwords += ["malware", "infected"]
-        self.passwords = list(set(self.passwords))
+        self.passwords = _deduplicate_list(self.passwords)
         self.max_zip_depth = max_zip_depth
         self.trusted_domains = _input_to_str_list(trusted_domains)
         self.trusted_domains_yara_safe_required = _input_to_str_list(
@@ -213,7 +221,7 @@ class MailScanner(object):
         for match in markdown_matches:
             tags = match["tags"].copy()
             tags.append("pdf2text")
-            match["tags"] = list(set(tags))
+            match["tags"] = _deduplicate_list(tags)
 
         return markdown_matches
 
@@ -234,7 +242,8 @@ class MailScanner(object):
         zip_matches = []
         with zipfile.ZipFile(payload) as zip_file:
             for name in zip_file.namelist():
-                for password in self.passwords:
+                passwords = [None] + self.passwords
+                for password in passwords:
                     if isinstance(password, str):
                         password = password.encode("utf-8")
                     member_content = None
@@ -249,6 +258,7 @@ class MailScanner(object):
                             matches = _match_to_dict(
                                 self._attachment_rules.match(
                                     data=member_content))
+                            break
                     except RuntimeError:
                         continue
 
@@ -279,7 +289,7 @@ class MailScanner(object):
                             filename=name,
                             _current_depth=_current_depth)
                 for match in zip_matches:
-                    match["tags"] = list(set(match["tags"] + tags))
+                    match["tags"] = _deduplicate_list(match["tags"] + tags)
 
                 return zip_matches
 
@@ -490,7 +500,7 @@ class MailScanner(object):
                 if match["meta"]["category"] == "safe":
                     if "auth_optional" in match["meta"] and not auth_optional:
                         auth_optional = match["meta"]["auth_optional"]
-        categories = list(set(categories))
+        categories = _deduplicate_list(categories)
         if len(categories) == 1:
             verdict = categories[0]
         elif len(categories) > 1:
