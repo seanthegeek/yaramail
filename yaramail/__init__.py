@@ -20,7 +20,7 @@ handler.setFormatter(formatter)
 logger = logging.getLogger("yaramail")
 logger.addHandler(handler)
 
-__version__ = "2.0.13"
+__version__ = "2.0.14"
 
 
 def _deduplicate_list(og_list: list):

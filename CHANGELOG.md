@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.14
+
+- Require the `yara-python` version to be at least [4.2.3][yara-4.2.3] to address an arbitrary code execution vulnerability    
+
 ## 2.0.13
 
 - Fix multiple ZIP scanning bugs
@@ -125,3 +129,5 @@
 # 1.0.0
 
 - Initial release
+
+[yara-4.2.3]: https://github.com/VirusTotal/yara/releases/tag/v4.2.3
