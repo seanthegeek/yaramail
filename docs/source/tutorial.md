@@ -193,12 +193,13 @@ in an email body match the domain of a vendor.
 ```yara
 rule all_urls_example_vendor : urls {
     // YARA rules can include C-style comments like this one
-    
+
     /*
     The " : urls" after the rule name sets an optional namespace
     that can be useful for organizing rules.
     The default namespace is "default".
     */
+
     meta:
         author = "Sean Whalen"
         date = "2022-07-13"
@@ -206,15 +207,17 @@ rule all_urls_example_vendor : urls {
         from_domain = "example.com" // Only applies to emails from example.com
         description = "All URLs point to the example.com domain"
     strings:
-        $http = "http" ascii wide nocase
+        $url = "://" ascii wide nocase
         $example_url = "https://example.com" ascii wide nocase
     condition:
         /*
-        The total number of URLs must match the number of example.com URls.
         Require at least one URL for this rule, otherwise all email with no
         URLs would match.
+
+        The total number of URLs must match the number of example.com URls.
         */
-        #http > 0 and #http == #example_url
+
+        $url and #url == #example_url
 }
 ```
 
@@ -438,13 +441,13 @@ rule workday {
         no_attachments = true
     strings:
         $footer = "Powered by Workday: A New Day, A Better Way."
-        $url = "http"
+        $url = "://"
         // Account for company logo
         $img = /!\[.*\]\(http/ nocase
         // Add your org's name in Workday to the end of this URL
         $workday_url = "https://www.myworkday.com/"
     condition:
-        $footer and #url > 0 and #img == 1 and #url == #workday_url + #img
+        $footer and $url and #img == 1 and #url == #workday_url + #img
 }
 ```
 
