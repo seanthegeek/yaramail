@@ -300,12 +300,13 @@ describes when the rule should match.</p>
 in an email body match the domain of a vendor.</p>
 <div class="highlight-yara notranslate"><div class="highlight"><pre><span></span>rule all_urls_example_vendor : urls {
     // YARA rules can include C-style comments like this one
-    
+
     /*
     The &quot; : urls&quot; after the rule name sets an optional namespace
     that can be useful for organizing rules.
     The default namespace is &quot;default&quot;.
     */
+
     meta:
         author = &quot;Sean Whalen&quot;
         date = &quot;2022-07-13&quot;
@@ -313,15 +314,17 @@ in an email body match the domain of a vendor.</p>
         from_domain = &quot;example.com&quot; // Only applies to emails from example.com
         description = &quot;All URLs point to the example.com domain&quot;
     strings:
-        $http = &quot;http&quot; ascii wide nocase
+        $url = &quot;://&quot; ascii wide nocase
         $example_url = &quot;https://example.com&quot; ascii wide nocase
     condition:
         /*
-        The total number of URLs must match the number of example.com URls.
         Require at least one URL for this rule, otherwise all email with no
         URLs would match.
+
+        The total number of URLs must match the number of example.com URls.
         */
-        #http &gt; 0 and #http == #example_url
+
+        $url and #url == #example_url
 }
 </pre></div>
 </div>
@@ -531,13 +534,13 @@ links or attachments.</p>
         no_attachments = true
     strings:
         $footer = &quot;Powered by Workday: A New Day, A Better Way.&quot;
-        $url = &quot;http&quot;
+        $url = &quot;://&quot;
         // Account for company logo
         $img = /!\[.*\]\(http/ nocase
         // Add your org&#39;s name in Workday to the end of this URL
         $workday_url = &quot;https://www.myworkday.com/&quot;
     condition:
-        $footer and #url &gt; 0 and #img == 1 and #url == #workday_url + #img
+        $footer and $url and #img == 1 and #url == #workday_url + #img
 }
 </pre></div>
 </div>
