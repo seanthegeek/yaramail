@@ -211,7 +211,7 @@ rule all_urls_example_vendor : urls {
         $example_url = "https://example.com" ascii wide nocase
     condition:
         /*
-        Require at least one URL for this rule, otherwise all email with no
+        Require at least one URL for this rule, otherwise all emails with no
         URLs would match.
 
         The total number of URLs must match the number of example.com URls.
