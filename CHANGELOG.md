@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.15
+
+- Bump `mailsuite` version requirement to `>=1.9.6`
+
 ## 2.0.14
 
 - Require the `yara-python` version to be at least [4.2.3][yara-4.2.3] to address an arbitrary code execution vulnerability    

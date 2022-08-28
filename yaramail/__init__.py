@@ -11,16 +11,10 @@ from publicsuffix2 import get_sld
 
 from mailsuite.utils import parse_email, from_trusted_domain, decode_base64
 
-formatter = logging.Formatter(
-    fmt='%(levelname)8s:%(message)s',
-    datefmt='%Y-%m-%d:%H:%M:%S')
-handler = logging.StreamHandler()
-handler.setFormatter(formatter)
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
 
-logger = logging.getLogger("yaramail")
-logger.addHandler(handler)
-
-__version__ = "2.0.14"
+__version__ = "2.0.15"
 
 
 def _deduplicate_list(og_list: list):
