@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.16
+
+- Bump `mailsuite` version requirement to `>=1.9.7`
+
 ## 2.0.15
 
 - Bump `mailsuite` version requirement to `>=1.9.6`
