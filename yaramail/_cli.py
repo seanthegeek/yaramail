@@ -10,8 +10,15 @@ import simplejson
 from mailsuite.utils import parse_email
 from yaramail import __version__, MailScanner
 
+formatter = logging.Formatter(
+    fmt='%(levelname)8s:%(message)s',
+    datefmt='%Y-%m-%d:%H:%M:%S')
+handler = logging.StreamHandler()
+handler.setFormatter(formatter)
+
 logger = logging.getLogger("yaramail")
 logger.setLevel(logging.INFO)
+logger.addHandler(handler)
 
 arg_parser = argparse.ArgumentParser(
     "A YARA scanner for emails",

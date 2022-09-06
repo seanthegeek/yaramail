@@ -2,6 +2,7 @@
   <img src="https://seanthegeek.github.io/yaramail/_static/yaramail-logo.png" style="padding-top: 10px" alt="yaramail logo">
 <h1 style="margin-top: 0; padding-top: 0">yaramail</h1>
 
+  [![Python tests](https://github.com/seanthegeek/yaramail/actions/workflows/python-tests.yaml/badge.svg)](https://github.com/seanthegeek/yaramail/actions/workflows/python-tests.yaml)
   [![PyPI](https://img.shields.io/pypi/v/yara-mail)](https://pypi.org/project/yara-mail/)
   [![PyPI - Downloads](https://img.shields.io/pypi/dm/yara-mail?color=blue)](https://pypistats.org/packages/yara-mail)
 </div>
