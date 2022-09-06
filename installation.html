@@ -95,36 +95,32 @@ container or VM for additional security.</p>
 <p>Some system dependencies <strong>must</strong> be installed before installing <code class="docutils literal notranslate"><span class="pre">yaramail</span></code>.</p>
 <section id="debian-ubuntu-and-friends">
 <h3>Debian, Ubuntu, and friends<a class="headerlink" href="#debian-ubuntu-and-friends" title="Permalink to this heading"></a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">build</span><span class="o">-</span><span class="n">essential</span> <span class="n">libpoppler</span><span class="o">-</span><span class="n">cpp</span><span class="o">-</span><span class="n">dev</span> <span class="n">pkg</span><span class="o">-</span><span class="n">config</span> <span class="n">python3</span><span class="o">-</span><span class="n">dev</span>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>sudo apt install build-essential libpoppler-cpp-dev pkg-config python3-dev
 </pre></div>
 </div>
 </section>
 <section id="fedora-red-hat-and-friends">
 <h3>Fedora, Red Hat, and friends<a class="headerlink" href="#fedora-red-hat-and-friends" title="Permalink to this heading"></a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">yum</span> <span class="n">install</span> <span class="n">gcc</span><span class="o">-</span><span class="n">c</span><span class="o">++</span> <span class="n">pkgconfig</span> <span class="n">poppler</span><span class="o">-</span><span class="n">cpp</span><span class="o">-</span><span class="n">devel</span> <span class="n">python3</span><span class="o">-</span><span class="n">devel</span>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>sudo yum install gcc-c++ pkgconfig poppler-cpp-devel python3-devel
 </pre></div>
 </div>
 </section>
 <section id="macos">
 <h3>macOS<a class="headerlink" href="#macos" title="Permalink to this heading"></a></h3>
 <p>Install <a class="reference external" href="https://brew.sh/">Homebrew</a>, then run the following command in a terminal.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">brew</span> <span class="n">install</span> <span class="n">pkg</span><span class="o">-</span><span class="n">config</span> <span class="n">poppler</span> <span class="n">python</span>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>brew install pkg-config poppler python
 </pre></div>
 </div>
 </section>
 <section id="windows">
 <h3>Windows<a class="headerlink" href="#windows" title="Permalink to this heading"></a></h3>
-<ol class="arabic">
+<ol class="arabic simple">
 <li><p>Install the <a class="reference external" href="https://visualstudio.microsoft.com/downloads/#microsoft-visual-c-redistributable-for-visual-studio-2022">Microsoft Visual Studio Build Tools</a></p></li>
 <li><p>Install <a class="reference external" href="https://www.anaconda.com/products/distribution">Anaconda Distribution</a></p></li>
 <li><p>Use Anaconda Navigator to create a new Anaconda Environment</p></li>
 <li><p>Click the play button for the Anaconda Environment</p></li>
 <li><p>Click Open Terminal</p></li>
-<li><p>Run this command and leave the terminal open:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">poppler</span>
-</pre></div>
-</div>
-</li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">poppler</span></code> and leave the terminal open:</p></li>
 <li><p>Configure your Python IDE/project to use the Anaconda Environment</p></li>
 </ol>
 </section>
@@ -134,15 +130,15 @@ container or VM for additional security.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The official name for this project, package, and module is <code class="docutils literal notranslate"><span class="pre">yaramail</span></code>.
-Unfortunately, the Python Package Index (PyPI) <a class="reference external" href="https://github.com/pypa/pypi-support/issues/2098">did not allow that name to be
-used there</a>, so the PyPI project name for <code class="docutils literal notranslate"><span class="pre">yaramail</span></code> is
+Unfortunately, the Python Package Index (PyPI) [did not allow that name to be
+used there][pypi-name-issue], so the PyPI project name for <code class="docutils literal notranslate"><span class="pre">yaramail</span></code> is
 <code class="docutils literal notranslate"><span class="pre">yara-mail</span></code>.</p>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p><strong>Never</strong> install Python packages as <code class="docutils literal notranslate"><span class="pre">root</span></code> or with <code class="docutils literal notranslate"><span class="pre">sudo</span></code>. Not only is it a
 huge security risk, but doing that will also pollute the system Python
-enviorment.</p>
+environment.</p>
 </div>
 <p>It is recommended to create a separate Python <a class="reference external" href="https://docs.python.org/3/tutorial/venv.html">virtual environment</a>
 for any project that will use <code class="docutils literal notranslate"><span class="pre">yaramail</span></code>.</p>
@@ -153,12 +149,12 @@ Conda environment, there is no need to create a virtual environment.</p>
 </div>
 <p>Once the virtual environment has been created and activated, use <code class="docutils literal notranslate"><span class="pre">pip</span></code> to
 install <code class="docutils literal notranslate"><span class="pre">yaramail</span></code>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">yaramail</span>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>pip3 install -U yaramail
 </pre></div>
 </div>
 <p>Alternatively, if you would like to install the <code class="docutils literal notranslate"><span class="pre">yaramail</span></code> CLI as a user tool,
 run this command <strong>outside</strong> a virtual environment:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="o">--</span><span class="n">user</span> <span class="o">-</span><span class="n">U</span> <span class="n">yaramail</span>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>pip3 install --user -U yaramail
 </pre></div>
 </div>
 </section>
