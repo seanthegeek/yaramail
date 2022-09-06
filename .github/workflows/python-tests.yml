@@ -21,7 +21,7 @@ jobs:
       with:
         python-version: "3.8"
     - name: Install system dependencies
-      run: /
+      run: |
          sudo apt install -y build-essential libpoppler-cpp-dev pkg-config python3-dev
                 
     - name: Install Python dependencies
