@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.17
+
+- Fix CLI log message output
+
 ## 2.0.16
 
 - Bump `mailsuite` version requirement to `>=1.9.7`
