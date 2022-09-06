@@ -91,6 +91,9 @@ arg_parser.add_argument("--max-zip-depth", type=int,
 
 def _main():
     args = arg_parser.parse_args()
+    if len(args.scan_path) == 0:
+        logger.error("At least one scan_path must be specified")
+        exit(-1)
 
     use_stdin = args.scan_path[0] == "-"
     if not use_stdin:
