@@ -14,7 +14,7 @@
 
 - Scans all parts of an email via API or CLI
   - Headers
-    -  Removes header indents by default for consistent scanning
+    - Removes header indents by default for consistent scanning
   - Plain text and HTML body content
     - Converts body content to Markdown by default for consistent scanning
   - Attachments
@@ -26,6 +26,4 @@
 - Provides a built-in methodology for categorizing emails
 - Parses `Authentication-Results` headers
 
-
 [yara]: https://yara.readthedocs.io/en/stable/writingrules.html
-

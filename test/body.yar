@@ -32,10 +32,10 @@ rule workday {
         from_domain = "myworkday.com"
         no_attachments = true
     strings:
-        $footer = "Powered by Workday: A New Day, A Better Way."
-        $url = /http(s)?\:\/\// nocase
-        $redacted_url = /http(s)?\:\/\/(www\.)?REDACTED.com\// nocase
-        $workday_url = "https://www.myworkday.com/REDACTED/"
+        $footer = "Powered by Workday: A New Day, A Better Way." ascii wide
+        $url = /https?\:\/\// ascii wide nocase
+        $redacted_url = /https?\:\/\/(www\.)?REDACTED.com\// ascii wide nocase
+        $workday_url = "https://www.myworkday.com/REDACTED/" ascii wide nocase
     condition:
         all of them and #url == (#redacted_url + #workday_url)
 }
