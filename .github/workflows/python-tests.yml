@@ -38,4 +38,4 @@ jobs:
     - name: Test building packages
       run: hatch build
     - name: Test rules
-      run: python3 -m yaramail._cli -t --rules test test\samples
+      run: python3 -m yaramail._cli -to test/samples  --rules test
