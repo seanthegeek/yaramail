@@ -147,7 +147,7 @@ learn about the returned objects.
 
 ## Anatomy of a YARA rule
 
-[YARA rules][yara_rules] provide a flexable method of checking email header,
+[YARA rules][yara_rules] provide a flexible method of checking email header,
 body, and attachment content against known malicious and trusted patterns. The
 rules consist of three sections: `meta`, `strings`, and `condition`.
 
@@ -227,7 +227,6 @@ To add additional context without affecting categorization or verdicts, write
 a rule without including a `category` value in the `meta` section. Any matches
 will still appear in the returned `matches`.
 
-
 ```yara
 rule short_url {
     meta:
@@ -244,7 +243,7 @@ rule short_url {
 ### Checking for impersonation
 
 Impersonating a top executive is a classic social engineering technique. Even
-if a target organisation has fully implemented DMARC to prevent domain
+if a target organization has fully implemented DMARC to prevent domain
 spoofing, people can still be impersonated in the display name of the
 message `From` header, or in the email body. A YARA rule can check for this.
 [regular expressions][yara_regex] (regex) are handy, because one string can
@@ -337,9 +336,9 @@ types.
 ```{tip}
 A helpful list of [file type signatures][file signatures] can be found on
 Wikipedia.
-``` 
+```
 
-#### Small ISO files 
+#### Small ISO files
 
 Sometimes attackers will store malicious files inside ISO files, because the
 content of ISO files are often not scanned by email security controls.
@@ -361,7 +360,7 @@ rule small_iso {
         author = "Sean Whalen"
         date = "2022-07-21"
         category = "malware"
-        discription = "A small ISO file"
+        description = "A small ISO file"
     strings:
         $iso = {43 44 30 30 31} // Magic bytes for ISO files
     condition:
@@ -384,7 +383,7 @@ value is not a real name, it can still be used as a weak method of attribution
 if it is used in multiple PDFs in a campaign.
 
 ```{tip}
-[exiftool][exiftool] can show metadata for a wide varity of file
+[exiftool][exiftool] can show metadata for a wide variety of file
 types, including PDFs.
 ```
 
@@ -422,7 +421,7 @@ Every Workday notification email
 
 - Has the message `From` domain `myworkday.com`
 - Is DKIM signed by a key at the domain `myworkday.com`
-- The organisation's logo as a remote image
+- The organization's logo as a remote image
 - Contains at least one link, and all links start with `https://www.myworkday.com/`
 - Contains the string "Powered by Workday: A New Day, A Better Way."
 
@@ -435,22 +434,19 @@ links or attachments.
 rule workday {
     meta:
         author = "Sean Whalen"
-        date = "2022-08-08"
+        date = "2022-09-06"
         category = "safe"
         from_domain = "myworkday.com"
         no_attachments = true
     strings:
-        $footer = "Powered by Workday: A New Day, A Better Way."
-        $url = "://"
-        // Account for company logo
-        $img = /!\[.*\]\(http/ nocase
-        // Add your org's name in Workday to the end of this URL
-        $workday_url = "https://www.myworkday.com/"
+        $footer = "Powered by Workday: A New Day, A Better Way." ascii wide
+        $url = /https?\:\/\// ascii wide nocase
+        $redacted_url = /https?\:\/\/(www\.)?REDACTED.com\// ascii wide nocase
+        $workday_url = "https://www.myworkday.com/REDACTED/" ascii wide nocase
     condition:
-        $footer and $url and #img == 1 and #url == #workday_url + #img
+        all of them and #url == (#redacted_url + #workday_url)
 }
 ```
-
 
 ### Checking if an email is junk
 
@@ -549,7 +545,7 @@ from mailsuite.utils import parse_email
 from yaramail import MailScanner
 
 logger = logging.getLogger("scanner")
-
+logging.BasicConfig(level=logging.INFO)
 
 def escalate_to_incident_response(_report_email: Dict,
                                   priority: str = "normal"):
@@ -638,9 +634,7 @@ for email in emails:
 
 ```
 
-[DMARC]: https://seanthegeek.net/459/demystifying-dmarc/
 [yara_rules]: https://yara.readthedocs.io/en/stable/writingrules.html
-[yara_include]: https://yara.readthedocs.io/en/stable/writingrules.html#including-files
 [yara_meta]: https://yara.readthedocs.io/en/stable/writingrules.html#metadata
 [yara_strings]: https://yara.readthedocs.io/en/stable/writingrules.html#strings
 [yara_text_strings]: https://yara.readthedocs.io/en/stable/writingrules.html#text-strings
@@ -648,8 +642,3 @@ for email in emails:
 [yara_regex]: https://yara.readthedocs.io/en/stable/writingrules.html#regular-expressions
 [yara_string_modifiers]: https://yara.readthedocs.io/en/stable/writingrules.html#string-modifier-summary
 [yara_condition]: https://yara.readthedocs.io/en/stable/writingrules.html#conditions
-[CyberChef]: https://github.com/gchq/CyberChef/releases
-[EDGAR]: https://www.sec.gov/edgar/searchedgar/companysearch.html
-[file signatures]: https://en.wikipedia.org/wiki/List_of_file_signatures
-[filesize]: https://yara.readthedocs.io/en/stable/writingrules.html#file-size
-[exiftool]: https://exiftool.org/
