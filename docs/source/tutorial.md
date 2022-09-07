@@ -119,6 +119,7 @@ import logging
 from yaramail import MailScanner
 
 logger = logging.getLogger("scanner")
+logging.BasicConfig(level=logging.INFO)
 
 # Initialize the scanner
 scanner = None  # Avoid an IDE warning
