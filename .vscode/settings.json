@@ -1,9 +1,40 @@
 {
     "markdownlint.config": {
     "MD033": false,
-    "MD041": false, 
+    "MD041": false,
+    "MD053": false,
     },
     "cSpell.words": [
-        "tdysr"
+        "autoclass",
+        "bootable",
+        "conda",
+        "devel",
+        "DMARC",
+        "elif",
+        "endswith",
+        "essor",
+        "exiftool",
+        "Farnsworth",
+        "filesize",
+        "githubpages",
+        "Leela",
+        "levelname",
+        "libpoppler",
+        "mailsuite",
+        "myworkday",
+        "nocase",
+        "OPSEC",
+        "pdftotext",
+        "pkgconfig",
+        "poppler",
+        "Proofpoint",
+        "publicsuffix",
+        "ruleset",
+        "simplejson",
+        "Turanga",
+        "viewcode",
+        "Whalen",
+        "YARA",
+        "yaramail"
     ]
 }
