@@ -508,11 +508,11 @@ class MailScanner(object):
         if verdict is None and authenticated:
             verdict = "safe"
 
-        tdysr = trusted_domain_yara_safe_required
+        safe_required = trusted_domain_yara_safe_required
         return dict(matches=matches, categories=categories,
                     msg_from_domain=msg_from_domain,
                     trusted_domain=trusted_domain,
-                    trusted_domain_yara_safe_required=tdysr,
+                    trusted_domain_yara_safe_required=safe_required,
                     auth_optional=auth_optional,
                     has_attachment=has_attachment,
                     verdict=verdict)
