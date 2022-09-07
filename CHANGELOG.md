@@ -1,9 +1,5 @@
 # Changelog
 
-## 2.0.18
-
-- Fix status badge in the README
-
 ## 2.0.17
 
 - Fix CLI log message output
