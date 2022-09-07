@@ -14,7 +14,7 @@ from mailsuite.utils import parse_email, from_trusted_domain, decode_base64
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
-__version__ = "2.0.17"
+__version__ = "2.0.18"
 
 
 def _deduplicate_list(og_list: list):
@@ -383,7 +383,7 @@ class MailScanner(object):
          - ``yara_safe_auth_fail`` -  Categorized at ``safe`` by YARA, but
            domain authentication failed
          - ``auth_pass_not_yara_safe`` - Domain authentication passed, but YARA
-           did not returnn the required ``safe`` categorization
+           did not return the required ``safe`` categorization
          - ``ambiguous`` - Multiple categories matched
          - Any custom ``category`` specified in the ``meta`` section of a YARA
            rule

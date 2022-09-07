@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.18
+
+- Fix status badge in the README
+
 ## 2.0.17
 
 - Fix CLI log message output
@@ -14,7 +18,7 @@
 
 ## 2.0.14
 
-- Require the `yara-python` version to be at least [4.2.3][yara-4.2.3] to address an arbitrary code execution vulnerability    
+- Require the `yara-python` version to be at least [4.2.3][yara-4.2.3] to address an arbitrary code execution vulnerability
 
 ## 2.0.13
 
@@ -88,8 +92,8 @@
     - `use_authentication_results_original`
   - Instead of returning a list of matches, `MailScanner.scan_email()` now returns a dictionary with the following keys
     - `matches` - The list of YARA matches
-    - `categories` - A deduplicated list of categories from the `catagory` meta value in YARA rule matches
-    - `trused_domain` - A boolean indicating if the authenticated from domain is in the `trusted_domains` list
+    - `categories` - A deduplicated list of categories from the `category` meta value in YARA rule matches
+    - `trusted_domain` - A boolean indicating if the authenticated from domain is in the `trusted_domains` list
     - `trusted_domain_yara_safe_required` - A boolean indicating if the authenticated from domain is in the `trusted_domains_yara_safe_required` list
     - `auth_optional` - A boolean indicating if the from domain authentication check is optional
     - `verdict` a verdict based on the above
@@ -97,7 +101,7 @@
   - Pass `-` as the scan path to scan a single email from standard input (stdin)
   - `--passwords` - A path to a list of passwords to use when brute-forcing password-protected attachments
   - `--trusted-domains-yara` - A path to a list of from domains that also require a YARA safe match
-  - `-t` `--test` - Test rules based on verdicts matching the name of the folder a sample is in 
+  - `-t` `--test` - Test rules based on verdicts matching the name of the folder a sample is in
 
 ## 1.1.1
 
@@ -138,7 +142,7 @@
 - Clean up `README.md`
 - Add `CHANGELOG.md`
 
-# 1.0.0
+## 1.0.0
 
 - Initial release
 

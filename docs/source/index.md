@@ -1,6 +1,6 @@
 # Welcome to yaramail's documentation
 
-[![Python tests](https://github.com/seanthegeek/yaramail/actions/workflows/python-tests.yaml/badge.svg)](https://github.com/seanthegeek/yaramail/actions/workflows/python-tests.yaml)
+[![Python tests](https://github.com/seanthegeek/yaramail/actions/workflows/python-tests.yml/badge.svg)](https://github.com/seanthegeek/yaramail/actions/workflows/python-tests.yml)
 [![PyPI](https://img.shields.io/pypi/v/yara-mail)](https://pypi.org/project/yara-mail/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/yara-mail?color=blue)](https://pypistats.org/packages/yara-mail)
 
@@ -11,7 +11,7 @@ yaramail is a Python package and command line utility for scanning emails with
 
 - Scans all parts of an email via API or CLI
   - Headers
-    -  Removes header indents by default for consistent scanning
+    - Removes header indents by default for consistent scanning
   - Plain text and HTML body content
     - Converts body content to Markdown by default for consistent scanning
   - Attachments
