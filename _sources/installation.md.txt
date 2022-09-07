@@ -80,4 +80,5 @@ pip3 install --user -U yaramail
 [homebrew]: https://brew.sh/
 [build_tools]: https://visualstudio.microsoft.com/downloads/#microsoft-visual-c-redistributable-for-visual-studio-2022
 [anaconda_distribution]: https://www.anaconda.com/products/distribution
+[pypi-name-issue]: https://github.com/pypa/pypi-support/issues/2098
 [venv]: https://docs.python.org/3/tutorial/venv.html

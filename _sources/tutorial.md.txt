@@ -9,7 +9,7 @@ to develop, store, and maintain  YARA rules, trusted domain lists, and sample
 emails, for a number of reasons.
 
 - Version control tracks who made what change when, with easy rollback
-- Automations can (and should) pull a fresh copy of the repository
+- Automation can (and should) pull a fresh copy of the repository
   before scanning
 - CI/CD workflows can [run tests](#testing-a-collection-of-samples)
   against a collection of emails samples before allowing the rules into
@@ -351,7 +351,7 @@ megabytes to several gigabytes in size. Malicious ISO files are much
 smaller, because they only contain malware payloads.
 
 ISO files contain the bytes `43 44 30 30 31` at offset `0`. This information
-can be combined with the special YARA variable `fiilesize` to look for small
+can be combined with the special YARA variable `filesize` to look for small
 ISO files.
 
 ```yara
@@ -452,7 +452,7 @@ rule workday {
 
 Users will often send marketing (i.e., junk) mail to a phishing report inbox,
 which can be a significant contributor to alert fatigue for those who are
-triaging the inbox. YARA rules can help reduce this noise.
+doing inbox triage. YARA rules can help reduce this noise.
 
 Start by looking through junk emails that have been reported. Make note of
 words or phrases that are common across different marketing campaigns,
@@ -634,7 +634,9 @@ for email in emails:
 
 ```
 
+[DMARC]: https://seanthegeek.net/459/demystifying-dmarc/
 [yara_rules]: https://yara.readthedocs.io/en/stable/writingrules.html
+[yara_include]: https://yara.readthedocs.io/en/stable/writingrules.html#including-files
 [yara_meta]: https://yara.readthedocs.io/en/stable/writingrules.html#metadata
 [yara_strings]: https://yara.readthedocs.io/en/stable/writingrules.html#strings
 [yara_text_strings]: https://yara.readthedocs.io/en/stable/writingrules.html#text-strings
@@ -642,3 +644,8 @@ for email in emails:
 [yara_regex]: https://yara.readthedocs.io/en/stable/writingrules.html#regular-expressions
 [yara_string_modifiers]: https://yara.readthedocs.io/en/stable/writingrules.html#string-modifier-summary
 [yara_condition]: https://yara.readthedocs.io/en/stable/writingrules.html#conditions
+[CyberChef]: https://github.com/gchq/CyberChef/releases
+[EDGAR]: https://www.sec.gov/edgar/searchedgar/companysearch.html
+[file signatures]: https://en.wikipedia.org/wiki/List_of_file_signatures
+[filesize]: https://yara.readthedocs.io/en/stable/writingrules.html#file-size
+[exiftool]: https://exiftool.org/

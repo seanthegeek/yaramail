@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorial &mdash; yaramail 2.0.17 documentation</title>
+  <title>Tutorial &mdash; yaramail 2.0.18 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -113,7 +113,7 @@ to develop, store, and maintain  YARA rules, trusted domain lists, and sample
 emails, for a number of reasons.</p>
 <ul class="simple">
 <li><p>Version control tracks who made what change when, with easy rollback</p></li>
-<li><p>Automations can (and should) pull a fresh copy of the repository
+<li><p>Automation can (and should) pull a fresh copy of the repository
 before scanning</p></li>
 <li><p>CI/CD workflows can <a class="reference internal" href="#testing-a-collection-of-samples"><span class="std std-doc">run tests</span></a>
 against a collection of emails samples before allowing the rules into
@@ -187,7 +187,7 @@ such as Abnormal Security.</p>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Read [Demystifying DMARC][DMARC] for more details about SPF, DKIM, and DMARC.</p>
+<p>Read <a class="reference external" href="https://seanthegeek.net/459/demystifying-dmarc/">Demystifying DMARC</a> for more details about SPF, DKIM, and DMARC.</p>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">safe</span></code> verdict is special. In order to reach a <code class="docutils literal notranslate"><span class="pre">safe</span></code> verdict, one of the
 following sets of conditions must be met.</p>
@@ -231,7 +231,7 @@ authenticated <strong>and</strong> the email includes known safe content.</p>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Use the [include][yara_include] directive in the YARA rule files that you pass
+<p>Use the <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#including-files">include</a> directive in the YARA rule files that you pass
 to <code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> to include rules from other files. That way, rules can be
 divided into separate files as you see fit.</p>
 </div>
@@ -357,7 +357,7 @@ message <code class="docutils literal notranslate"><span class="pre">From</span>
 match a wide range of name variations.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Use a local copy of [CyberChef][CyberChef] to quickly and privately test
+<p>Use a local copy of <a class="reference external" href="https://github.com/gchq/CyberChef/releases">CyberChef</a> to quickly and privately test
 regular expressions.</p>
 </div>
 <p>Most organizations add something to the beginning of an email subject or body
@@ -415,7 +415,7 @@ content.</p>
 <p class="admonition-title">Tip</p>
 <p>Full names (often including middle initials) of executives at
 publicly-traded US companies can be found in SEC filings, which are
-[publicly searchable][EDGAR] on EDGAR.</p>
+<a class="reference external" href="https://www.sec.gov/edgar/searchedgar/companysearch.html">publicly searchable</a> on EDGAR.</p>
 </div>
 <p>Rules in the <code class="docutils literal notranslate"><span class="pre">header_body</span></code> ruleset are checked against combined email header
 and email body content. A rule like the one above should be added to the
@@ -436,7 +436,7 @@ numbers. YARA rules can use these file signatures to target specific file
 types.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>A helpful list of [file type signatures][file signatures] can be found on
+<p>A helpful list of <a class="reference external" href="https://en.wikipedia.org/wiki/List_of_file_signatures">file type signatures</a> can be found on
 Wikipedia.</p>
 </div>
 <section id="small-iso-files">
@@ -450,7 +450,7 @@ used as bootable operating system installers that range from hundreds of
 megabytes to several gigabytes in size. Malicious ISO files are much
 smaller, because they only contain malware payloads.</p>
 <p>ISO files contain the bytes <code class="docutils literal notranslate"><span class="pre">43</span> <span class="pre">44</span> <span class="pre">30</span> <span class="pre">30</span> <span class="pre">31</span></code> at offset <code class="docutils literal notranslate"><span class="pre">0</span></code>. This information
-can be combined with the special YARA variable <code class="docutils literal notranslate"><span class="pre">fiilesize</span></code> to look for small
+can be combined with the special YARA variable <code class="docutils literal notranslate"><span class="pre">filesize</span></code> to look for small
 ISO files.</p>
 <div class="highlight-yara notranslate"><div class="highlight"><pre><span></span>rule small_iso {
     meta:
@@ -481,7 +481,7 @@ value is not a real name, it can still be used as a weak method of attribution
 if it is used in multiple PDFs in a campaign.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>[exiftool][exiftool] can show metadata for a wide variety of file
+<p><a class="reference external" href="https://exiftool.org/">exiftool</a> can show metadata for a wide variety of file
 types, including PDFs.</p>
 </div>
 <p>The YARA rule below identifies PDFs created by <code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">Robot</span> <span class="pre">Devil</span></code> that contain
@@ -547,7 +547,7 @@ links or attachments.</p>
 <h3>Checking if an email is junk<a class="headerlink" href="#checking-if-an-email-is-junk" title="Permalink to this heading"></a></h3>
 <p>Users will often send marketing (i.e., junk) mail to a phishing report inbox,
 which can be a significant contributor to alert fatigue for those who are
-triaging the inbox. YARA rules can help reduce this noise.</p>
+doing inbox triage. YARA rules can help reduce this noise.</p>
 <p>Start by looking through junk emails that have been reported. Make note of
 words or phrases that are common across different marketing campaigns,
 businesses, and industries. Some common examples include:</p>
