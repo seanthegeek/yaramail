@@ -213,6 +213,7 @@ authenticated <strong>and</strong> the email includes known safe content.</p>
 <span class="kn">from</span> <span class="nn">yaramail</span> <span class="kn">import</span> <span class="n">MailScanner</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;scanner&quot;</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">BasicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
 
 <span class="c1"># Initialize the scanner</span>
 <span class="n">scanner</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Avoid an IDE warning</span>
