@@ -17,6 +17,7 @@ rstcheck>=3.3.1
 sphinx
 sphinx_rtd_theme
 myst-parser
+myst-parser[linkify]
 wheel
 codecov
 hatch

@@ -11,7 +11,7 @@ raw/original depends on the email service or client being used.
 3. Select the entire raw message content, copy it, paste it into an empty text editor, and save the file with a `.eml` file extension
 
 ## Apple Mail on macOS
-    
+
 1. Right-click on the message in the list of messages
 2. Click Forward as Attachment
 3. Save the attachment and/or send the email
@@ -57,11 +57,11 @@ unsuitable for forensic analysis.
 
 Instead of using `msgconvert`, use one of these other Outlook clients.
 
-```{note}
+:::{note}
 If a `.msg` file is attached to an email and sent from a Windows Outlook
-client, the email will actually be sent as a `.eml` file. So, users can send 
+client, the email will actually be sent as a `.eml` file. So, users can send
 email samples without needing to worry about the file format.
-```
+:::
 
 ### Microsoft Outlook for macOS
 
