@@ -1,9 +1,4 @@
 {
-    "markdownlint.config": {
-    "MD033": false,
-    "MD041": false,
-    "MD053": false,
-    },
     "cSpell.words": [
         "amsmath",
         "autoclass",
@@ -27,6 +22,7 @@
         "levelname",
         "libpoppler",
         "linkify",
+        "mailparser",
         "mailsuite",
         "maxdepth",
         "modindex",
