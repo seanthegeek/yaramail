@@ -1,6 +1,6 @@
 # API
 
-```{eval-rst}
+```eval-rst}
 .. automodule:: yaramail
    :members:
    :undoc-members:

@@ -1,10 +1,10 @@
 # Installation
 
-```{warning}
-It is recommended to use `yaramail` in a different OS than what is targeted by 
+:::{warning}
+It is recommended to use `yaramail` in a different OS than what is targeted by
 the potential malware you are scanning. Consider using `yaramail` inside of a
 container or VM for additional security.
-```
+:::
 
 ## System dependencies
 
@@ -42,26 +42,26 @@ brew install pkg-config poppler python
 
 ## Install yaramail
 
-```{note}
-The official name for this project, package, and module is `yaramail`. 
+:::{note}
+The official name for this project, package, and module is `yaramail`.
 Unfortunately, the Python Package Index (PyPI) [did not allow that name to be
-used there][pypi-name-issue], so the PyPI project name for `yaramail` is 
+used there][pypi-name-issue], so the PyPI project name for `yaramail` is
 `yara-mail`.
-```
+:::
 
-```{warning}
+:::{warning}
 **Never** install Python packages as `root` or with `sudo`. Not only is it a
 huge security risk, but doing that will also pollute the system Python
 environment.
-```
+:::
 
 It is recommended to create a separate Python [virtual environment][venv]
 for any project that will use `yaramail`.
 
-```{note}
+:::{note}
 Conda environments are a type of virtual environment, so if you are using a
 Conda environment, there is no need to create a virtual environment.
-```
+:::
 
 Once the virtual environment has been created and activated, use `pip` to
 install `yaramail`.

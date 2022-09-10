@@ -65,30 +65,30 @@ authentication check. If your mail service does this, set the
 This allows multiple headers, but all `Authentication-Results` headers will
 be ignored if multiple DMARC results are found, to avoid spoofed results.
 
-```{warning}
+:::{warning}
 Authentication results are not verified by `yaramail`, so only use it on
 emails that have been received by trusted mail servers, and not on
 third-party emails.
-```
+:::
 
-```{warning}
+:::{warning}
 Set `allow_multiple_authentication_results` to `True` **if and only if**
 the receiving mail service splits the results of each authentication method
 in separate `Authentication-Results` headers **and always** includes DMARC
 results.
-```
+:::
 
-```{warning}
+:::{warning}
 Set `use_authentication_results_original` to `True`
 **if and only if** you use an email security gateway that adds an
 `Authentication-Results-Original` header, such as Proofpoint or Cisco
 IronPort. This **does not** include API-based email security solutions,
 such as Abnormal Security.
-```
+:::
 
-```{tip}
+:::{tip}
 Read [Demystifying DMARC][DMARC] for more details about SPF, DKIM, and DMARC.
-```
+:::
 
 The `safe` verdict is special. In order to reach a `safe` verdict, one of the
 following sets of conditions must be met.
@@ -136,11 +136,11 @@ except Exception as e:
     exit(-1)
 ```
 
-```{tip}
+:::{tip}
 Use the [include][yara_include] directive in the YARA rule files that you pass
 to `MailScanner` to include rules from other files. That way, rules can be
 divided into separate files as you see fit.
-```
+:::
 
 To scan an email, pass email content, a file-like object, or a file path to
 `MailScanner.scan_email()`. Take a look at the [API documentation](api) to
@@ -250,10 +250,10 @@ message `From` header, or in the email body. A YARA rule can check for this.
 [regular expressions][yara_regex] (regex) are handy, because one string can
 match a wide range of name variations.
 
-```{tip}
+:::{tip}
 Use a local copy of [CyberChef][CyberChef] to quickly and privately test
 regular expressions.
-```
+:::
 
 Most organizations add something to the beginning of an email subject or body
 to let the user know that the email came from an external, untrusted source.
@@ -308,11 +308,11 @@ rule planet_express_vip_impersonation {
 }
 ```
 
-```{tip}
+:::{tip}
 Full names (often including middle initials) of executives at
 publicly-traded US companies can be found in SEC filings, which are
 [publicly searchable][EDGAR] on EDGAR.
-```
+:::
 
 Rules in the `header_body` ruleset are checked against combined email header
 and email body content. A rule like the one above should be added to the
@@ -334,10 +334,10 @@ of a file). These file signatures are often called magic bytes or magic
 numbers. YARA rules can use these file signatures to target specific file
 types.
 
-```{tip}
+:::{tip}
 A helpful list of [file type signatures][file signatures] can be found on
 Wikipedia.
-```
+:::
 
 #### Small ISO files
 
@@ -369,10 +369,10 @@ rule small_iso {
 }
 ```
 
-```{tip}
+:::{tip}
 These types of conditions can also help to make YARA more efficient when it is
 being used as a filesystem scanner.
-```
+:::
 
 #### Credential harvesting PDFs
 
@@ -383,10 +383,10 @@ embedded into the document, including an `author` field. Even if this field
 value is not a real name, it can still be used as a weak method of attribution
 if it is used in multiple PDFs in a campaign.
 
-```{tip}
+:::{tip}
 [exiftool][exiftool] can show metadata for a wide variety of file
 types, including PDFs.
-```
+:::
 
 The YARA rule below identifies PDFs created by `The Robot Devil` that contain
 at least one clickable link.
@@ -407,11 +407,11 @@ rule robot_devil_pdf {
 }
 ```
 
-```{note}
+:::{note}
 Although `/URI(` as a text string could have been used to check for clickable
 links, using a regular expression is better in this situation, because it will
 show full URLs in the list of matches.
-```
+:::
 
 ### Real world example: Workday
 
@@ -500,23 +500,23 @@ files can be found:
 - `trusted_domains.txt` - A list of message from domains that return a `safe` verdict if the domain is authenticated and no YARA categories match other than safe
 - `trusted_domains_yara_safe_required.txt` - A list of message From domains that return a `safe` verdict if the domain is authenticated *and* the email itself has a YARA `safe` verdict
 
-```{note}
+:::{note}
 The expected names of these files can be changed using command-line arguments.
-```
+:::
 
-```{note}
+:::{note}
 If any of these files are missing or blank, the CLI will issue a warning, but
 the scanner will still run using the data it does have.
-```
+:::
 
 ### Scanning an individual sample
 
 To scan an individual sample, pass a path to the sample to `yaramail`.
 The scan results will be printed to the terminal's standard output.
 
-```{tip}
+:::{tip}
 To scan standard input (stdin) use `-` as the path to scan.
-```
+:::
 
 ### Scanning multiple samples
 
