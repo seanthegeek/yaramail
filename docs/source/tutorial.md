@@ -352,7 +352,7 @@ megabytes to several gigabytes in size. Malicious ISO files are much
 smaller, because they only contain malware payloads.
 
 ISO files contain the bytes `43 44 30 30 31` at offset `0`. This information
-can be combined with the special YARA variable `filesize` to look for small
+can be combined with the special YARA variable [filesize] to look for small
 ISO files.
 
 ```yara
