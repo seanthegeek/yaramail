@@ -451,7 +451,7 @@ used as bootable operating system installers that range from hundreds of
 megabytes to several gigabytes in size. Malicious ISO files are much
 smaller, because they only contain malware payloads.</p>
 <p>ISO files contain the bytes <code class="docutils literal notranslate"><span class="pre">43</span> <span class="pre">44</span> <span class="pre">30</span> <span class="pre">30</span> <span class="pre">31</span></code> at offset <code class="docutils literal notranslate"><span class="pre">0</span></code>. This information
-can be combined with the special YARA variable <code class="docutils literal notranslate"><span class="pre">filesize</span></code> to look for small
+can be combined with the special YARA variable <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#file-size">filesize</a> to look for small
 ISO files.</p>
 <div class="highlight-yara notranslate"><div class="highlight"><pre><span></span>rule small_iso {
     meta:
