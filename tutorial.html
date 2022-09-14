@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorial &mdash; yaramail 2.0.18 documentation</title>
+  <title>Tutorial &mdash; yaramail 2.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -450,9 +450,9 @@ be used to identify small ISO files.</p>
 used as bootable operating system installers that range from hundreds of
 megabytes to several gigabytes in size. Malicious ISO files are much
 smaller, because they only contain malware payloads.</p>
-<p>ISO files contain the bytes <code class="docutils literal notranslate"><span class="pre">43</span> <span class="pre">44</span> <span class="pre">30</span> <span class="pre">30</span> <span class="pre">31</span></code> at offset <code class="docutils literal notranslate"><span class="pre">0</span></code>. This information
-can be combined with the special YARA variable <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#file-size">filesize</a> to look for small
-ISO files.</p>
+<p>ISO files contain the bytes <code class="docutils literal notranslate"><span class="pre">43</span> <span class="pre">44</span> <span class="pre">30</span> <span class="pre">30</span> <span class="pre">31</span></code> (which is <code class="docutils literal notranslate"><span class="pre">CD001</span></code> in ASCII) at
+offsets <code class="docutils literal notranslate"><span class="pre">0x8001</span></code>, <code class="docutils literal notranslate"><span class="pre">0x8801</span></code>, or <code class="docutils literal notranslate"><span class="pre">0x9001</span></code>. This information can be combined with
+the special YARA variable <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#file-size">filesize</a> to look for small ISO files.</p>
 <div class="highlight-yara notranslate"><div class="highlight"><pre><span></span>rule small_iso {
     meta:
         author = &quot;Sean Whalen&quot;
@@ -460,9 +460,10 @@ ISO files.</p>
         category = &quot;malware&quot;
         description = &quot;A small ISO file&quot;
     strings:
-        $iso = {43 44 30 30 31} // Magic bytes for ISO files
+        $iso = &quot;CD001&quot;
     condition:
-        $iso at 0 and filesize &lt; 100MB
+        ($iso at 8001 or $iso at 8801 or $iso at 9001)
+        and filesize &lt; 200MB
 }
 </pre></div>
 </div>
@@ -600,6 +601,11 @@ files can be found:</p>
 <p class="admonition-title">Note</p>
 <p>If any of these files are missing or blank, the CLI will issue a warning, but
 the scanner will still run using the data it does have.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Starting in version 1.2.0, the contents of the message body will always be
+tried as ZIP passwords, along with <code class="docutils literal notranslate"><span class="pre">infected</span></code> and <code class="docutils literal notranslate"><span class="pre">malware</span></code>.</p>
 </div>
 <section id="scanning-an-individual-sample">
 <h3>Scanning an individual sample<a class="headerlink" href="#scanning-an-individual-sample" title="Permalink to this heading"></a></h3>

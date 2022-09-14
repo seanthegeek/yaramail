@@ -351,9 +351,9 @@ used as bootable operating system installers that range from hundreds of
 megabytes to several gigabytes in size. Malicious ISO files are much
 smaller, because they only contain malware payloads.
 
-ISO files contain the bytes `43 44 30 30 31` at offset `0`. This information
-can be combined with the special YARA variable [filesize] to look for small
-ISO files.
+ISO files contain the bytes `43 44 30 30 31` (which is `CD001` in ASCII) at
+offsets `0x8001`, `0x8801`, or `0x9001`. This information can be combined with
+the special YARA variable [filesize] to look for small ISO files.
 
 ```yara
 rule small_iso {
@@ -363,9 +363,10 @@ rule small_iso {
         category = "malware"
         description = "A small ISO file"
     strings:
-        $iso = {43 44 30 30 31} // Magic bytes for ISO files
+        $iso = "CD001"
     condition:
-        $iso at 0 and filesize < 100MB
+        ($iso at 8001 or $iso at 8801 or $iso at 9001)
+        and filesize < 200MB
 }
 ```
 
@@ -507,6 +508,11 @@ The expected names of these files can be changed using command-line arguments.
 :::{note}
 If any of these files are missing or blank, the CLI will issue a warning, but
 the scanner will still run using the data it does have.
+:::
+
+:::{note}
+Starting in version 1.2.0, the contents of the message body will always be
+tried as ZIP passwords, along with `infected` and `malware`.
 :::
 
 ### Scanning an individual sample
