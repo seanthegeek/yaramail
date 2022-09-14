@@ -336,7 +336,8 @@ types.
 
 :::{tip}
 A helpful list of [file type signatures][file signatures] can be found on
-Wikipedia.
+Wikipedia. The [Library of Congress][LOC] maintains extensive descriptions of
+many different file types.
 :::
 
 #### Small ISO files
@@ -654,5 +655,6 @@ for email in emails:
 [CyberChef]: https://github.com/gchq/CyberChef/releases
 [EDGAR]: https://www.sec.gov/edgar/searchedgar/companysearch.html
 [file signatures]: https://en.wikipedia.org/wiki/List_of_file_signatures
+[LOC]: https://www.loc.gov/preservation/digital/formats/fdd/browse_list.shtml
 [filesize]: https://yara.readthedocs.io/en/stable/writingrules.html#file-size
 [exiftool]: https://exiftool.org/
