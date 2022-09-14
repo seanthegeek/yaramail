@@ -1,5 +1,6 @@
 import logging
 from typing import Union, List, Dict
+import re
 import binascii
 from os import path, listdir
 from io import IOBase, BytesIO, StringIO
@@ -14,7 +15,41 @@ from mailsuite.utils import parse_email, from_trusted_domain, decode_base64
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
-__version__ = "2.0.18"
+__version__ = "2.1.0"
+
+
+delimiters = ["\"", "'", "`", "\*\*",
+              "_", ("\(", "\)"), ("\[", "\]"), ("\{", "\}")]
+
+password_regex = [re.compile(r"\s*(\S+)\s*", re.MULTILINE)]
+for delimiter in delimiters:
+    if isinstance(delimiter, str):
+        regex = re.compile(f"{delimiter}(.+){delimiter}", re.MULTILINE)
+        password_regex.append(regex)
+        regex = re.compile(f"{delimiter}.+{delimiter}", re.MULTILINE)
+        password_regex.append(regex)
+    elif isinstance(delimiter, tuple):
+        regex = re.compile(f"{delimiter[0]}(.+){delimiter[1]}", re.MULTILINE)
+        password_regex.append(regex)
+        regex = re.compile(f"{delimiter[0]}.+{delimiter[1]}", re.MULTILINE)
+        password_regex.append(regex)
+
+
+def _carve_passwords(content: str) -> List[str]:
+    passwords = []
+    for regex in password_regex:
+        matches = regex.findall(content)
+        passwords += matches
+    additional_passwords = []
+    for password in passwords:
+        # Make object type clear to IDEs
+        password = str(password)
+        # Account for any extra spaces added during markdown conversion
+        if " " in password:
+            additional_passwords.append(password.replace(" ", ""))
+            passwords += additional_passwords
+
+    return passwords
 
 
 def _deduplicate_list(og_list: list):
@@ -176,7 +211,13 @@ class MailScanner(object):
           solutions, such as Abnormal Security.
 
         .. note::
-          ``infected`` and ``malware`` are always tried as passwords.
+          ``infected`` and ``malware`` and the contents of the message body \
+            are always tried as passwords.
+
+        .. note::
+          Starting in version 2.1.0, the contents of the message body are \
+          automatically tried as passwords for password-protected ZIP \
+          attachments.
         """
         self._header_rules = header_rules
         self._body_rules = body_rules
@@ -220,7 +261,8 @@ class MailScanner(object):
         return markdown_matches
 
     def _scan_zip(self, payload: Union[bytes, BytesIO, str],
-                  filename: str = None, _current_depth: int = 0):
+                  filename: str = None, passwords: List[str] = None,
+                  _current_depth: int = 0):
         if isinstance(payload, str):
             if not path.exists(payload):
                 raise FileNotFoundError(f"{payload} not found")
@@ -236,7 +278,8 @@ class MailScanner(object):
         zip_matches = []
         with zipfile.ZipFile(payload) as zip_file:
             for name in zip_file.namelist():
-                passwords = [None] + self.passwords
+                if passwords is None:
+                    passwords == []
                 for password in passwords:
                     if isinstance(password, str):
                         password = password.encode("utf-8")
@@ -281,16 +324,18 @@ class MailScanner(object):
                         zip_matches += self._scan_zip(
                             member_content,
                             filename=name,
+                            passwords=passwords,
                             _current_depth=_current_depth)
                 for match in zip_matches:
                     match["tags"] = _deduplicate_list(match["tags"] + tags)
 
                 return zip_matches
 
-    def _scan_attachments(self, attachments: Union[List, Dict]) -> List[Dict]:
+    def _scan_attachments(self, attachments: Union[List, Dict],
+                          passwords: List[str] = None) -> List[Dict]:
         def add_location(_attachment_matches: List[Dict], _filename: str):
             for match in _attachment_matches:
-                base_location = f"attachment:{filename}"
+                base_location = f"attachment:{_filename}"
                 if "location" in match:
                     og_location = match["location"]
                     match["location"] = f"{base_location}:{og_location}"
@@ -298,6 +343,9 @@ class MailScanner(object):
                     match["location"] = base_location
             return _attachment_matches
 
+        if passwords is None:
+            passwords = []
+        passwords = [None] + passwords + self.passwords
         combined_attachment_matches = []
         if isinstance(attachments, dict):
             attachments = [attachments]
@@ -329,6 +377,7 @@ class MailScanner(object):
                 try:
                     attachment_matches += self._scan_zip(
                         payload,
+                        passwords=passwords,
                         filename=filename)
                     attachment_matches = add_location(attachment_matches,
                                                       filename)
@@ -458,7 +507,8 @@ class MailScanner(object):
                 header_body_match["location"] = "header_body"
                 matches.append(header_body_match)
         if self._attachment_rules:
-            matches += self._scan_attachments(attachments)
+            passwords = _carve_passwords(parsed_email["body_markdown"])
+            matches += self._scan_attachments(attachments, passwords=passwords)
 
         verdict = None
         multi_auth_headers = self.allow_multiple_authentication_results

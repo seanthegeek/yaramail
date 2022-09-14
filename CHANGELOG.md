@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.0
+
+- Use email body content to brute force password-protected ZIPs
+
 ## 2.0.17
 
 - Fix CLI log message output

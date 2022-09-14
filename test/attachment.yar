@@ -3,11 +3,12 @@ rule small_iso {
         author = "Sean Whalen"
         date = "2022-07-21"
         category = "malware"
-        discription = "A small ISO file"
+        description = "A small ISO file"
     strings:
-        $iso = {43 44 30 30 31} // Magic bytes for ISO files
+        $iso = "CD001"
     condition:
-        $iso at 0 and filesize < 100MB
+        ($iso at 8001 or $iso at 8801 or $iso at 9001)
+        and filesize < 200MB
 }
 
 rule robot_devil_pdf {

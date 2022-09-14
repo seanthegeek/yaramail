@@ -19,6 +19,7 @@ yaramail is a Python package and command line utility for scanning emails with
     - Emails attached to emails
     - PDF document text
     - ZIP file contents, including nested ZIP files
+      - Uses message body content as a list of possible ZIP passwords
       - Customizable list of passwords to use when attempting to scan encrypted ZIP files
 - Provides a built-in methodology for categorizing emails
 - Parses `Authentication-Results` headers
