@@ -1,5 +1,27 @@
 # Changelog
 
+## 3.0.0
+
+*Warning*
+This release is a major rewrite that includes changes breaking existing use
+
+- Logic changes
+  - Rules with a category of `safe` must have a matching `from_domain` `meta` value for the category to apply
+    - This logic replaces `trusted_domains_yara_safe_required`
+    - `auth_pass_not_yara_safe` verdict removed
+    - `trusted_domain`, `trusted_domain_yara_safe_required`, and `auth_optional` removed from results
+  - The `auth_optional`rule `meta` value only applies to that rule
+  - Including the second-level domain (SLD) in authentication checks is now set by the `include_sld` rule `meta` value
+  - Trusted domains are now called YARA optional domains
+- API changes
+  - `trusted_domains` renamed to `yara_optional_domains`
+  - `trusted_domains_yara_safe_required` parameter removed
+  - `include_sld_in_auth_check` parameter removed
+- CLI changes
+  - `--trusted-domains` renamed to `--yara-optional-domains`
+  - `--trusted-domains-yara` removed
+  - `--sld` removed
+
 ## 2.1.0
 
 - Use email body content to brute force password-protected ZIPs

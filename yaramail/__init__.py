@@ -145,10 +145,7 @@ class MailScanner(object):
                  attachment_rules: Union[str, IOBase, yara.Rules] = None,
                  passwords: Union[List[str], IOBase, str] = None,
                  max_zip_depth: int = None,
-                 trusted_domains: Union[List[str], IOBase, str] = None,
-                 trusted_domains_yara_safe_required: Union[List[str], IOBase,
-                                                           str] = None,
-                 include_sld_in_auth_check: bool = False,
+                 yara_optional_domains: Union[List[str], IOBase, str] = None,
                  allow_multiple_authentication_results: bool = False,
                  use_authentication_results_original: bool = False):
         """
@@ -169,12 +166,6 @@ class MailScanner(object):
             trusted_domains: A list of message From domains that return a \
             ``safe`` verdict if the domain is authenticated and no YARA \
             categories match other than ``safe``
-            trusted_domains_yara_safe_required: A list of message From \
-            domains that return a ``safe`` verdict if the domain is \
-            authenticated **and** the email itself has a YARA ``safe`` verdict
-            include_sld_in_auth_check: Check authentication results based on \
-            Second-Level Domain (SLD) in addition to the \
-            Fully-Qualified Domain Name (FQDN)
             allow_multiple_authentication_results: Allow multiple \
             ``Authentication-Results-Original`` headers when checking \
             authentication results
@@ -235,11 +226,7 @@ class MailScanner(object):
         self.passwords += ["malware", "infected"]
         self.passwords = _deduplicate_list(self.passwords)
         self.max_zip_depth = max_zip_depth
-        self.trusted_domains = _input_to_str_list(trusted_domains)
-        self.trusted_domains_yara_safe_required = _input_to_str_list(
-            trusted_domains_yara_safe_required
-        )
-        self.include_sld_in_auth_check = include_sld_in_auth_check
+        self.trusted_domains = _input_to_str_list(yara_optional_domains)
         allow_multi_auth = allow_multiple_authentication_results
         self.allow_multiple_authentication_results = allow_multi_auth
         use_og_auth = use_authentication_results_original
@@ -414,14 +401,6 @@ class MailScanner(object):
         - ``matches`` - A list of YARA match dictionaries
         - ``categories`` - A list of categories of YARA matches
         - ``msg_from_domain`` - The message From domain
-        - ``trusted_domain`` - The message From domain is in the
-          ``trusted_domains`` list **AND** is authenticated
-        - ``trusted_domain_yara_safe_required`` - The message From domain is
-          in the ``trusted_domain_yara_safe_required`` list **AND** is
-          is authenticated
-        - ``auth_optional`` - At least one matching YARA rule has
-          ``auth_optional = true`` **AND** ``category = safe`` in its ``meta``
-          section
         - ``has_attachment`` - The email sample has an attachment
         - ``verdict`` - The verdict of the scan
 
@@ -429,10 +408,8 @@ class MailScanner(object):
 
          - ``None`` - No categories matched
          - ``safe`` - The email is considered safe
-         - ``yara_safe_auth_fail`` -  Categorized at ``safe`` by YARA, but
+         - ``yara_safe_auth_fail`` -  Categorized as ``safe`` by YARA, but
            domain authentication failed
-         - ``auth_pass_not_yara_safe`` - Domain authentication passed, but YARA
-           did not return the required ``safe`` categorization
          - ``ambiguous`` - Multiple categories matched
          - Any custom ``category`` specified in the ``meta`` section of a YARA
            rule
