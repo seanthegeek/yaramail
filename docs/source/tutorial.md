@@ -129,7 +129,7 @@ try:
         body_rules="body.yar",
         header_body_rules="header_body.yar",
         attachment_rules="attachment.yar",
-        trusted_domains="trusted_domains.txt",
+        trusted_domains="yara_safe_optional_domains.txt",
         trusted_domains_yara_safe_required="trusted_yara_safe_required.txt")
 except Exception as e:
     logger.error(f"Could not initialize the scanner: {e}")
@@ -573,7 +573,7 @@ try:
         body_rules="body.yar",
         header_body_rules="header_body.yar",
         attachment_rules="attachment.yar",
-        trusted_domains="trusted_domains.txt",
+        trusted_domains="yara_safe_optional_domains.txt",
         trusted_domains_yara_safe_required="trusted_yara_safe_required.txt")
 except Exception as e:
     logger.error(f"Could not initialize the scanner: {e}")
