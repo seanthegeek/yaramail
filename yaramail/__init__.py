@@ -488,11 +488,6 @@ class MailScanner(object):
         verdict = None
         multi_auth_headers = self.allow_multiple_authentication_results
         use_og_auth_results = self.use_authentication_results_original
-        yara_safe_optional_domain = from_trusted_domain(
-            parsed_email, self.yara_safe_optional_domains,
-            allow_multiple_authentication_results=multi_auth_headers,
-            use_authentication_results_original=use_og_auth_results,
-        )
         authenticated_domain = from_trusted_domain(
             parsed_email, [parsed_email["from"]["domain"]],
             allow_multiple_authentication_results=multi_auth_headers,
