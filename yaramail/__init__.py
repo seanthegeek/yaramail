@@ -516,8 +516,7 @@ class MailScanner(object):
                 if match["meta"]["category"] == "safe":
                     if "auth_optional" in match["meta"]:
                         auth_optional = match["meta"]["auth_optional"]
-                    authenticated = any([yara_safe_optional_domain,
-                                         auth_optional, authenticated_domain])
+                    authenticated = auth_optional or authenticated_domain
                     if not authenticated:
                         categories.append("yara_safe_auth_fail")
                         continue
