@@ -8,8 +8,7 @@ usage: A YARA scanner for emails [-h] [-V] [-v] [-m] [-o] [-r] [-b] [-s] [-t]
                                  [--header-body-rules HEADER_BODY_RULES]
                                  [--attachment-rules ATTACHMENT_RULES]
                                  [--passwords PASSWORDS]
-                                 [--trusted-domains TRUSTED_DOMAINS]
-                                 [--trusted-domains-yara TRUSTED_DOMAINS_YARA]
+                                 [--yara-safe-optional-domains YARA_SAFE_OPTIONAL_DOMAINS]
                                  [--max-zip-depth MAX_ZIP_DEPTH]
                                  scan_path
 
@@ -54,17 +53,13 @@ options:
                         attachment.yar)
   --passwords PASSWORDS
                         Filename of a list of passwords to try against
-                        password-protected files (default: passwords.txt)
-  --trusted-domains TRUSTED_DOMAINS
+                        password-protected files in addition to email body
+                        content (default: passwords.txt)
+  --yara-safe-optional-domains YARA_SAFE_OPTIONAL_DOMAINS
                         Filename of a list of message From domains that return
                         a safe verdict if the domain is authenticated and no
                         YARA categories match other than safe (default:
-                        trusted_domains.txt)
-  --trusted-domains-yara TRUSTED_DOMAINS_YARA
-                        Filename of a list of message From domains that
-                        require an authenticated from domain and YARA safe
-                        verdict (default:
-                        trusted_domains_yara_safe_required.txt)
+                        yara_safe_optional_domains.txt)
   --max-zip-depth MAX_ZIP_DEPTH
                         The maximum number of times to recurse into nested ZIP
                         files (default: None)

@@ -6,12 +6,18 @@
 This release is a major rewrite that includes changes breaking existing use
 
 - Logic changes
-  - Rules with a category of `safe` must have a matching `from_domain` `meta` value for the category to apply
+  - Rules with a category of `safe` must have a `from_domain` `meta` value for the category to apply
     - This logic replaces `trusted_domains_yara_safe_required`
-    - `auth_pass_not_yara_safe` verdict removed
     - `trusted_domain`, `trusted_domain_yara_safe_required`, and `auth_optional` removed from results
+  - Warnings are located inside a `warnings` list in each match, instead of as a `verdict`
+    - A rule category does not apply if one or more warning is raised
+      - Possible warnings include
+        - `unexpected-attachment` - A rule with a `meta` value `no_attachment` or `no_attachments` set to `true` matched an email with one or more attachments
+        - `from-domain-mismatch` - The `from_domain` rule `meta` value does not match the from domain of the email message
+        - `domain-authentication-failed` - Domain authentication failed for a rule with a `from_domain` `meta` value set. This warning can be suppressed by setting the `auth_optional` `meta` value to `true`
+        - `safe-rule-missing-from-domain` - A rule with a `category` of `safe` does not have the required `from_domain` `meta` value
   - The `auth_optional`rule `meta` value only applies to that rule
-  - Trusted domains are now called YARA optional domains
+  - Trusted domains are now called YARA safe optional domains
 - API changes
   - `trusted_domains` renamed to `yara_safe_optional_domains`
   - `trusted_domains_yara_safe_required` parameter removed
@@ -20,6 +26,7 @@ This release is a major rewrite that includes changes breaking existing use
   - `--trusted-domains` renamed to `--yara-safe-optional-domains`
   - `--trusted-domains-yara` removed
   - `--sld` removed
+  - Log output delimiter changed from `:` to `|` to avoid conflicting with JSON
 
 ## 2.1.0
 

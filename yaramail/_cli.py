@@ -71,7 +71,8 @@ arg_parser.add_argument("--attachment-rules", type=str,
                         default="attachment.yar")
 arg_parser.add_argument("--passwords", type=str,
                         help="Filename of a list of passwords to try against "
-                             "password-protected files",
+                             "password-protected files in addition to email "
+                             "body content",
                         default="passwords.txt")
 arg_parser.add_argument("--yara-safe-optional-domains", type=str,
                         help="Filename of a list of message From domains that "
@@ -183,13 +184,13 @@ def _main():
                             if verdict != category:
                                 results = simplejson.dumps(results)
                                 logger.error(
-                                    f"fail:path={msg_path}:verdict={verdict}:"
-                                    f"expected={category}:results={results}")
+                                    f"fail|path={msg_path}|verdict={verdict}|"
+                                    f"expected={category}|results={results}")
                                 test_failures += 1
                             elif verbose:
                                 logger.info(
-                                    f"pass:path={msg_path}:verdict={verdict}:"
-                                    f"expected={category}:results={results}")
+                                    f"pass|path={msg_path}|verdict={verdict}|"
+                                    f"expected={category}|results={results}")
                         except Exception as e_:
                             logger.warning(f"{msg_path}: {e_}")
                             test_failures += 1

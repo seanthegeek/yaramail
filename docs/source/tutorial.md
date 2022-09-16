@@ -38,7 +38,8 @@ does several things. First, it scans the contents of the email headers, body,
 and attachments with user-provided YARA rules. Then, the `meta` section of each
 matching rule is checked for a `category` key. Each match category is
 added to a deduplicated list of `categories`. If a `from_domain` key
-exists in the `meta` section of a matching rule, the `category` of the rule is
+exists in the `meta` section of a matching rule (which is required for rules
+with a `safe` category). the `category` of the rule is
 only added to the list of `categories` if the message `From` domain of the
 email matches the `from_domain` value. If a `meta` key named `no_attachments`
 is set to `true`,  the `category` of the matching rule is only added to the
@@ -64,6 +65,11 @@ authentication check. If your mail service does this, set the
 `allow_multiple_authentication_results` parameter to `True`.
 This allows multiple headers, but all `Authentication-Results` headers will
 be ignored if multiple DMARC results are found, to avoid spoofed results.
+
+If a matching rule has a `from_domain` meta key (required for rules with a
+`safe` category), the domain of the message `From` address must match this
+domain for the rule's category to apply. Domain authentication must 
+pass, unless that rule has an `auth_optional` `meta` key value set to `true`.
 
 :::{warning}
 Authentication results are not verified by `yaramail`, so only use it on
@@ -91,11 +97,11 @@ Read [Demystifying DMARC][DMARC] for more details about SPF, DKIM, and DMARC.
 :::
 
 The `safe` verdict is special. In order to reach a `safe` verdict, one of the
-following sets of conditions must be met.
+following set of conditions must be met.
 
-1. An authenticated domain is in the `trusted_domains` list **and** the categories list is empty **or** only contains `safe`
-2. **Any** of the matching rules have a meta value `auth_optional` set to `true` **and** the categories list contains one value, `safe`
-3. An authenticated domain is in the `trusted_domains_yara_safe_required` list **and** the categories list contains one value, `safe`
+1. The domain of the email address in the message `From` header is in the `yara_safe_optional_domains` list, domain authentication passed, **and** no categories match other than `safe`
+2. A rule with a `safe` category has a `from_domain` meta value that matches the message `From` domain, the meta value `auth_optiona`, set to `true`, **and** the categories list contains one value, `safe`
+3. A rule with a `safe` category has a `from_domain` meta value that matches the message `From` domain, domain authentication passed, **and** the categories list contains one value, `safe` 
 
 The first scenario is useful in situations where the sending domain is
 trusted, but the email content is not consistent enough for a YARA rule.
@@ -103,8 +109,8 @@ trusted, but the email content is not consistent enough for a YARA rule.
 The second scenario is useful is situations where the sender can't or won't
 use DKIM properly, but very specific email content traits can be identified.
 
-The third scenario is the most trusted, because the email from domain has been
-authenticated **and** the email includes known safe content.
+The third scenario is the most trusted, because the message `From` domain has
+been authenticated **and** the email includes known safe content.
 
 ## Getting started
 
@@ -129,8 +135,7 @@ try:
         body_rules="body.yar",
         header_body_rules="header_body.yar",
         attachment_rules="attachment.yar",
-        trusted_domains="yara_safe_optional_domains.txt",
-        trusted_domains_yara_safe_required="trusted_yara_safe_required.txt")
+        yara_safe_optional_domains="yara_safe_optional_domains.txt")
 except Exception as e:
     logger.error(f"Could not initialize the scanner: {e}")
     exit(-1)
@@ -161,8 +166,8 @@ pairs of metadata that can be useful to humans and/or the scanner application.
 | Key              | Description                                                                                                                                                                           |
 |------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `category`       | The `category` of the rule. This can be any string, but the value `safe` is special. Rules without a `category` are considered informational, and do not contribute to the `verdict`. |
-| `from_domain`    | If this value is set, the rule’s `category` only applies to emails with the specified message From domain.                                                                            |
-| `auth_optional`  | Do not factor authentication into the `verdict` if the rule matches AND the rule’s category is `safe`.                                                                                |
+| `from_domain`    | If this value is set, the rule’s `category` only applies to emails with the specified message `From` domain. Required for `safe` category rules.                                      |
+| `auth_optional`  | Do not factor domain authentication into the `verdict` if the rule matches                                                                                                            |
 | `no_attachments` | If this value is true, the rule’s category only applies to emails with no attachments.                                                                                                |
 | `no_attachment`  | Alias of `no_attachment`.                                                                                                                                                             |
 
@@ -573,8 +578,7 @@ try:
         body_rules="body.yar",
         header_body_rules="header_body.yar",
         attachment_rules="attachment.yar",
-        trusted_domains="yara_safe_optional_domains.txt",
-        trusted_domains_yara_safe_required="trusted_yara_safe_required.txt")
+        yara_safe_optional_domains="yara_safe_optional_domains.txt")
 except Exception as e:
     logger.error(f"Could not initialize the scanner: {e}")
     exit(-1)

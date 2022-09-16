@@ -67,9 +67,9 @@ def _match_to_dict(match: Union[yara.Match,
                     namespace=_match.namespace,
                     tags=_match.tags,
                     meta=_match.meta,
-                    strings=_match.strings
+                    strings=_match.strings,
+                    warnings=[]
                     )
-
     if isinstance(match, list):
         matches = match.copy()
         for i in range(len(matches)):
@@ -497,26 +497,31 @@ class MailScanner(object):
         has_attachment = len(attachments) > 0
         for match in matches:
             auth_optional = False
+            if "auth_optional" in match["meta"]:
+                auth_optional = match["meta"]["auth_optional"]
+            authenticated = authenticated_domain or auth_optional
             if "no_attachments" in match["meta"]:
                 if match["meta"]["no_attachments"] and has_attachment:
+                    match["warnings"].append("unexpected-attachment")
                     continue
             if "no_attachment" in match["meta"]:
                 if match["meta"]["no_attachment"] and has_attachment:
+                    match["warnings"].append("unexpected-attachment")
                     continue
+            rule_from_domain = None
             if "from_domain" in match["meta"]:
-                domain = parsed_email["from"]["domain"]
-                if domain != match["meta"]["from_domain"]:
-                    continue
+                rule_from_domain = match["meta"]["from_domain"]
+                if rule_from_domain != parsed_email["from"]["domain"]:
+                    match["warnings"].append("from-domain-mismatch")
+                if not authenticated:
+                    match["warnings"].append("domain-authentication-failed")
             if "category" in match["meta"]:
                 if match["meta"]["category"] == "safe":
-                    if "auth_optional" in match["meta"]:
-                        auth_optional = match["meta"]["auth_optional"]
-                    authenticated = auth_optional or authenticated_domain
-                    if not authenticated:
-                        categories.append("yara_safe_auth_fail")
-                        continue
-
-                categories.append(match["meta"]["category"])
+                    if rule_from_domain is None:
+                        match["warnings"].append(
+                            "safe-rule-missing-from-domain")
+                if len(match["warnings"]) == 0:
+                    categories.append(match["meta"]["category"])
 
         categories = _deduplicate_list(categories)
         if len(categories) == 1:
