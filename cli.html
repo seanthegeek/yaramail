@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CLI &mdash; yaramail 2.1.0 documentation</title>
+  <title>CLI &mdash; yaramail 3.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -81,8 +81,7 @@
                                  [--header-body-rules HEADER_BODY_RULES]
                                  [--attachment-rules ATTACHMENT_RULES]
                                  [--passwords PASSWORDS]
-                                 [--trusted-domains TRUSTED_DOMAINS]
-                                 [--trusted-domains-yara TRUSTED_DOMAINS_YARA]
+                                 [--implicit-safe-domains IMPLICIT_SAFE_DOMAINS]
                                  [--max-zip-depth MAX_ZIP_DEPTH]
                                  scan_path
 
@@ -127,17 +126,13 @@ options:
                         attachment.yar)
   --passwords PASSWORDS
                         Filename of a list of passwords to try against
-                        password-protected files (default: passwords.txt)
-  --trusted-domains TRUSTED_DOMAINS
+                        password-protected files in addition to email body
+                        content (default: passwords.txt)
+  --implicit-safe-domains IMPLICIT_SAFE_DOMAINS
                         Filename of a list of message From domains that return
                         a safe verdict if the domain is authenticated and no
                         YARA categories match other than safe (default:
-                        trusted_domains.txt)
-  --trusted-domains-yara TRUSTED_DOMAINS_YARA
-                        Filename of a list of message From domains that
-                        require an authenticated from domain and YARA safe
-                        verdict (default:
-                        trusted_domains_yara_safe_required.txt)
+                        implicit_safe_domains.txt)
   --max-zip-depth MAX_ZIP_DEPTH
                         The maximum number of times to recurse into nested ZIP
                         files (default: None)

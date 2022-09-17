@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorial &mdash; yaramail 2.1.0 documentation</title>
+  <title>Tutorial &mdash; yaramail 3.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -43,12 +43,14 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#best-practices">Best practices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#methodology">Methodology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting started</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#anatomy-of-a-yara-rule">Anatomy of a YARA rule</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#meta">meta</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#strings">strings</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#condition">condition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#methodology">Methodology</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#anatomy-of-a-yara-rule">Anatomy of a YARA rule</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#meta">meta</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#strings">strings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#condition">condition</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#practical-yara-rule-examples">Practical YARA rule examples</a><ul>
@@ -132,24 +134,43 @@ submit their changes for review, they create a Pull Request, and a project
 maintainer reviews the proposed changes before squashing and merging commits
 into the upstream <code class="docutils literal notranslate"><span class="pre">main</span></code> branch.</p>
 </section>
+<section id="getting-started">
+<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this heading"></a></h2>
+<p>Follow the <a class="reference internal" href="installation.html"><span class="doc std std-doc">installation guide</span></a>.</p>
+<p>Import <code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> from <code class="docutils literal notranslate"><span class="pre">yaramail</span></code>, and create a new
+<a class="reference internal" href="api.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> object</span></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">yaramail</span> <span class="kn">import</span> <span class="n">MailScanner</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;scanner&quot;</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+<span class="c1"># Initialize the scanner</span>
+<span class="n">scanner</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Avoid an IDE warning</span>
+<span class="k">try</span><span class="p">:</span>
+  <span class="n">scanner</span> <span class="o">=</span> <span class="n">MailScanner</span><span class="p">(</span>
+    <span class="n">header_rules</span><span class="o">=</span><span class="s2">&quot;header.yar&quot;</span><span class="p">,</span>
+    <span class="n">body_rules</span><span class="o">=</span><span class="s2">&quot;body.yar&quot;</span><span class="p">,</span>
+    <span class="n">header_body_rules</span><span class="o">=</span><span class="s2">&quot;header_body.yar&quot;</span><span class="p">,</span>
+    <span class="n">attachment_rules</span><span class="o">=</span><span class="s2">&quot;attachment.yar&quot;</span><span class="p">,</span>
+    <span class="n">implicit_safe_domains</span><span class="o">=</span><span class="s2">&quot;implicit_safe_domains.txt&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+  <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not initialize the scanner: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+  <span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To scan an email, pass email content, a file-like object, or a file path to
+<code class="docutils literal notranslate"><span class="pre">MailScanner.scan_email()</span></code>. Take a look at the <a class="reference internal" href="api.html"><span class="doc std std-doc">API documentation</span></a> to
+learn about the returned objects.</p>
+</section>
 <section id="methodology">
 <h2>Methodology<a class="headerlink" href="#methodology" title="Permalink to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">yaramail</span></code> module contains a <code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> class. When <code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> scans
 an email, it attempts to use a combination of email authentication results and
 YARA rule matches to categorize an email and reach a <code class="docutils literal notranslate"><span class="pre">verdict</span></code>. To do this, it
-does several things. First, it scans the contents of the email headers, body,
-and attachments with user-provided YARA rules. Then, the <code class="docutils literal notranslate"><span class="pre">meta</span></code> section of each
-matching rule is checked for a <code class="docutils literal notranslate"><span class="pre">category</span></code> key. Each match category is
-added to a deduplicated list of <code class="docutils literal notranslate"><span class="pre">categories</span></code>. If a <code class="docutils literal notranslate"><span class="pre">from_domain</span></code> key
-exists in the <code class="docutils literal notranslate"><span class="pre">meta</span></code> section of a matching rule, the <code class="docutils literal notranslate"><span class="pre">category</span></code> of the rule is
-only added to the list of <code class="docutils literal notranslate"><span class="pre">categories</span></code> if the message <code class="docutils literal notranslate"><span class="pre">From</span></code> domain of the
-email matches the <code class="docutils literal notranslate"><span class="pre">from_domain</span></code> value. If a <code class="docutils literal notranslate"><span class="pre">meta</span></code> key named <code class="docutils literal notranslate"><span class="pre">no_attachments</span></code>
-is set to <code class="docutils literal notranslate"><span class="pre">true</span></code>,  the <code class="docutils literal notranslate"><span class="pre">category</span></code> of the matching rule is only added to the
-list of<code class="docutils literal notranslate"><span class="pre">categories</span></code> if the email as no attachments.</p>
-<p>If a single category is in the list of <code class="docutils literal notranslate"><span class="pre">categories</span></code>, the <code class="docutils literal notranslate"><span class="pre">verdict</span></code> is set to
-that category. If multiple categories are listed, the verdict is set to
-<code class="docutils literal notranslate"><span class="pre">ambiguous</span></code>. If no categories are listed, the verdict is set to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-<p>Then, the <code class="docutils literal notranslate"><span class="pre">Authentication-Results</span></code> of the email is parsed. The
+does several things.</p>
+<p>First, the <code class="docutils literal notranslate"><span class="pre">Authentication-Results</span></code> header of the email is parsed. The
 <code class="docutils literal notranslate"><span class="pre">Authentication-Results</span></code> header is added by the receiving mail server as a way
 of logging the results of authentication checks that prove that the domain
 in the message <code class="docutils literal notranslate"><span class="pre">From</span></code> header was not spoofed. Most email services — including
@@ -157,7 +178,7 @@ Microsoft 365 and Gmail — use a single <code class="docutils literal notransla
 to log the results of all authentication checks. By default,
 all <code class="docutils literal notranslate"><span class="pre">Authentication-Results</span></code> headers will be ignored if multiple
 <code class="docutils literal notranslate"><span class="pre">Authentication-Results</span></code> headers are found in an email. This is done to avoid
-false positives when an attacker adds their own<code class="docutils literal notranslate"><span class="pre">Authentication-Results</span></code>
+false positives when an attacker adds their own <code class="docutils literal notranslate"><span class="pre">Authentication-Results</span></code>
 header to an email before it reaches the destination mail server.</p>
 <p>Postfix mail servers use a separate <code class="docutils literal notranslate"><span class="pre">Authentication-Results</span></code> header for each
 authentication check. If your mail service does this, set the
@@ -189,94 +210,93 @@ such as Abnormal Security.</p>
 <p class="admonition-title">Tip</p>
 <p>Read <a class="reference external" href="https://seanthegeek.net/459/demystifying-dmarc/">Demystifying DMARC</a> for more details about SPF, DKIM, and DMARC.</p>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">safe</span></code> verdict is special. In order to reach a <code class="docutils literal notranslate"><span class="pre">safe</span></code> verdict, one of the
-following sets of conditions must be met.</p>
-<ol class="arabic simple">
-<li><p>An authenticated domain is in the <code class="docutils literal notranslate"><span class="pre">trusted_domains</span></code> list <strong>and</strong> the categories list is empty <strong>or</strong> only contains <code class="docutils literal notranslate"><span class="pre">safe</span></code></p></li>
-<li><p><strong>Any</strong> of the matching rules have a meta value <code class="docutils literal notranslate"><span class="pre">auth_optional</span></code> set to <code class="docutils literal notranslate"><span class="pre">true</span></code> <strong>and</strong> the categories list contains one value, <code class="docutils literal notranslate"><span class="pre">safe</span></code></p></li>
-<li><p>An authenticated domain is in the <code class="docutils literal notranslate"><span class="pre">trusted_domains_yara_safe_required</span></code> list <strong>and</strong> the categories list contains one value, <code class="docutils literal notranslate"><span class="pre">safe</span></code></p></li>
-</ol>
-<p>The first scenario is useful in situations where the sending domain is
-trusted, but the email content is not consistent enough for a YARA rule.</p>
-<p>The second scenario is useful is situations where the sender can’t or won’t
-use DKIM properly, but very specific email content traits can be identified.</p>
-<p>The third scenario is the most trusted, because the email from domain has been
-authenticated <strong>and</strong> the email includes known safe content.</p>
-</section>
-<section id="getting-started">
-<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this heading"></a></h2>
-<p>Follow the <a class="reference internal" href="installation.html"><span class="doc std std-doc">installation guide</span></a>.</p>
-<p>Import <code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> from <code class="docutils literal notranslate"><span class="pre">yaramail</span></code>, and create a new
-<a class="reference internal" href="api.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> object</span></a></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
-
-<span class="kn">from</span> <span class="nn">yaramail</span> <span class="kn">import</span> <span class="n">MailScanner</span>
-
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;scanner&quot;</span><span class="p">)</span>
-<span class="n">logging</span><span class="o">.</span><span class="n">BasicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
-
-<span class="c1"># Initialize the scanner</span>
-<span class="n">scanner</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Avoid an IDE warning</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="n">scanner</span> <span class="o">=</span> <span class="n">MailScanner</span><span class="p">(</span>
-        <span class="n">header_rules</span><span class="o">=</span><span class="s2">&quot;header.yar&quot;</span><span class="p">,</span>
-        <span class="n">body_rules</span><span class="o">=</span><span class="s2">&quot;body.yar&quot;</span><span class="p">,</span>
-        <span class="n">header_body_rules</span><span class="o">=</span><span class="s2">&quot;header_body.yar&quot;</span><span class="p">,</span>
-        <span class="n">attachment_rules</span><span class="o">=</span><span class="s2">&quot;attachment.yar&quot;</span><span class="p">,</span>
-        <span class="n">trusted_domains</span><span class="o">=</span><span class="s2">&quot;trusted_domains.txt&quot;</span><span class="p">,</span>
-        <span class="n">trusted_domains_yara_safe_required</span><span class="o">=</span><span class="s2">&quot;trusted_yara_safe_required.txt&quot;</span><span class="p">)</span>
-<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not initialize the scanner: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>Use the <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#including-files">include</a> directive in the YARA rule files that you pass
-to <code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> to include rules from other files. That way, rules can be
-divided into separate files as you see fit.</p>
-</div>
-<p>To scan an email, pass email content, a file-like object, or a file path to
-<code class="docutils literal notranslate"><span class="pre">MailScanner.scan_email()</span></code>. Take a look at the <a class="reference internal" href="api.html"><span class="doc std std-doc">API documentation</span></a> to
-learn about the returned objects.</p>
-</section>
+<p>Then, the message header, body, and attachment content is scanned with
+user-provided <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html">YARA rules</a> that provide a flexible method of
+checking content against known malicious and trusted patterns.</p>
 <section id="anatomy-of-a-yara-rule">
-<h2>Anatomy of a YARA rule<a class="headerlink" href="#anatomy-of-a-yara-rule" title="Permalink to this heading"></a></h2>
-<p><a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html">YARA rules</a> provide a flexible method of checking email header,
-body, and attachment content against known malicious and trusted patterns. The
-rules consist of three sections: <code class="docutils literal notranslate"><span class="pre">meta</span></code>, <code class="docutils literal notranslate"><span class="pre">strings</span></code>, and <code class="docutils literal notranslate"><span class="pre">condition</span></code>.</p>
+<h3>Anatomy of a YARA rule<a class="headerlink" href="#anatomy-of-a-yara-rule" title="Permalink to this heading"></a></h3>
+<p>YARA rules consist of three sections: <code class="docutils literal notranslate"><span class="pre">meta</span></code>, <code class="docutils literal notranslate"><span class="pre">strings</span></code>, and <code class="docutils literal notranslate"><span class="pre">condition</span></code>.</p>
 <section id="meta">
-<h3>meta<a class="headerlink" href="#meta" title="Permalink to this heading"></a></h3>
+<h4>meta<a class="headerlink" href="#meta" title="Permalink to this heading"></a></h4>
 <p>The <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#metadata">meta section</a> specifies arbitrary metadata key-value
 pairs of metadata that can be useful to humans and/or the scanner application.
-<code class="docutils literal notranslate"><span class="pre">yaramail</span></code> uses a few specific metadata keys:</p>
-<table class="colwidths-auto docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Key</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">category</span></code></p></td>
-<td><p>The <code class="docutils literal notranslate"><span class="pre">category</span></code> of the rule. This can be any string, but the value <code class="docutils literal notranslate"><span class="pre">safe</span></code> is special. Rules without a <code class="docutils literal notranslate"><span class="pre">category</span></code> are considered informational, and do not contribute to the <code class="docutils literal notranslate"><span class="pre">verdict</span></code>.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">from_domain</span></code></p></td>
-<td><p>If this value is set, the rule’s <code class="docutils literal notranslate"><span class="pre">category</span></code> only applies to emails with the specified message From domain.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">auth_optional</span></code></p></td>
-<td><p>Do not factor authentication into the <code class="docutils literal notranslate"><span class="pre">verdict</span></code> if the rule matches AND the rule’s category is <code class="docutils literal notranslate"><span class="pre">safe</span></code>.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">no_attachments</span></code></p></td>
-<td><p>If this value is true, the rule’s category only applies to emails with no attachments.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">no_attachment</span></code></p></td>
-<td><p>Alias of <code class="docutils literal notranslate"><span class="pre">no_attachment</span></code>.</p></td>
-</tr>
-</tbody>
-</table>
+<code class="docutils literal notranslate"><span class="pre">yaramail</span></code> uses a few specific <code class="docutils literal notranslate"><span class="pre">meta</span></code> keys.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">meta</span></code> section of each matching rule is checked
+for an optional <code class="docutils literal notranslate"><span class="pre">category</span></code> key. Each match category is added to a
+deduplicated list of <code class="docutils literal notranslate"><span class="pre">categories</span></code>, if the additional criteria specified in
+the rule’s <code class="docutils literal notranslate"><span class="pre">meta</span></code> section is met.</p>
+<p>If a single category is in the list of <code class="docutils literal notranslate"><span class="pre">categories</span></code>, the <code class="docutils literal notranslate"><span class="pre">verdict</span></code> is set to
+that category. If multiple categories are listed, the verdict is set to
+<code class="docutils literal notranslate"><span class="pre">ambiguous</span></code>. If no categories are listed, the verdict is set to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In extremely rare cases, a trusted domain may send a wide variety of automated
+emails that do not fit into patterns, making YARA rules impractical.
+To account for this, a domain can be added to the <code class="docutils literal notranslate"><span class="pre">implicit_safe_domains</span></code>
+list, which will add a <code class="docutils literal notranslate"><span class="pre">category</span></code> of <code class="docutils literal notranslate"><span class="pre">safe</span></code> to every email from that
+domain, as long as the domain is authenticated. The emails will still be
+scanned by YARA, so any YARA category matches other than <code class="docutils literal notranslate"><span class="pre">safe</span></code> will still
+return an <code class="docutils literal notranslate"><span class="pre">ambiguous</span></code> verdict.</p>
+<p><em>Only do this as a last resort</em>, because implicitly trusting all emails from
+a domain would cause a malicious email to be categorized as <code class="docutils literal notranslate"><span class="pre">safe</span></code>.</p>
+</div>
+<section id="auth-optional">
+<h5>auth_optional<a class="headerlink" href="#auth-optional" title="Permalink to this heading"></a></h5>
+<p>Do not require domain authentication for the rule’s category to apply.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This only applies when <code class="docutils literal notranslate"><span class="pre">from_domain</span></code> is set.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Only set this key to true if the sender is known to not properly DKIM sign
+their email.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Emails without proper authentication may have a spoofed message <code class="docutils literal notranslate"><span class="pre">From</span></code>
+domain, so take extra care to write YARA rules matching known safe content as
+detailed and narrow as possible.</p>
+</div>
+</section>
+<section id="authentication-optional">
+<h5>authentication_optional<a class="headerlink" href="#authentication-optional" title="Permalink to this heading"></a></h5>
+<p>Alias of <code class="docutils literal notranslate"><span class="pre">auth_optional</span></code>.</p>
+</section>
+<section id="category">
+<h5>category<a class="headerlink" href="#category" title="Permalink to this heading"></a></h5>
+<p>The <code class="docutils literal notranslate"><span class="pre">category</span></code> of the rule. This can be any string, but the value <code class="docutils literal notranslate"><span class="pre">safe</span></code> is
+special. Rules without a <code class="docutils literal notranslate"><span class="pre">category</span></code> key are considered informational, and do
+not contribute to the <code class="docutils literal notranslate"><span class="pre">verdict</span></code>.</p>
+</section>
+<section id="from-domain">
+<h5>from_domain<a class="headerlink" href="#from-domain" title="Permalink to this heading"></a></h5>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This key <strong>must</strong> be set for rules with a category of <code class="docutils literal notranslate"><span class="pre">safe</span></code>.</p>
+</div>
+<p>If this key is set, the rule’s <code class="docutils literal notranslate"><span class="pre">category</span></code> only applies to emails when the
+message <code class="docutils literal notranslate"><span class="pre">From</span></code> domain that matches this value exactly. Multiple domains can be
+specified in this value by separating them with spaces.</p>
+<p>Domain authentication must pass, unless that rule has an <code class="docutils literal notranslate"><span class="pre">auth_optional</span></code> meta
+key with the value set to <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
+</section>
+<section id="from-domains">
+<h5>from_domains<a class="headerlink" href="#from-domains" title="Permalink to this heading"></a></h5>
+<p>Alias of <code class="docutils literal notranslate"><span class="pre">from_domain</span></code>.</p>
+</section>
+<section id="no-attachment">
+<h5>no_attachment<a class="headerlink" href="#no-attachment" title="Permalink to this heading"></a></h5>
+<p>If this key is <code class="docutils literal notranslate"><span class="pre">true</span></code>, the rule’s <code class="docutils literal notranslate"><span class="pre">category</span></code> only applies to emails with no
+attachments.</p>
+</section>
+<section id="no-attachments">
+<h5>no_attachments<a class="headerlink" href="#no-attachments" title="Permalink to this heading"></a></h5>
+<p>Alias of <code class="docutils literal notranslate"><span class="pre">no_attachment</span></code>.</p>
+</section>
 </section>
 <section id="strings">
-<h3>strings<a class="headerlink" href="#strings" title="Permalink to this heading"></a></h3>
+<h4>strings<a class="headerlink" href="#strings" title="Permalink to this heading"></a></h4>
 <p>The <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#strings">strings section</a> specifies strings to match.</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#text-strings">Text strings</a> are surrounded by <code class="docutils literal notranslate"><span class="pre">&quot;</span></code></p></li>
@@ -287,9 +307,10 @@ pairs of metadata that can be useful to humans and/or the scanner application.
 only, and more.</p>
 </section>
 <section id="condition">
-<h3>condition<a class="headerlink" href="#condition" title="Permalink to this heading"></a></h3>
+<h4>condition<a class="headerlink" href="#condition" title="Permalink to this heading"></a></h4>
 <p>The <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#conditions">condition section</a> consists of a Boolean expression that
 describes when the rule should match.</p>
+</section>
 </section>
 </section>
 <section id="practical-yara-rule-examples">
@@ -643,13 +664,14 @@ testing pipelines.</p>
 <span class="kn">from</span> <span class="nn">yaramail</span> <span class="kn">import</span> <span class="n">MailScanner</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;scanner&quot;</span><span class="p">)</span>
-<span class="n">logging</span><span class="o">.</span><span class="n">BasicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
 
 <span class="k">def</span> <span class="nf">escalate_to_incident_response</span><span class="p">(</span><span class="n">_report_email</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
                                   <span class="n">priority</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span><span class="p">):</span>
-    <span class="n">m</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Escalating </span><span class="si">{</span><span class="n">priority</span><span class="si">}</span><span class="s2"> priority email&quot;</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-    <span class="c1"># TODO: Do something!</span>
+  <span class="n">m</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Escalating </span><span class="si">{</span><span class="n">priority</span><span class="si">}</span><span class="s2"> priority email&quot;</span>
+  <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+  <span class="c1"># TODO: Do something!</span>
 
 
 <span class="n">malicious_categories</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;credential-harvesting&quot;</span><span class="p">,</span> <span class="s2">&quot;fraud&quot;</span><span class="p">,</span> <span class="s2">&quot;malware&quot;</span><span class="p">]</span>
@@ -658,77 +680,77 @@ testing pipelines.</p>
 <span class="c1"># Initialize the scanner</span>
 <span class="n">scanner</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Avoid an IDE warning</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="n">scanner</span> <span class="o">=</span> <span class="n">MailScanner</span><span class="p">(</span>
-        <span class="n">header_rules</span><span class="o">=</span><span class="s2">&quot;header.yar&quot;</span><span class="p">,</span>
-        <span class="n">body_rules</span><span class="o">=</span><span class="s2">&quot;body.yar&quot;</span><span class="p">,</span>
-        <span class="n">header_body_rules</span><span class="o">=</span><span class="s2">&quot;header_body.yar&quot;</span><span class="p">,</span>
-        <span class="n">attachment_rules</span><span class="o">=</span><span class="s2">&quot;attachment.yar&quot;</span><span class="p">,</span>
-        <span class="n">trusted_domains</span><span class="o">=</span><span class="s2">&quot;trusted_domains.txt&quot;</span><span class="p">,</span>
-        <span class="n">trusted_domains_yara_safe_required</span><span class="o">=</span><span class="s2">&quot;trusted_yara_safe_required.txt&quot;</span><span class="p">)</span>
+  <span class="n">scanner</span> <span class="o">=</span> <span class="n">MailScanner</span><span class="p">(</span>
+    <span class="n">header_rules</span><span class="o">=</span><span class="s2">&quot;header.yar&quot;</span><span class="p">,</span>
+    <span class="n">body_rules</span><span class="o">=</span><span class="s2">&quot;body.yar&quot;</span><span class="p">,</span>
+    <span class="n">header_body_rules</span><span class="o">=</span><span class="s2">&quot;header_body.yar&quot;</span><span class="p">,</span>
+    <span class="n">attachment_rules</span><span class="o">=</span><span class="s2">&quot;attachment.yar&quot;</span><span class="p">,</span>
+    <span class="n">implicit_safe_domains</span><span class="o">=</span><span class="s2">&quot;implicit_safe_domains.txt&quot;</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not initialize the scanner: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+  <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not initialize the scanner: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+  <span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">scan_email</span><span class="p">(</span><span class="n">email_sample</span><span class="p">):</span>
-    <span class="n">email_sample</span><span class="p">[</span><span class="s2">&quot;yaramail&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scanner</span><span class="o">.</span><span class="n">scan_email</span><span class="p">(</span><span class="n">email_sample</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">email_sample</span>
+  <span class="n">email_sample</span><span class="p">[</span><span class="s2">&quot;yaramail&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scanner</span><span class="o">.</span><span class="n">scan_email</span><span class="p">(</span><span class="n">email_sample</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">email_sample</span>
+
 
 <span class="c1"># TODO: Do something to fetch emails</span>
 <span class="n">emails</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="k">for</span> <span class="n">email</span> <span class="ow">in</span> <span class="n">emails</span><span class="p">:</span>
-    <span class="n">attached_email</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">report_email</span> <span class="o">=</span> <span class="n">parse_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
-    <span class="n">report_email</span><span class="p">[</span><span class="s2">&quot;valid_report&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">if</span> <span class="n">report_email</span><span class="p">[</span><span class="s2">&quot;automatic_reply&quot;</span><span class="p">]:</span>
-        <span class="c1"># TODO: Move automatic replies to the trash</span>
-        <span class="k">continue</span>
-    <span class="k">for</span> <span class="n">attachment</span> <span class="ow">in</span> <span class="n">report_email</span><span class="p">[</span><span class="s2">&quot;attachments&quot;</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="n">attachment</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.eml&quot;</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">attached_email</span><span class="p">:</span>
-                <span class="c1"># TODO: Tell the user to only send one attached email</span>
-                <span class="n">report_email</span><span class="p">[</span><span class="s2">&quot;valid_report&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="n">escalate_to_incident_response</span><span class="p">(</span><span class="n">report_email</span><span class="p">)</span>
-                <span class="c1"># TODO: Move report email to the invalid folder or trash</span>
-                <span class="n">attachment</span> <span class="o">=</span> <span class="kc">None</span>
-                <span class="k">break</span>
-            <span class="n">attached_email</span> <span class="o">=</span> <span class="n">attachment</span>
-    <span class="k">if</span> <span class="n">attached_email</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">report_email</span><span class="p">[</span><span class="s2">&quot;valid_report&quot;</span><span class="p">]:</span>
-        <span class="n">report_email</span><span class="p">[</span><span class="s2">&quot;valid_report&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="c1"># TODO: Tell use user how to properly send a sample as an attachment</span>
-        <span class="n">escalate_to_incident_response</span><span class="p">(</span><span class="n">report_email</span><span class="p">)</span>
-        <span class="c1"># TODO: Move report email to the invalid folder or trash</span>
-        <span class="k">continue</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">sample</span> <span class="o">=</span> <span class="n">scan_email</span><span class="p">(</span><span class="n">attached_email</span><span class="p">[</span><span class="s2">&quot;payload&quot;</span><span class="p">])</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">_e</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid email sample: </span><span class="si">{</span><span class="n">_e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+  <span class="n">attached_email</span> <span class="o">=</span> <span class="kc">None</span>
+  <span class="n">report_email</span> <span class="o">=</span> <span class="n">parse_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+  <span class="n">report_email</span><span class="p">[</span><span class="s2">&quot;valid_report&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+  <span class="k">if</span> <span class="n">report_email</span><span class="p">[</span><span class="s2">&quot;automatic_reply&quot;</span><span class="p">]:</span>
+    <span class="c1"># TODO: Move automatic replies to the trash</span>
+    <span class="k">continue</span>
+  <span class="k">for</span> <span class="n">attachment</span> <span class="ow">in</span> <span class="n">report_email</span><span class="p">[</span><span class="s2">&quot;attachments&quot;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">attachment</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.eml&quot;</span><span class="p">):</span>
+      <span class="k">if</span> <span class="n">attached_email</span><span class="p">:</span>
+        <span class="c1"># TODO: Tell the user to only send one attached email</span>
         <span class="n">report_email</span><span class="p">[</span><span class="s2">&quot;valid_report&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">escalate_to_incident_response</span><span class="p">(</span><span class="n">report_email</span><span class="p">)</span>
         <span class="c1"># TODO: Move report email to the invalid folder or trash</span>
-        <span class="k">continue</span>
+        <span class="n">attachment</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">break</span>
+      <span class="n">attached_email</span> <span class="o">=</span> <span class="n">attachment</span>
+  <span class="k">if</span> <span class="n">attached_email</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">report_email</span><span class="p">[</span><span class="s2">&quot;valid_report&quot;</span><span class="p">]:</span>
+    <span class="n">report_email</span><span class="p">[</span><span class="s2">&quot;valid_report&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1"># TODO: Tell use user how to properly send a sample as an attachment</span>
+    <span class="n">escalate_to_incident_response</span><span class="p">(</span><span class="n">report_email</span><span class="p">)</span>
+    <span class="c1"># TODO: Move report email to the invalid folder or trash</span>
+    <span class="k">continue</span>
+  <span class="k">try</span><span class="p">:</span>
+    <span class="n">sample</span> <span class="o">=</span> <span class="n">scan_email</span><span class="p">(</span><span class="n">attached_email</span><span class="p">[</span><span class="s2">&quot;payload&quot;</span><span class="p">])</span>
+  <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">_e</span><span class="p">:</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid email sample: </span><span class="si">{</span><span class="n">_e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">report_email</span><span class="p">[</span><span class="s2">&quot;valid_report&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">escalate_to_incident_response</span><span class="p">(</span><span class="n">report_email</span><span class="p">)</span>
+    <span class="c1"># TODO: Move report email to the invalid folder or trash</span>
+    <span class="k">continue</span>
 
-    <span class="n">report_email</span><span class="p">[</span><span class="s2">&quot;sample&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample</span>
+  <span class="n">report_email</span><span class="p">[</span><span class="s2">&quot;sample&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample</span>
 
-    <span class="n">is_malicious</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span>
-        <span class="n">malicious_categories</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">sample</span><span class="p">[</span><span class="s2">&quot;yaramail&quot;</span><span class="p">][</span><span class="s2">&quot;categories&quot;</span><span class="p">]))))</span>
+  <span class="n">is_malicious</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span>
+    <span class="n">malicious_categories</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">sample</span><span class="p">[</span><span class="s2">&quot;yaramail&quot;</span><span class="p">][</span><span class="s2">&quot;categories&quot;</span><span class="p">]))))</span>
 
-    <span class="k">if</span> <span class="n">is_malicious</span><span class="p">:</span>
-        <span class="c1"># TODO: Instruct the user to delete the malicious email</span>
-        <span class="c1"># TODO: Move report email to the malicious folder or trash</span>
-        <span class="c1"># TODO: Maybe do something different for each verdict?</span>
-        <span class="n">escalate_to_incident_response</span><span class="p">(</span><span class="n">report_email</span><span class="p">,</span> <span class="s2">&quot;high&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;yaramail&quot;</span><span class="p">][</span><span class="s2">&quot;verdict&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;safe&quot;</span><span class="p">:</span>
-        <span class="c1"># TODO: Let the user know the email is safe and close the ticket</span>
-        <span class="c1"># TODO: Move the report to the safe folder or trash</span>
-        <span class="k">pass</span>
-    <span class="k">elif</span> <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;yaramail&quot;</span><span class="p">][</span><span class="s2">&quot;verdict&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;junk&quot;</span><span class="p">:</span>
-        <span class="c1"># TODO: Tell the user how to add an address to their spam filter</span>
-        <span class="c1"># TODO: Close the ticket and move the report to the junk/trash folder</span>
-        <span class="k">pass</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">escalate_to_incident_response</span><span class="p">(</span><span class="n">report_email</span><span class="p">)</span>
+  <span class="k">if</span> <span class="n">is_malicious</span><span class="p">:</span>
+    <span class="c1"># TODO: Instruct the user to delete the malicious email</span>
+    <span class="c1"># TODO: Move report email to the malicious folder or trash</span>
+    <span class="c1"># TODO: Maybe do something different for each verdict?</span>
+    <span class="n">escalate_to_incident_response</span><span class="p">(</span><span class="n">report_email</span><span class="p">,</span> <span class="s2">&quot;high&quot;</span><span class="p">)</span>
+  <span class="k">elif</span> <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;yaramail&quot;</span><span class="p">][</span><span class="s2">&quot;verdict&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;safe&quot;</span><span class="p">:</span>
+    <span class="c1"># TODO: Let the user know the email is safe and close the ticket</span>
+    <span class="c1"># TODO: Move the report to the safe folder or trash</span>
+    <span class="k">pass</span>
+  <span class="k">elif</span> <span class="n">sample</span><span class="p">[</span><span class="s2">&quot;yaramail&quot;</span><span class="p">][</span><span class="s2">&quot;verdict&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;junk&quot;</span><span class="p">:</span>
+    <span class="c1"># TODO: Tell the user how to add an address to their spam filter</span>
+    <span class="c1"># TODO: Close the ticket and move the report to the junk/trash folder</span>
+    <span class="k">pass</span>
+  <span class="k">else</span><span class="p">:</span>
+    <span class="n">escalate_to_incident_response</span><span class="p">(</span><span class="n">report_email</span><span class="p">)</span>
 
 </pre></div>
 </div>

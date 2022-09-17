@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaramail &mdash; yaramail 2.0.18 documentation</title>
+  <title>yaramail &mdash; yaramail 3.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -72,6 +72,7 @@
   <h1>Source code for yaramail</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">binascii</span>
 <span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span><span class="p">,</span> <span class="n">listdir</span>
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">IOBase</span><span class="p">,</span> <span class="n">BytesIO</span><span class="p">,</span> <span class="n">StringIO</span>
@@ -79,14 +80,47 @@
 
 <span class="kn">import</span> <span class="nn">yara</span>
 <span class="kn">import</span> <span class="nn">pdftotext</span>
-<span class="kn">from</span> <span class="nn">publicsuffix2</span> <span class="kn">import</span> <span class="n">get_sld</span>
 
 <span class="kn">from</span> <span class="nn">mailsuite.utils</span> <span class="kn">import</span> <span class="n">parse_email</span><span class="p">,</span> <span class="n">from_trusted_domain</span><span class="p">,</span> <span class="n">decode_base64</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">NullHandler</span><span class="p">())</span>
 
-<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;2.0.18&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;3.0.0&quot;</span>
+
+
+<span class="n">delimiters</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;r</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;`&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\*\*&quot;</span><span class="p">,</span>
+              <span class="sa">r</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\(&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\)&quot;</span><span class="p">),</span> <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\[&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\]&quot;</span><span class="p">),</span> <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\{&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\}&quot;</span><span class="p">)]</span>
+
+<span class="n">password_regex</span> <span class="o">=</span> <span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s*(\S+)\s*&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)]</span>
+<span class="k">for</span> <span class="n">delimiter</span> <span class="ow">in</span> <span class="n">delimiters</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">delimiter</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">delimiter</span><span class="si">}</span><span class="s2">(.+)</span><span class="si">{</span><span class="n">delimiter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+        <span class="n">password_regex</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">regex</span><span class="p">)</span>
+        <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">delimiter</span><span class="si">}</span><span class="s2">.+</span><span class="si">{</span><span class="n">delimiter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+        <span class="n">password_regex</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">regex</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">delimiter</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">delimiter</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">(.+)</span><span class="si">{</span><span class="n">delimiter</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+        <span class="n">password_regex</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">regex</span><span class="p">)</span>
+        <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">delimiter</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">.+</span><span class="si">{</span><span class="n">delimiter</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+        <span class="n">password_regex</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">regex</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_carve_passwords</span><span class="p">(</span><span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="n">passwords</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_regex</span> <span class="ow">in</span> <span class="n">password_regex</span><span class="p">:</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="n">_regex</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+        <span class="n">passwords</span> <span class="o">+=</span> <span class="n">matches</span>
+    <span class="n">additional_passwords</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">password</span> <span class="ow">in</span> <span class="n">passwords</span><span class="p">:</span>
+        <span class="c1"># Make object type clear to IDEs</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
+        <span class="c1"># Account for any extra spaces added during markdown conversion</span>
+        <span class="k">if</span> <span class="s2">&quot; &quot;</span> <span class="ow">in</span> <span class="n">password</span><span class="p">:</span>
+            <span class="n">additional_passwords</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">password</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+            <span class="n">passwords</span> <span class="o">+=</span> <span class="n">additional_passwords</span>
+
+    <span class="k">return</span> <span class="n">passwords</span>
 
 
 <span class="k">def</span> <span class="nf">_deduplicate_list</span><span class="p">(</span><span class="n">og_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
@@ -105,9 +139,9 @@
                     <span class="n">namespace</span><span class="o">=</span><span class="n">_match</span><span class="o">.</span><span class="n">namespace</span><span class="p">,</span>
                     <span class="n">tags</span><span class="o">=</span><span class="n">_match</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span>
                     <span class="n">meta</span><span class="o">=</span><span class="n">_match</span><span class="o">.</span><span class="n">meta</span><span class="p">,</span>
-                    <span class="n">strings</span><span class="o">=</span><span class="n">_match</span><span class="o">.</span><span class="n">strings</span>
+                    <span class="n">strings</span><span class="o">=</span><span class="n">_match</span><span class="o">.</span><span class="n">strings</span><span class="p">,</span>
+                    <span class="n">warnings</span><span class="o">=</span><span class="p">[]</span>
                     <span class="p">)</span>
-
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">match</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">matches</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)):</span>
@@ -182,10 +216,8 @@
                  <span class="n">attachment_rules</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IOBase</span><span class="p">,</span> <span class="n">yara</span><span class="o">.</span><span class="n">Rules</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">passwords</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">IOBase</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">max_zip_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">trusted_domains</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">IOBase</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">trusted_domains_yara_safe_required</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">IOBase</span><span class="p">,</span>
-                                                           <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">include_sld_in_auth_check</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                 <span class="n">implicit_safe_domains</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">IOBase</span><span class="p">,</span>
+                                              <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">allow_multiple_authentication_results</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                  <span class="n">use_authentication_results_original</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -203,15 +235,8 @@
 <span class="sd">            passwords: A list of passwords to use when attempting to scan \</span>
 <span class="sd">            password-protected files</span>
 <span class="sd">            max_zip_depth: Number of times to recurse into nested ZIP files</span>
-<span class="sd">            trusted_domains: A list of message From domains that return a \</span>
-<span class="sd">            ``safe`` verdict if the domain is authenticated and no YARA \</span>
-<span class="sd">            categories match other than ``safe``</span>
-<span class="sd">            trusted_domains_yara_safe_required: A list of message From \</span>
-<span class="sd">            domains that return a ``safe`` verdict if the domain is \</span>
-<span class="sd">            authenticated **and** the email itself has a YARA ``safe`` verdict</span>
-<span class="sd">            include_sld_in_auth_check: Check authentication results based on \</span>
-<span class="sd">            Second-Level Domain (SLD) in addition to the \</span>
-<span class="sd">            Fully-Qualified Domain Name (FQDN)</span>
+<span class="sd">            implicit_safe_domains: Always add the ``safe`` category to \</span>
+<span class="sd">            emails from these domains</span>
 <span class="sd">            allow_multiple_authentication_results: Allow multiple \</span>
 <span class="sd">            ``Authentication-Results-Original`` headers when checking \</span>
 <span class="sd">            authentication results</span>
@@ -248,7 +273,13 @@
 <span class="sd">          solutions, such as Abnormal Security.</span>
 
 <span class="sd">        .. note::</span>
-<span class="sd">          ``infected`` and ``malware`` are always tried as passwords.</span>
+<span class="sd">          ``infected`` and ``malware`` and the contents of the message body \</span>
+<span class="sd">            are always tried as passwords.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">          Starting in version 2.1.0, the contents of the message body are \</span>
+<span class="sd">          automatically tried as passwords for password-protected ZIP \</span>
+<span class="sd">          attachments.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_header_rules</span> <span class="o">=</span> <span class="n">header_rules</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_body_rules</span> <span class="o">=</span> <span class="n">body_rules</span>
@@ -266,11 +297,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">passwords</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;malware&quot;</span><span class="p">,</span> <span class="s2">&quot;infected&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">passwords</span> <span class="o">=</span> <span class="n">_deduplicate_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">passwords</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_zip_depth</span> <span class="o">=</span> <span class="n">max_zip_depth</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">trusted_domains</span> <span class="o">=</span> <span class="n">_input_to_str_list</span><span class="p">(</span><span class="n">trusted_domains</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">trusted_domains_yara_safe_required</span> <span class="o">=</span> <span class="n">_input_to_str_list</span><span class="p">(</span>
-            <span class="n">trusted_domains_yara_safe_required</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">include_sld_in_auth_check</span> <span class="o">=</span> <span class="n">include_sld_in_auth_check</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">implicit_safe_domains</span> <span class="o">=</span> <span class="n">_input_to_str_list</span><span class="p">(</span>
+            <span class="n">implicit_safe_domains</span><span class="p">)</span>
         <span class="n">allow_multi_auth</span> <span class="o">=</span> <span class="n">allow_multiple_authentication_results</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">allow_multiple_authentication_results</span> <span class="o">=</span> <span class="n">allow_multi_auth</span>
         <span class="n">use_og_auth</span> <span class="o">=</span> <span class="n">use_authentication_results_original</span>
@@ -292,7 +320,8 @@
         <span class="k">return</span> <span class="n">markdown_matches</span>
 
     <span class="k">def</span> <span class="nf">_scan_zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">BytesIO</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-                  <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_current_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+                  <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">passwords</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                  <span class="n">_current_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">payload</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">payload</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span>
@@ -308,7 +337,10 @@
         <span class="n">zip_matches</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_file</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">zip_file</span><span class="o">.</span><span class="n">namelist</span><span class="p">():</span>
-                <span class="n">passwords</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">passwords</span>
+                <span class="k">if</span> <span class="n">passwords</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">passwords</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">if</span> <span class="kc">None</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">passwords</span><span class="p">:</span>
+                    <span class="n">passwords</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="n">passwords</span>
                 <span class="k">for</span> <span class="n">password</span> <span class="ow">in</span> <span class="n">passwords</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                         <span class="n">password</span> <span class="o">=</span> <span class="n">password</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
@@ -353,16 +385,18 @@
                         <span class="n">zip_matches</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_zip</span><span class="p">(</span>
                             <span class="n">member_content</span><span class="p">,</span>
                             <span class="n">filename</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                            <span class="n">passwords</span><span class="o">=</span><span class="n">passwords</span><span class="p">,</span>
                             <span class="n">_current_depth</span><span class="o">=</span><span class="n">_current_depth</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">zip_matches</span><span class="p">:</span>
                     <span class="k">match</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_deduplicate_list</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">tags</span><span class="p">)</span>
 
                 <span class="k">return</span> <span class="n">zip_matches</span>
 
-    <span class="k">def</span> <span class="nf">_scan_attachments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attachments</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">_scan_attachments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attachments</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
+                          <span class="n">passwords</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
         <span class="k">def</span> <span class="nf">add_location</span><span class="p">(</span><span class="n">_attachment_matches</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span> <span class="n">_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">_attachment_matches</span><span class="p">:</span>
-                <span class="n">base_location</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;attachment:</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">base_location</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;attachment:</span><span class="si">{</span><span class="n">_filename</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="k">if</span> <span class="s2">&quot;location&quot;</span> <span class="ow">in</span> <span class="n">match</span><span class="p">:</span>
                     <span class="n">og_location</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span>
                     <span class="k">match</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_location</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">og_location</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -370,6 +404,9 @@
                     <span class="k">match</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">base_location</span>
             <span class="k">return</span> <span class="n">_attachment_matches</span>
 
+        <span class="k">if</span> <span class="n">passwords</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">passwords</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">passwords</span> <span class="o">=</span> <span class="n">passwords</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">passwords</span>
         <span class="n">combined_attachment_matches</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attachments</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">attachments</span> <span class="o">=</span> <span class="p">[</span><span class="n">attachments</span><span class="p">]</span>
@@ -401,6 +438,7 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">attachment_matches</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_zip</span><span class="p">(</span>
                         <span class="n">payload</span><span class="p">,</span>
+                        <span class="n">passwords</span><span class="o">=</span><span class="n">passwords</span><span class="p">,</span>
                         <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span>
                     <span class="n">attachment_matches</span> <span class="o">=</span> <span class="n">add_location</span><span class="p">(</span><span class="n">attachment_matches</span><span class="p">,</span>
                                                       <span class="n">filename</span><span class="p">)</span>
@@ -435,47 +473,43 @@
 <span class="sd">        The returned dictionary contains the following key-value pairs:</span>
 
 <span class="sd">        - ``matches`` - A list of YARA match dictionaries</span>
+
+<span class="sd">          - ``name`` - The name of the rule.</span>
+<span class="sd">          - ``namespace`` - The namespace of the rule.</span>
+<span class="sd">          - ``meta`` - A dictionary of key-value pairs from the meta section.</span>
+<span class="sd">          - ``tags`` - A list of the rule&#39;s tags.</span>
+<span class="sd">          - ``strings`` - A list of lists identifying strings or patterns that</span>
+<span class="sd">            match.</span>
+
+<span class="sd">             0. The location/offset of the identified string</span>
+<span class="sd">             1. The variable name of the string/pattern in the rule</span>
+<span class="sd">             2. The matching string/pattern content</span>
+
 <span class="sd">        - ``categories`` - A list of categories of YARA matches</span>
-<span class="sd">        - ``msg_from_domain`` - The message From domain</span>
-<span class="sd">        - ``trusted_domain`` - The message From domain is in the</span>
-<span class="sd">          ``trusted_domains`` list **AND** is authenticated</span>
-<span class="sd">        - ``trusted_domain_yara_safe_required`` - The message From domain is</span>
-<span class="sd">          in the ``trusted_domain_yara_safe_required`` list **AND** is</span>
-<span class="sd">          is authenticated</span>
-<span class="sd">        - ``auth_optional`` - At least one matching YARA rule has</span>
-<span class="sd">          ``auth_optional = true`` **AND** ``category = safe`` in its ``meta``</span>
-<span class="sd">          section</span>
-<span class="sd">        - ``has_attachment`` - The email sample has an attachment</span>
-<span class="sd">        - ``verdict`` - The verdict of the scan</span>
+<span class="sd">        - ``msg_from_domain`` -  Message From domain details</span>
 
-<span class="sd">        Possible verdicts include:</span>
+<span class="sd">          - ``domain``  - The message From domain</span>
+<span class="sd">          - ``domain_authenticated`` - bool: domain is authenticated</span>
+<span class="sd">          - ``implicit_safe_domain`` - bool: YARA safe match is optional</span>
+<span class="sd">            for the domain</span>
 
-<span class="sd">         - ``None`` - No categories matched</span>
-<span class="sd">         - ``safe`` - The email is considered safe</span>
-<span class="sd">         - ``yara_safe_auth_fail`` -  Categorized at ``safe`` by YARA, but</span>
-<span class="sd">           domain authentication failed</span>
-<span class="sd">         - ``auth_pass_not_yara_safe`` - Domain authentication passed, but YARA</span>
-<span class="sd">           did not return the required ``safe`` categorization</span>
-<span class="sd">         - ``ambiguous`` - Multiple categories matched</span>
-<span class="sd">         - Any custom ``category`` specified in the ``meta`` section of a YARA</span>
-<span class="sd">           rule</span>
+<span class="sd">        - ``has_attachment`` - bool: The email sample has an attachment</span>
 
-<span class="sd">        Each match dictionary in the returned list contains</span>
-<span class="sd">        the following key-value pairs:</span>
+<span class="sd">        - ``warnings`` - A list of warnings. Possible warnings include:</span>
 
-<span class="sd">        - ``name`` - The name of the rule.</span>
-<span class="sd">        - ``namespace`` - The namespace of the rule.</span>
-<span class="sd">        - ``meta`` - A dictionary of key-value pairs from the meta section.</span>
-<span class="sd">        - ``tags`` - A list of the rule&#39;s tags.</span>
-<span class="sd">        - ``strings`` - A list of identified strings or patterns that match.</span>
+<span class="sd">          - ``domain-authentication-failed`` - Authentication of the message</span>
+<span class="sd">            From domain failed</span>
+<span class="sd">          - ``from-domain-mismatch`` - The message From domain did not exactly</span>
+<span class="sd">            match the value of the ``meta`` key ``from_domain``</span>
+<span class="sd">          - ``safe-rule-missing-from-domain`` - The rule is missing a</span>
+<span class="sd">            ``from_domain`` ``meta`` key that is required for rules with the</span>
+<span class="sd">            ``category`` meta key set to ``safe``</span>
+<span class="sd">          - ``unexpected-attachment`` - An email win an attachment matched a</span>
+<span class="sd">            rule with the ``meta`` key ``no attachment`` or ``no_attachments``</span>
+<span class="sd">            set to ``true``</span>
 
-<span class="sd">          Each ``strings`` list item is also a list, with the following values:</span>
-
-<span class="sd">              0. The location/offset of the identified string</span>
-<span class="sd">              1. The variable name of the string/pattern in the rule</span>
-<span class="sd">              2. The matching string/pattern content</span>
-
-<span class="sd">        - ``location`` - The part of the email where the match was found</span>
+<span class="sd">        - ``location`` - The part of the email where the match was</span>
+<span class="sd">          found, for example:</span>
 
 <span class="sd">          - ``header``</span>
 <span class="sd">          - ``body``</span>
@@ -484,6 +518,14 @@
 <span class="sd">          - ``attachment:example.zip:evil.js``</span>
 <span class="sd">          - ``attachment:first.zip:nested.zip:evil.js``</span>
 <span class="sd">          - ``attachment:evil.eml:attachment:example.zip:evil.js``</span>
+
+<span class="sd">        - ``verdict`` - The verdict of the scan. Possible verdicts include:</span>
+
+<span class="sd">           - ``None`` - No categories matched</span>
+<span class="sd">           - ``safe`` - The email is considered safe</span>
+<span class="sd">           - ``ambiguous`` - Multiple categories matched</span>
+<span class="sd">           - Any custom ``category`` specified in the ``meta`` section of a</span>
+<span class="sd">             YARA rule</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">email</span><span class="p">):</span>
@@ -530,62 +572,73 @@
                 <span class="n">header_body_match</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;header_body&quot;</span>
                 <span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">header_body_match</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attachment_rules</span><span class="p">:</span>
-            <span class="n">matches</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_attachments</span><span class="p">(</span><span class="n">attachments</span><span class="p">)</span>
+            <span class="n">passwords</span> <span class="o">=</span> <span class="n">_carve_passwords</span><span class="p">(</span><span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;body_markdown&quot;</span><span class="p">])</span>
+            <span class="n">matches</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_attachments</span><span class="p">(</span><span class="n">attachments</span><span class="p">,</span> <span class="n">passwords</span><span class="o">=</span><span class="n">passwords</span><span class="p">)</span>
 
         <span class="n">verdict</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">multi_auth_headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_multiple_authentication_results</span>
         <span class="n">use_og_auth_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_authentication_results_original</span>
-        <span class="n">trusted_domain</span> <span class="o">=</span> <span class="n">from_trusted_domain</span><span class="p">(</span>
-            <span class="n">parsed_email</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trusted_domains</span><span class="p">,</span>
+        <span class="n">yara_safe_optional_domain</span> <span class="o">=</span> <span class="n">from_trusted_domain</span><span class="p">(</span>
+            <span class="n">parsed_email</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">implicit_safe_domains</span><span class="p">,</span>
             <span class="n">allow_multiple_authentication_results</span><span class="o">=</span><span class="n">multi_auth_headers</span><span class="p">,</span>
             <span class="n">use_authentication_results_original</span><span class="o">=</span><span class="n">use_og_auth_results</span><span class="p">,</span>
-            <span class="n">include_sld</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">include_sld_in_auth_check</span>
         <span class="p">)</span>
-        <span class="n">trusted_domain_yara_safe_required</span> <span class="o">=</span> <span class="n">from_trusted_domain</span><span class="p">(</span>
-            <span class="n">parsed_email</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trusted_domains_yara_safe_required</span><span class="p">,</span>
+        <span class="n">authenticated_domain</span> <span class="o">=</span> <span class="n">from_trusted_domain</span><span class="p">(</span>
+            <span class="n">parsed_email</span><span class="p">,</span> <span class="p">[</span><span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">][</span><span class="s2">&quot;domain&quot;</span><span class="p">]],</span>
             <span class="n">allow_multiple_authentication_results</span><span class="o">=</span><span class="n">multi_auth_headers</span><span class="p">,</span>
             <span class="n">use_authentication_results_original</span><span class="o">=</span><span class="n">use_og_auth_results</span><span class="p">,</span>
-            <span class="n">include_sld</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">include_sld_in_auth_check</span>
         <span class="p">)</span>
-        <span class="n">auth_optional</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">categories</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">has_attachment</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">attachments</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
+            <span class="n">auth_optional</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="s2">&quot;authentication_optional&quot;</span> <span class="ow">in</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]:</span>
+                <span class="n">auth_optional</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;authentication_optional&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">&quot;auth_optional&quot;</span> <span class="ow">in</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]:</span>
+                <span class="n">auth_optional</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;auth_optional&quot;</span><span class="p">]</span>
+            <span class="n">passed_authentication</span> <span class="o">=</span> <span class="n">authenticated_domain</span> <span class="ow">or</span> <span class="n">auth_optional</span>
+            <span class="n">no_attachment</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">if</span> <span class="s2">&quot;no_attachments&quot;</span> <span class="ow">in</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]:</span>
-                <span class="k">if</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;no_attachments&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">has_attachment</span><span class="p">:</span>
-                    <span class="k">continue</span>
+                <span class="n">no_attachment</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;no_attachments&quot;</span><span class="p">]</span>
             <span class="k">if</span> <span class="s2">&quot;no_attachment&quot;</span> <span class="ow">in</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]:</span>
-                <span class="k">if</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;no_attachment&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">has_attachment</span><span class="p">:</span>
-                    <span class="k">continue</span>
-            <span class="k">if</span> <span class="s2">&quot;from_domain&quot;</span> <span class="ow">in</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]:</span>
-                <span class="n">sld</span> <span class="o">=</span> <span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">][</span><span class="s2">&quot;sld&quot;</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">sld</span> <span class="o">!=</span> <span class="n">get_sld</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;from_domain&quot;</span><span class="p">]):</span>
-                    <span class="k">continue</span>
+                <span class="n">no_attachment</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;no_attachment&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">no_attachment</span> <span class="ow">and</span> <span class="n">has_attachment</span><span class="p">:</span>
+                <span class="k">match</span><span class="p">[</span><span class="s2">&quot;warnings&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;unexpected-attachment&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="n">rule_from_domains</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="s2">&quot;from_domains&quot;</span> <span class="ow">in</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]:</span>
+                <span class="n">rule_from_domains</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;from_domains&quot;</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="s2">&quot;from_domain&quot;</span> <span class="ow">in</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]:</span>
+                <span class="n">rule_from_domains</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;from_domain&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">rule_from_domains</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">rule_from_domains</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">][</span><span class="s2">&quot;domain&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">rule_from_domains</span><span class="p">:</span>
+                    <span class="k">match</span><span class="p">[</span><span class="s2">&quot;warnings&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;from-domain-mismatch&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">passed_authentication</span><span class="p">:</span>
+                    <span class="k">match</span><span class="p">[</span><span class="s2">&quot;warnings&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;domain-authentication-failed&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="s2">&quot;category&quot;</span> <span class="ow">in</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]:</span>
-                <span class="n">categories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;category&quot;</span><span class="p">])</span>
                 <span class="k">if</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;category&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;safe&quot;</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="s2">&quot;auth_optional&quot;</span> <span class="ow">in</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">auth_optional</span><span class="p">:</span>
-                        <span class="n">auth_optional</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;auth_optional&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">rule_from_domains</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">match</span><span class="p">[</span><span class="s2">&quot;warnings&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="s2">&quot;safe-rule-missing-from-domain&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="s2">&quot;warnings&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">categories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;category&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">yara_safe_optional_domain</span><span class="p">:</span>
+            <span class="n">categories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;safe&quot;</span><span class="p">)</span>
         <span class="n">categories</span> <span class="o">=</span> <span class="n">_deduplicate_list</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">verdict</span> <span class="o">=</span> <span class="n">categories</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">verdict</span> <span class="o">=</span> <span class="s2">&quot;ambiguous&quot;</span>
-        <span class="n">authenticated</span> <span class="o">=</span> <span class="nb">any</span><span class="p">([</span><span class="n">trusted_domain</span><span class="p">,</span> <span class="n">trusted_domain_yara_safe_required</span><span class="p">,</span>
-                             <span class="n">auth_optional</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">verdict</span> <span class="o">==</span> <span class="s2">&quot;safe&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">authenticated</span><span class="p">:</span>
-            <span class="n">verdict</span> <span class="o">=</span> <span class="s2">&quot;yara_safe_auth_fail&quot;</span>
-        <span class="k">if</span> <span class="n">verdict</span> <span class="o">!=</span> <span class="s2">&quot;safe&quot;</span> <span class="ow">and</span> <span class="n">trusted_domain_yara_safe_required</span><span class="p">:</span>
-            <span class="n">verdict</span> <span class="o">=</span> <span class="s2">&quot;auth_pass_not_yara_safe&quot;</span>
-        <span class="k">if</span> <span class="n">verdict</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">authenticated</span><span class="p">:</span>
-            <span class="n">verdict</span> <span class="o">=</span> <span class="s2">&quot;safe&quot;</span>
 
-        <span class="n">safe_required</span> <span class="o">=</span> <span class="n">trusted_domain_yara_safe_required</span>
+        <span class="n">msg_from_domain_results</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">domain</span><span class="o">=</span><span class="n">msg_from_domain</span><span class="p">,</span>
+            <span class="n">authenticated</span><span class="o">=</span><span class="n">authenticated_domain</span><span class="p">,</span>
+            <span class="n">implicit_safe_domain</span><span class="o">=</span><span class="n">yara_safe_optional_domain</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">matches</span><span class="o">=</span><span class="n">matches</span><span class="p">,</span> <span class="n">categories</span><span class="o">=</span><span class="n">categories</span><span class="p">,</span>
-                    <span class="n">msg_from_domain</span><span class="o">=</span><span class="n">msg_from_domain</span><span class="p">,</span>
-                    <span class="n">trusted_domain</span><span class="o">=</span><span class="n">trusted_domain</span><span class="p">,</span>
-                    <span class="n">trusted_domain_yara_safe_required</span><span class="o">=</span><span class="n">safe_required</span><span class="p">,</span>
-                    <span class="n">auth_optional</span><span class="o">=</span><span class="n">auth_optional</span><span class="p">,</span>
+                    <span class="n">msg_from_domain</span><span class="o">=</span><span class="n">msg_from_domain_results</span><span class="p">,</span>
                     <span class="n">has_attachment</span><span class="o">=</span><span class="n">has_attachment</span><span class="p">,</span>
                     <span class="n">verdict</span><span class="o">=</span><span class="n">verdict</span><span class="p">)</span></div></div>
 </pre></div>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API &mdash; yaramail 2.1.0 documentation</title>
+  <title>API &mdash; yaramail 3.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -72,13 +72,154 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section class="tex2jax_ignore mathjax_ignore" id="api">
-<h1>API<a class="headerlink" href="#api" title="Permalink to this heading"></a></h1>
-<div class="highlight-eval-rst} notranslate"><div class="highlight"><pre><span></span>.. automodule:: yaramail
-   :members:
-   :undoc-members:
-</pre></div>
+  <section class="tex2jax_ignore mathjax_ignore" id="module-yaramail">
+<span id="api"></span><h1>API<a class="headerlink" href="#module-yaramail" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="yaramail.MailScanner">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">yaramail.</span></span><span class="sig-name descname"><span class="pre">MailScanner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">header_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Rules</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Rules</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_body_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Rules</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attachment_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Rules</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">passwords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_zip_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">implicit_safe_domains</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_multiple_authentication_results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_authentication_results_original</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yaramail.html#MailScanner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaramail.MailScanner" title="Permalink to this definition"></a></dt>
+<dd><p>A YARA scanner for emails that can also check Authentication-Results
+headers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>header_rules</strong> – Rules that only apply to email header content</p></li>
+<li><p><strong>body_rules</strong> – Rules that only apply to email body content</p></li>
+<li><p><strong>header_body_rules</strong> – Rules that apply to combined email             header and body content</p></li>
+<li><p><strong>attachment_rules</strong> – Rules that only apply to file             attachment content</p></li>
+<li><p><strong>passwords</strong> – A list of passwords to use when attempting to scan             password-protected files</p></li>
+<li><p><strong>max_zip_depth</strong> – Number of times to recurse into nested ZIP files</p></li>
+<li><p><strong>implicit_safe_domains</strong> – Always add the <code class="docutils literal notranslate"><span class="pre">safe</span></code> category to             emails from these domains</p></li>
+<li><p><strong>allow_multiple_authentication_results</strong> – Allow multiple             <code class="docutils literal notranslate"><span class="pre">Authentication-Results-Original</span></code> headers when checking             authentication results</p></li>
+<li><p><strong>use_authentication_results_original</strong> – Use the             <code class="docutils literal notranslate"><span class="pre">Authentication-Results-Original</span></code> header instead of the             <code class="docutils literal notranslate"><span class="pre">Authentication-Results</span></code> header</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Each <code class="docutils literal notranslate"><span class="pre">_rules</span></code> parameter can accept raw rule content, a path to a
+rules file, a file-like object, or a <code class="docutils literal notranslate"><span class="pre">yara.Rule</span></code> object.</p>
 </div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">include</span></code> directive in the YARA rule files that you
+pass to <code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> to include rules from other files. That
+way, rules can be divided into separate files as you see fit.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Authentication results are based on the headers of the email sample,
+so only trust authentication results on emails that have been
+received by trusted mail servers, and not on third-party emails.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Set <code class="docutils literal notranslate"><span class="pre">allow_multiple_authentication_results</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code>
+<strong>if and only if</strong> the receiving mail service splits the results
+of each authentication method in separate <code class="docutils literal notranslate"><span class="pre">Authentication-Results</span></code>
+headers <strong>and always</strong> includes DMARC results.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Set <code class="docutils literal notranslate"><span class="pre">use_authentication_results_original</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code>
+<strong>if and only if</strong> you use an email security gateway that adds an
+<code class="docutils literal notranslate"><span class="pre">Authentication-Results-Original</span></code> header, such as Proofpoint or
+Cisco IronPort. This <strong>does not</strong> include API-based email security
+solutions, such as Abnormal Security.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">infected</span></code> and <code class="docutils literal notranslate"><span class="pre">malware</span></code> and the contents of the message body             are always tried as passwords.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Starting in version 2.1.0, the contents of the message body are           automatically tried as passwords for password-protected ZIP           attachments.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="yaramail.MailScanner.scan_email">
+<span class="sig-name descname"><span class="pre">scan_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">IOBase</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_raw_headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_raw_body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="_modules/yaramail.html#MailScanner.scan_email"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaramail.MailScanner.scan_email" title="Permalink to this definition"></a></dt>
+<dd><p>Scans an email using YARA rules</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email</strong> – Email file content, a path to an email             file, a file-like object, or output from             <code class="docutils literal notranslate"><span class="pre">mailsuite.utils.parse_email()</span></code></p></li>
+<li><p><strong>use_raw_headers</strong> – Scan headers with indentations included</p></li>
+<li><p><strong>use_raw_body</strong> – Scan the raw email body instead of converting it to             Markdown first</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns: A dictionary</p>
+<p>The returned dictionary contains the following key-value pairs:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">matches</span></code> - A list of YARA match dictionaries</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> - The name of the rule.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">namespace</span></code> - The namespace of the rule.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">meta</span></code> - A dictionary of key-value pairs from the meta section.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tags</span></code> - A list of the rule’s tags.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strings</span></code> - A list of lists identifying strings or patterns that
+match.</p>
+<blockquote>
+<div><ol class="arabic simple" start="0">
+<li><p>The location/offset of the identified string</p></li>
+<li><p>The variable name of the string/pattern in the rule</p></li>
+<li><p>The matching string/pattern content</p></li>
+</ol>
+</div></blockquote>
+</li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">categories</span></code> - A list of categories of YARA matches</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">msg_from_domain</span></code> -  Message From domain details</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">domain</span></code>  - The message From domain</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">domain_authenticated</span></code> - bool: domain is authenticated</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">implicit_safe_domain</span></code> - bool: YARA safe match is optional
+for the domain</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">has_attachment</span></code> - bool: The email sample has an attachment</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">warnings</span></code> - A list of warnings. Possible warnings include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">domain-authentication-failed</span></code> - Authentication of the message
+From domain failed</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">from-domain-mismatch</span></code> - The message From domain did not exactly
+match the value of the <code class="docutils literal notranslate"><span class="pre">meta</span></code> key <code class="docutils literal notranslate"><span class="pre">from_domain</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">safe-rule-missing-from-domain</span></code> - The rule is missing a
+<code class="docutils literal notranslate"><span class="pre">from_domain</span></code> <code class="docutils literal notranslate"><span class="pre">meta</span></code> key that is required for rules with the
+<code class="docutils literal notranslate"><span class="pre">category</span></code> meta key set to <code class="docutils literal notranslate"><span class="pre">safe</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unexpected-attachment</span></code> - An email win an attachment matched a
+rule with the <code class="docutils literal notranslate"><span class="pre">meta</span></code> key <code class="docutils literal notranslate"><span class="pre">no</span> <span class="pre">attachment</span></code> or <code class="docutils literal notranslate"><span class="pre">no_attachments</span></code>
+set to <code class="docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">location</span></code> - The part of the email where the match was
+found, for example:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">header</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">body</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">header_body</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">attachment:filename</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">attachment:example.zip:evil.js</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">attachment:first.zip:nested.zip:evil.js</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">attachment:evil.eml:attachment:example.zip:evil.js</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verdict</span></code> - The verdict of the scan. Possible verdicts include:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> - No categories matched</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">safe</span></code> - The email is considered safe</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ambiguous</span></code> - Multiple categories matched</p></li>
+<li><p>Any custom <code class="docutils literal notranslate"><span class="pre">category</span></code> specified in the <code class="docutils literal notranslate"><span class="pre">meta</span></code> section of a
+YARA rule</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
