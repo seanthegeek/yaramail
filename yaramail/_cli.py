@@ -74,12 +74,12 @@ arg_parser.add_argument("--passwords", type=str,
                              "password-protected files in addition to email "
                              "body content",
                         default="passwords.txt")
-arg_parser.add_argument("--yara-safe-optional-domains", type=str,
+arg_parser.add_argument("--implicit-safe-domains", type=str,
                         help="Filename of a list of message From domains that "
                              "return a safe verdict if the domain is "
                              "authenticated and no YARA categories match "
                              "other than safe",
-                        default="yara_safe_optional_domains.txt")
+                        default="implicit_safe_domains.txt")
 arg_parser.add_argument("--max-zip-depth", type=int,
                         help="The maximum number of times to recurse into "
                              "nested ZIP files")
@@ -119,24 +119,24 @@ def _main():
     if not os.path.exists(args.passwords):
         logger.warning(f"{args.passwords} does not exist.")
         args.passwords = None
-    args.yara_safe_optional_domains = os.path.join(
+    args.implicit_safe_domains = os.path.join(
         args.rules,
-        args.yara_safe_optional_domains)
-    if not os.path.exists(args.yara_safe_optional_domains):
-        logger.warning(f"{args.yara_safe_optional_domains} does not exist.")
-        args.yara_safe_optional_domains = None
+        args.implicit_safe_domains)
+    if not os.path.exists(args.implicit_safe_domains):
+        logger.warning(f"{args.implicit_safe_domains} does not exist.")
+        args.implicit_safe_domains = None
 
     yara_safe_optional_domains = []
-    if args.yara_safe_optional_domains is not None:
+    if args.implicit_safe_domains is not None:
         try:
-            with open(args.yara_safe_optional_domains) as yara_optional_file:
+            with open(args.implicit_safe_domains) as yara_optional_file:
                 yara_safe_optional_domains = yara_optional_file.read().strip()
                 yara_safe_optional_domains = yara_safe_optional_domains.split(
                     "\n"
                 )
         except Exception as e:
             logger.error(
-                f"Error reading {args.yara_safe_optional_domains}: {e}")
+                f"Error reading {args.implicit_safe_domains}: {e}")
 
     try:
         scanner = MailScanner(
@@ -144,7 +144,7 @@ def _main():
             body_rules=args.body_rules,
             header_body_rules=args.header_body_rules,
             attachment_rules=args.attachment_rules,
-            yara_safe_optional_domains=yara_safe_optional_domains,
+            implicit_safe_domains=yara_safe_optional_domains,
             passwords=args.passwords,
             allow_multiple_authentication_results=args.multi_auth,
             use_authentication_results_original=args.auth_original,

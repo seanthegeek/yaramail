@@ -29,6 +29,39 @@ submit their changes for review, they create a Pull Request, and a project
 maintainer reviews the proposed changes before squashing and merging commits
 into the upstream `main` branch.
 
+## Getting started
+
+Follow the [installation guide](installation).
+
+Import `MailScanner` from `yaramail`, and create a new
+[`MailScanner` object](api)
+
+```python
+import logging
+
+from yaramail import MailScanner
+
+logger = logging.getLogger("scanner")
+logging.basicConfig(level=logging.INFO)
+
+# Initialize the scanner
+scanner = None  # Avoid an IDE warning
+try:
+  scanner = MailScanner(
+    header_rules="header.yar",
+    body_rules="body.yar",
+    header_body_rules="header_body.yar",
+    attachment_rules="attachment.yar",
+    implicit_safe_domains="implicit_safe_domains.txt")
+except Exception as e:
+  logger.error(f"Could not initialize the scanner: {e}")
+  exit(-1)
+```
+
+To scan an email, pass email content, a file-like object, or a file path to
+`MailScanner.scan_email()`. Take a look at the [API documentation](api) to
+learn about the returned objects.
+
 ## Methodology
 
 The `yaramail` module contains a `MailScanner` class. When `MailScanner` scans
@@ -78,98 +111,94 @@ such as Abnormal Security.
 Read [Demystifying DMARC][DMARC] for more details about SPF, DKIM, and DMARC.
 :::
 
-Then, the `meta` section of each matching rule is checked for a `category`
-key. Each match category is added to a deduplicated list of `categories`, if 
-the additional criteria specified in the rule's `meta` section is met.
+Then, the message header, body, and attachment content is scanned with
+user-provided [YARA rules][yara_rules] that provide a flexible method of
+checking content against known malicious and trusted patterns.
 
-If a matching rule has a `from_domain` meta key (required for rules with a
-`safe` category), the exact domain (including any subdomains) of the message
-`From` address must match the `from_domain` key value for the rule's category
-to be added to the `categories` list. Domain authentication must pass, unless
-that rule has an `auth_optional` meta key with the value set to `true`. This 
+### Anatomy of a YARA rule
+
+YARA rules consist of three sections: `meta`, `strings`, and `condition`.
+
+#### meta
+
+The [meta section][yara_meta] specifies arbitrary metadata key-value
+pairs of metadata that can be useful to humans and/or the scanner application.
+`yaramail` uses a few specific `meta` keys.
+
+The `meta` section of each matching rule is checked
+for an optional `category` key. Each match category is added to a
+deduplicated list of `categories`, if the additional criteria specified in
+the rule's `meta` section is met.
 
 If a single category is in the list of `categories`, the `verdict` is set to
 that category. If multiple categories are listed, the verdict is set to
 `ambiguous`. If no categories are listed, the verdict is set to `None`.
 
-The `safe` verdict is special. In order to reach a `safe` verdict, one of the
-following set of conditions must be met.
+:::{note}
+In extremely rare cases, a domain may send a wide variety of automated emails
+that do not fit into patterns, making YARA rules impractical. to account for
+this, a domain can be added to the `implicit_safe_domains_list`, which will
+add a `category` of `safe` to every email from that domain, as long as the
+domain is authenticated. The emails will still be scanned by YARA, so any
+YARA category matches other than `safe` will still return an `anbigious`
+verdict.
 
-1. A rule with a `safe` category has a `from_domain` meta value that matches the message `From` domain, domain authentication passed, **and** the categories list contains one value, `safe`
-2. A rule with a `safe` category has a `from_domain` meta value that matches the message `From` domain, the meta value `auth_optional`, set to `true`, **and** the categories list contains one value, `safe`
-3. The domain of the email address in the message `From` header is in the `yara_safe_optional_domains` list, domain authentication passed, **and** no categories match other than `safe`
-
-The first scenario is the most trusted, because the message `From` domain has
-been authenticated **and** the email includes known safe content.
-
-The first scenario is useful in situations where the sending domain is
-trusted, but the email content is not consistent enough for a YARA rule.
-
-The second scenario is useful is situations where the sender can't or won't
-use DKIM properly, but very specific email content traits can be identified.
-
-
-
-## Getting started
-
-Follow the [installation guide](installation).
-
-Import `MailScanner` from `yaramail`, and create a new
-[`MailScanner` object](api)
-
-```python
-import logging
-
-from yaramail import MailScanner
-
-logger = logging.getLogger("scanner")
-logging.basicConfig(level=logging.INFO)
-
-# Initialize the scanner
-scanner = None  # Avoid an IDE warning
-try:
-    scanner = MailScanner(
-        header_rules="header.yar",
-        body_rules="body.yar",
-        header_body_rules="header_body.yar",
-        attachment_rules="attachment.yar",
-        yara_safe_optional_domains="yara_safe_optional_domains.txt")
-except Exception as e:
-    logger.error(f"Could not initialize the scanner: {e}")
-    exit(-1)
-```
-
-:::{tip}
-Use the [include][yara_include] directive in the YARA rule files that you pass
-to `MailScanner` to include rules from other files. That way, rules can be
-divided into separate files as you see fit.
+*Only do this as a last resort*, because implicitly trusting all emails from
+a domain would cause a malicious email to be categorized as `safe`.
 :::
 
-To scan an email, pass email content, a file-like object, or a file path to
-`MailScanner.scan_email()`. Take a look at the [API documentation](api) to
-learn about the returned objects.
+##### auth_optional
 
-## Anatomy of a YARA rule
+Do not require domain authentication for the rule's category to apply.
 
-[YARA rules][yara_rules] provide a flexible method of checking email header,
-body, and attachment content against known malicious and trusted patterns. The
-rules consist of three sections: `meta`, `strings`, and `condition`.
+:::{important}
+Only set this key to true if the sender is known to not properly DKIM sign
+their email.
+:::
 
-### meta
+:::{warning}
+Emails without proper authentication may have a spoofed
+message `From` domain, so take extra care to write YARA rules matching known
+safe content as detailed and narrow as possible.
+:::
 
-The [meta section][yara_meta] specifies arbitrary metadata key-value
-pairs of metadata that can be useful to humans and/or the scanner application.
-`yaramail` uses a few specific metadata keys:
+##### authentication_optional
 
-| Key              | Description                                                                                                                                                                           |
-|------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `category`       | The `category` of the rule. This can be any string, but the value `safe` is special. Rules without a `category` are considered informational, and do not contribute to the `verdict`. |
-| `from_domain`    | If this value is set, the rule’s `category` only applies to emails with the specified message `From` domain. Required for `safe` category rules.                                      |
-| `auth_optional`  | Do not factor domain authentication into the `verdict` if the rule matches                                                                                                            |
-| `no_attachments` | If this value is true, the rule’s category only applies to emails with no attachments.                                                                                                |
-| `no_attachment`  | Alias of `no_attachment`.                                                                                                                                                             |
+Alias of `auth_optional`.
 
-### strings
+##### category
+
+The `category` of the rule. This can be any string, but the value `safe` is
+special. Rules without a `category` key are considered informational, and do
+not contribute to the `verdict`.
+
+##### from_domain
+
+:::{important}
+This key **must** be set for rules with a category of `safe`.
+:::
+
+If this key is set, the rule’s `category` only applies to emails when the
+message `From` domain that matches this value exactly. Multiple domains can be
+specified in this value by separating them with spaces.
+
+Domain authentication must pass, unless that rule has an `auth_optional` meta
+key with the value set to `true`.
+
+##### from_domains
+
+Alias of `from_domain`.
+
+##### no_attachment
+
+If this key is `true`, the rule’s `category` only applies to emails with no
+attachments.
+
+##### no_attachments
+
+Alias of `no_attachment`.
+
+#### strings
 
 The [strings section][yara_strings] specifies strings to match.
 
@@ -180,7 +209,7 @@ The [strings section][yara_strings] specifies strings to match.
 [String modifiers][yara_string_modifiers] set case sensitivity, full word match
 only, and more.
 
-### condition
+#### condition
 
 The [condition section][yara_condition] consists of a Boolean expression that
 describes when the rule should match.
@@ -558,11 +587,12 @@ from yaramail import MailScanner
 logger = logging.getLogger("scanner")
 logging.basicConfig(level=logging.INFO)
 
+
 def escalate_to_incident_response(_report_email: Dict,
                                   priority: str = "normal"):
-    m = f"Escalating {priority} priority email"
-    logger.debug(m)
-    # TODO: Do something!
+  m = f"Escalating {priority} priority email"
+  logger.debug(m)
+  # TODO: Do something!
 
 
 malicious_categories = ["credential-harvesting", "fraud", "malware"]
@@ -571,76 +601,77 @@ malicious_categories = set(malicious_categories)
 # Initialize the scanner
 scanner = None  # Avoid an IDE warning
 try:
-    scanner = MailScanner(
-        header_rules="header.yar",
-        body_rules="body.yar",
-        header_body_rules="header_body.yar",
-        attachment_rules="attachment.yar",
-        yara_safe_optional_domains="yara_safe_optional_domains.txt")
+  scanner = MailScanner(
+    header_rules="header.yar",
+    body_rules="body.yar",
+    header_body_rules="header_body.yar",
+    attachment_rules="attachment.yar",
+    implicit_safe_domains="implicit_safe_domains.txt")
 except Exception as e:
-    logger.error(f"Could not initialize the scanner: {e}")
-    exit(-1)
+  logger.error(f"Could not initialize the scanner: {e}")
+  exit(-1)
 
 
 def scan_email(email_sample):
-    email_sample["yaramail"] = scanner.scan_email(email_sample)
-    return email_sample
+  email_sample["yaramail"] = scanner.scan_email(email_sample)
+  return email_sample
+
 
 # TODO: Do something to fetch emails
 emails = []
 
 for email in emails:
-    attached_email = None
-    report_email = parse_email(email)
-    report_email["valid_report"] = True
-    if report_email["automatic_reply"]:
-        # TODO: Move automatic replies to the trash
-        continue
-    for attachment in report_email["attachments"]:
-        if attachment["filename"].lower().endswith(".eml"):
-            if attached_email:
-                # TODO: Tell the user to only send one attached email
-                report_email["valid_report"] = False
-                escalate_to_incident_response(report_email)
-                # TODO: Move report email to the invalid folder or trash
-                attachment = None
-                break
-            attached_email = attachment
-    if attached_email is None and report_email["valid_report"]:
-        report_email["valid_report"] = False
-        # TODO: Tell use user how to properly send a sample as an attachment
-        escalate_to_incident_response(report_email)
-        # TODO: Move report email to the invalid folder or trash
-        continue
-    try:
-        sample = scan_email(attached_email["payload"])
-    except Exception as _e:
-        logger.warning(f"Invalid email sample: {_e}")
+  attached_email = None
+  report_email = parse_email(email)
+  report_email["valid_report"] = True
+  if report_email["automatic_reply"]:
+    # TODO: Move automatic replies to the trash
+    continue
+  for attachment in report_email["attachments"]:
+    if attachment["filename"].lower().endswith(".eml"):
+      if attached_email:
+        # TODO: Tell the user to only send one attached email
         report_email["valid_report"] = False
         escalate_to_incident_response(report_email)
         # TODO: Move report email to the invalid folder or trash
-        continue
+        attachment = None
+        break
+      attached_email = attachment
+  if attached_email is None and report_email["valid_report"]:
+    report_email["valid_report"] = False
+    # TODO: Tell use user how to properly send a sample as an attachment
+    escalate_to_incident_response(report_email)
+    # TODO: Move report email to the invalid folder or trash
+    continue
+  try:
+    sample = scan_email(attached_email["payload"])
+  except Exception as _e:
+    logger.warning(f"Invalid email sample: {_e}")
+    report_email["valid_report"] = False
+    escalate_to_incident_response(report_email)
+    # TODO: Move report email to the invalid folder or trash
+    continue
 
-    report_email["sample"] = sample
+  report_email["sample"] = sample
 
-    is_malicious = bool(len(list(
-        malicious_categories.intersection(sample["yaramail"]["categories"]))))
+  is_malicious = bool(len(list(
+    malicious_categories.intersection(sample["yaramail"]["categories"]))))
 
-    if is_malicious:
-        # TODO: Instruct the user to delete the malicious email
-        # TODO: Move report email to the malicious folder or trash
-        # TODO: Maybe do something different for each verdict?
-        escalate_to_incident_response(report_email, "high")
-    elif sample["yaramail"]["verdict"] == "safe":
-        # TODO: Let the user know the email is safe and close the ticket
-        # TODO: Move the report to the safe folder or trash
-        pass
-    elif sample["yaramail"]["verdict"] == "junk":
-        # TODO: Tell the user how to add an address to their spam filter
-        # TODO: Close the ticket and move the report to the junk/trash folder
-        pass
-    else:
-        escalate_to_incident_response(report_email)
+  if is_malicious:
+    # TODO: Instruct the user to delete the malicious email
+    # TODO: Move report email to the malicious folder or trash
+    # TODO: Maybe do something different for each verdict?
+    escalate_to_incident_response(report_email, "high")
+  elif sample["yaramail"]["verdict"] == "safe":
+    # TODO: Let the user know the email is safe and close the ticket
+    # TODO: Move the report to the safe folder or trash
+    pass
+  elif sample["yaramail"]["verdict"] == "junk":
+    # TODO: Tell the user how to add an address to their spam filter
+    # TODO: Close the ticket and move the report to the junk/trash folder
+    pass
+  else:
+    escalate_to_incident_response(report_email)
 
 ```
 

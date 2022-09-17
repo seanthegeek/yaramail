@@ -144,8 +144,8 @@ class MailScanner(object):
                  attachment_rules: Union[str, IOBase, yara.Rules] = None,
                  passwords: Union[List[str], IOBase, str] = None,
                  max_zip_depth: int = None,
-                 yara_safe_optional_domains: Union[List[str], IOBase,
-                                                   str] = None,
+                 implicit_safe_domains: Union[List[str], IOBase,
+                                              str] = None,
                  allow_multiple_authentication_results: bool = False,
                  use_authentication_results_original: bool = False):
         """
@@ -163,6 +163,8 @@ class MailScanner(object):
             passwords: A list of passwords to use when attempting to scan \
             password-protected files
             max_zip_depth: Number of times to recurse into nested ZIP files
+            implicit_safe_domains: Always add the ``safe`` category to \
+            emails from these domains
             allow_multiple_authentication_results: Allow multiple \
             ``Authentication-Results-Original`` headers when checking \
             authentication results
@@ -223,8 +225,8 @@ class MailScanner(object):
         self.passwords += ["malware", "infected"]
         self.passwords = _deduplicate_list(self.passwords)
         self.max_zip_depth = max_zip_depth
-        self.yara_safe_optional_domains = _input_to_str_list(
-            yara_safe_optional_domains)
+        self.implicit_safe_domains = _input_to_str_list(
+            implicit_safe_domains)
         allow_multi_auth = allow_multiple_authentication_results
         self.allow_multiple_authentication_results = allow_multi_auth
         use_og_auth = use_authentication_results_original
@@ -416,7 +418,7 @@ class MailScanner(object):
 
           - ``domain``  - The message From domain
           - ``domain_authenticated`` - bool: domain is authenticated
-          - ``yara_safe_optional`` - bool: YARA safe match is optional
+          - ``implicit_safe_domain`` - bool: YARA safe match is optional
             for the domain
 
         - ``has_attachment`` - bool: The email sample has an attachment
@@ -505,7 +507,7 @@ class MailScanner(object):
         multi_auth_headers = self.allow_multiple_authentication_results
         use_og_auth_results = self.use_authentication_results_original
         yara_safe_optional_domain = from_trusted_domain(
-            parsed_email, self.yara_safe_optional_domains,
+            parsed_email, self.implicit_safe_domains,
             allow_multiple_authentication_results=multi_auth_headers,
             use_authentication_results_original=use_og_auth_results,
         )
@@ -559,7 +561,7 @@ class MailScanner(object):
         msg_from_domain_results = dict(
             domain=msg_from_domain,
             authenticated=authenticated_domain,
-            yara_safe_optional=yara_safe_optional_domain)
+            implicit_safe_domain=yara_safe_optional_domain)
 
         return dict(matches=matches, categories=categories,
                     msg_from_domain=msg_from_domain_results,

@@ -17,14 +17,14 @@ This release is a major rewrite that includes changes breaking existing use
         - `from-domain-mismatch` - The `from_domain` rule `meta` value does not match the from domain of the email message
         - `domain-authentication-failed` - Domain authentication failed for a rule with a `from_domain` `meta` value set. This warning can be suppressed by setting the `auth_optional` `meta` value to `true`
         - `safe-rule-missing-from-domain` - A rule with a `category` of `safe` does not have the required `from_domain` `meta` value
-  - Trusted domains are now called YARA safe optional domains
+  - Trusted domains are now called implicit safe domains
 - API changes
-  - `trusted_domains` renamed to `yara_safe_optional_domains`
+  - `trusted_domains` renamed to `implisit_safe_domains`
   - `trusted_domains_yara_safe_required` parameter removed
   - `include_sld_in_auth_check` parameter removed
   - Returned data structure changed (see docs for details)
 - CLI changes
-  - `--trusted-domains` renamed to `--yara-safe-optional-domains`
+  - `--trusted-domains` renamed to `--implicit-safe-domains`
   - `--trusted-domains-yara` removed
   - `--sld` removed
   - Log output delimiter changed from `:` to `|` to avoid conflicting with JSON
