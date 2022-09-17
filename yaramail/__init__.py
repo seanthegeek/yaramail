@@ -8,18 +8,17 @@ import zipfile
 
 import yara
 import pdftotext
-from publicsuffix2 import get_sld
 
 from mailsuite.utils import parse_email, from_trusted_domain, decode_base64
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
-__version__ = "2.1.0"
+__version__ = "3.0.0"
 
 
-delimiters = ["\"", "'", "`", "\*\*",
-              "_", ("\(", "\)"), ("\[", "\]"), ("\{", "\}")]
+delimiters = ["r\"", r"'", r"`", r"\*\*",
+              r"_", (r"\(", r"\)"), (r"\[", r"\]"), (r"\{", r"\}")]
 
 password_regex = [re.compile(r"\s*(\S+)\s*", re.MULTILINE)]
 for delimiter in delimiters:
@@ -37,8 +36,8 @@ for delimiter in delimiters:
 
 def _carve_passwords(content: str) -> List[str]:
     passwords = []
-    for regex in password_regex:
-        matches = regex.findall(content)
+    for _regex in password_regex:
+        matches = _regex.findall(content)
         passwords += matches
     additional_passwords = []
     for password in passwords:
@@ -68,9 +67,9 @@ def _match_to_dict(match: Union[yara.Match,
                     namespace=_match.namespace,
                     tags=_match.tags,
                     meta=_match.meta,
-                    strings=_match.strings
+                    strings=_match.strings,
+                    warnings=[]
                     )
-
     if isinstance(match, list):
         matches = match.copy()
         for i in range(len(matches)):
@@ -145,10 +144,8 @@ class MailScanner(object):
                  attachment_rules: Union[str, IOBase, yara.Rules] = None,
                  passwords: Union[List[str], IOBase, str] = None,
                  max_zip_depth: int = None,
-                 trusted_domains: Union[List[str], IOBase, str] = None,
-                 trusted_domains_yara_safe_required: Union[List[str], IOBase,
-                                                           str] = None,
-                 include_sld_in_auth_check: bool = False,
+                 implicit_safe_domains: Union[List[str], IOBase,
+                                              str] = None,
                  allow_multiple_authentication_results: bool = False,
                  use_authentication_results_original: bool = False):
         """
@@ -166,15 +163,8 @@ class MailScanner(object):
             passwords: A list of passwords to use when attempting to scan \
             password-protected files
             max_zip_depth: Number of times to recurse into nested ZIP files
-            trusted_domains: A list of message From domains that return a \
-            ``safe`` verdict if the domain is authenticated and no YARA \
-            categories match other than ``safe``
-            trusted_domains_yara_safe_required: A list of message From \
-            domains that return a ``safe`` verdict if the domain is \
-            authenticated **and** the email itself has a YARA ``safe`` verdict
-            include_sld_in_auth_check: Check authentication results based on \
-            Second-Level Domain (SLD) in addition to the \
-            Fully-Qualified Domain Name (FQDN)
+            implicit_safe_domains: Always add the ``safe`` category to \
+            emails from these domains
             allow_multiple_authentication_results: Allow multiple \
             ``Authentication-Results-Original`` headers when checking \
             authentication results
@@ -235,11 +225,8 @@ class MailScanner(object):
         self.passwords += ["malware", "infected"]
         self.passwords = _deduplicate_list(self.passwords)
         self.max_zip_depth = max_zip_depth
-        self.trusted_domains = _input_to_str_list(trusted_domains)
-        self.trusted_domains_yara_safe_required = _input_to_str_list(
-            trusted_domains_yara_safe_required
-        )
-        self.include_sld_in_auth_check = include_sld_in_auth_check
+        self.implicit_safe_domains = _input_to_str_list(
+            implicit_safe_domains)
         allow_multi_auth = allow_multiple_authentication_results
         self.allow_multiple_authentication_results = allow_multi_auth
         use_og_auth = use_authentication_results_original
@@ -279,7 +266,9 @@ class MailScanner(object):
         with zipfile.ZipFile(payload) as zip_file:
             for name in zip_file.namelist():
                 if passwords is None:
-                    passwords == []
+                    passwords = []
+                if None not in passwords:
+                    passwords = [None] + passwords
                 for password in passwords:
                     if isinstance(password, str):
                         password = password.encode("utf-8")
@@ -345,7 +334,7 @@ class MailScanner(object):
 
         if passwords is None:
             passwords = []
-        passwords = [None] + passwords + self.passwords
+        passwords = passwords + self.passwords
         combined_attachment_matches = []
         if isinstance(attachments, dict):
             attachments = [attachments]
@@ -412,47 +401,43 @@ class MailScanner(object):
         The returned dictionary contains the following key-value pairs:
 
         - ``matches`` - A list of YARA match dictionaries
+
+          - ``name`` - The name of the rule.
+          - ``namespace`` - The namespace of the rule.
+          - ``meta`` - A dictionary of key-value pairs from the meta section.
+          - ``tags`` - A list of the rule's tags.
+          - ``strings`` - A list of lists identifying strings or patterns that
+            match.
+
+             0. The location/offset of the identified string
+             1. The variable name of the string/pattern in the rule
+             2. The matching string/pattern content
+
         - ``categories`` - A list of categories of YARA matches
-        - ``msg_from_domain`` - The message From domain
-        - ``trusted_domain`` - The message From domain is in the
-          ``trusted_domains`` list **AND** is authenticated
-        - ``trusted_domain_yara_safe_required`` - The message From domain is
-          in the ``trusted_domain_yara_safe_required`` list **AND** is
-          is authenticated
-        - ``auth_optional`` - At least one matching YARA rule has
-          ``auth_optional = true`` **AND** ``category = safe`` in its ``meta``
-          section
-        - ``has_attachment`` - The email sample has an attachment
-        - ``verdict`` - The verdict of the scan
+        - ``msg_from_domain`` -  Message From domain details
 
-        Possible verdicts include:
+          - ``domain``  - The message From domain
+          - ``domain_authenticated`` - bool: domain is authenticated
+          - ``implicit_safe_domain`` - bool: YARA safe match is optional
+            for the domain
 
-         - ``None`` - No categories matched
-         - ``safe`` - The email is considered safe
-         - ``yara_safe_auth_fail`` -  Categorized at ``safe`` by YARA, but
-           domain authentication failed
-         - ``auth_pass_not_yara_safe`` - Domain authentication passed, but YARA
-           did not return the required ``safe`` categorization
-         - ``ambiguous`` - Multiple categories matched
-         - Any custom ``category`` specified in the ``meta`` section of a YARA
-           rule
+        - ``has_attachment`` - bool: The email sample has an attachment
 
-        Each match dictionary in the returned list contains
-        the following key-value pairs:
+        - ``warnings`` - A list of warnings. Possible warnings include:
 
-        - ``name`` - The name of the rule.
-        - ``namespace`` - The namespace of the rule.
-        - ``meta`` - A dictionary of key-value pairs from the meta section.
-        - ``tags`` - A list of the rule's tags.
-        - ``strings`` - A list of identified strings or patterns that match.
+          - ``domain-authentication-failed`` - Authentication of the message
+            From domain failed
+          - ``from-domain-mismatch`` - The message From domain did not exactly
+            match the value of the ``meta`` key ``from_domain``
+          - ``safe-rule-missing-from-domain`` - The rule is missing a
+            ``from_domain`` ``meta`` key that is required for rules with the
+            ``category`` meta key set to ``safe``
+          - ``unexpected-attachment`` - An email win an attachment matched a
+            rule with the ``meta`` key ``no attachment`` or ``no_attachments``
+            set to ``true``
 
-          Each ``strings`` list item is also a list, with the following values:
-
-              0. The location/offset of the identified string
-              1. The variable name of the string/pattern in the rule
-              2. The matching string/pattern content
-
-        - ``location`` - The part of the email where the match was found
+        - ``location`` - The part of the email where the match was
+          found, for example:
 
           - ``header``
           - ``body``
@@ -461,6 +446,14 @@ class MailScanner(object):
           - ``attachment:example.zip:evil.js``
           - ``attachment:first.zip:nested.zip:evil.js``
           - ``attachment:evil.eml:attachment:example.zip:evil.js``
+
+        - ``verdict`` - The verdict of the scan. Possible verdicts include:
+
+           - ``None`` - No categories matched
+           - ``safe`` - The email is considered safe
+           - ``ambiguous`` - Multiple categories matched
+           - Any custom ``category`` specified in the ``meta`` section of a
+             YARA rule
         """
         if isinstance(email, str):
             if path.exists(email):
@@ -513,56 +506,66 @@ class MailScanner(object):
         verdict = None
         multi_auth_headers = self.allow_multiple_authentication_results
         use_og_auth_results = self.use_authentication_results_original
-        trusted_domain = from_trusted_domain(
-            parsed_email, self.trusted_domains,
+        yara_safe_optional_domain = from_trusted_domain(
+            parsed_email, self.implicit_safe_domains,
             allow_multiple_authentication_results=multi_auth_headers,
             use_authentication_results_original=use_og_auth_results,
-            include_sld=self.include_sld_in_auth_check
         )
-        trusted_domain_yara_safe_required = from_trusted_domain(
-            parsed_email, self.trusted_domains_yara_safe_required,
+        authenticated_domain = from_trusted_domain(
+            parsed_email, [parsed_email["from"]["domain"]],
             allow_multiple_authentication_results=multi_auth_headers,
             use_authentication_results_original=use_og_auth_results,
-            include_sld=self.include_sld_in_auth_check
         )
-        auth_optional = False
         categories = []
         has_attachment = len(attachments) > 0
         for match in matches:
+            auth_optional = False
+            if "authentication_optional" in match["meta"]:
+                auth_optional = match["meta"]["authentication_optional"]
+            if "auth_optional" in match["meta"]:
+                auth_optional = match["meta"]["auth_optional"]
+            passed_authentication = authenticated_domain or auth_optional
+            no_attachment = False
             if "no_attachments" in match["meta"]:
-                if match["meta"]["no_attachments"] and has_attachment:
-                    continue
+                no_attachment = match["meta"]["no_attachments"]
             if "no_attachment" in match["meta"]:
-                if match["meta"]["no_attachment"] and has_attachment:
-                    continue
-            if "from_domain" in match["meta"]:
-                sld = parsed_email["from"]["sld"]
-                if sld != get_sld(match["meta"]["from_domain"]):
-                    continue
+                no_attachment = match["meta"]["no_attachment"]
+            if no_attachment and has_attachment:
+                match["warnings"].append("unexpected-attachment")
+                continue
+            rule_from_domains = None
+            if "from_domains" in match["meta"]:
+                rule_from_domains = match["meta"]["from_domains"]
+            elif "from_domain" in match["meta"]:
+                rule_from_domains = match["meta"]["from_domain"]
+            if rule_from_domains is not None:
+                rule_from_domains.split(" ")
+                if parsed_email["from"]["domain"] not in rule_from_domains:
+                    match["warnings"].append("from-domain-mismatch")
+                if not passed_authentication:
+                    match["warnings"].append("domain-authentication-failed")
             if "category" in match["meta"]:
-                categories.append(match["meta"]["category"])
                 if match["meta"]["category"] == "safe":
-                    if "auth_optional" in match["meta"] and not auth_optional:
-                        auth_optional = match["meta"]["auth_optional"]
+                    if rule_from_domains is None:
+                        match["warnings"].append(
+                            "safe-rule-missing-from-domain")
+                if len(match["warnings"]) == 0:
+                    categories.append(match["meta"]["category"].lower())
+
+        if yara_safe_optional_domain:
+            categories.append("safe")
         categories = _deduplicate_list(categories)
         if len(categories) == 1:
             verdict = categories[0]
         elif len(categories) > 1:
             verdict = "ambiguous"
-        authenticated = any([trusted_domain, trusted_domain_yara_safe_required,
-                             auth_optional])
-        if verdict == "safe" and not authenticated:
-            verdict = "yara_safe_auth_fail"
-        if verdict != "safe" and trusted_domain_yara_safe_required:
-            verdict = "auth_pass_not_yara_safe"
-        if verdict is None and authenticated:
-            verdict = "safe"
 
-        safe_required = trusted_domain_yara_safe_required
+        msg_from_domain_results = dict(
+            domain=msg_from_domain,
+            authenticated=authenticated_domain,
+            implicit_safe_domain=yara_safe_optional_domain)
+
         return dict(matches=matches, categories=categories,
-                    msg_from_domain=msg_from_domain,
-                    trusted_domain=trusted_domain,
-                    trusted_domain_yara_safe_required=safe_required,
-                    auth_optional=auth_optional,
+                    msg_from_domain=msg_from_domain_results,
                     has_attachment=has_attachment,
                     verdict=verdict)

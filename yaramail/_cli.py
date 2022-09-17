@@ -11,7 +11,7 @@ from mailsuite.utils import parse_email
 from yaramail import __version__, MailScanner
 
 formatter = logging.Formatter(
-    fmt='%(levelname)8s:%(message)s',
+    fmt='%(levelname)s|%(message)s',
     datefmt='%Y-%m-%d:%H:%M:%S')
 handler = logging.StreamHandler()
 handler.setFormatter(formatter)
@@ -71,19 +71,15 @@ arg_parser.add_argument("--attachment-rules", type=str,
                         default="attachment.yar")
 arg_parser.add_argument("--passwords", type=str,
                         help="Filename of a list of passwords to try against "
-                             "password-protected files",
+                             "password-protected files in addition to email "
+                             "body content",
                         default="passwords.txt")
-arg_parser.add_argument("--trusted-domains", type=str,
+arg_parser.add_argument("--implicit-safe-domains", type=str,
                         help="Filename of a list of message From domains that "
                              "return a safe verdict if the domain is "
                              "authenticated and no YARA categories match "
                              "other than safe",
-                        default="trusted_domains.txt")
-arg_parser.add_argument("--trusted-domains-yara", type=str,
-                        help="Filename of a list of message From domains that "
-                             "require an authenticated from domain and YARA "
-                             "safe verdict",
-                        default="trusted_domains_yara_safe_required.txt")
+                        default="implicit_safe_domains.txt")
 arg_parser.add_argument("--max-zip-depth", type=int,
                         help="The maximum number of times to recurse into "
                              "nested ZIP files")
@@ -121,38 +117,26 @@ def _main():
         args.attachment_rules = None
     args.passwords = os.path.join(args.rules, args.passwords)
     if not os.path.exists(args.passwords):
-        logger.warning(f"{args.passwords} does not exist. Skipping password "
-                       f"brute force attempts.")
+        logger.warning(f"{args.passwords} does not exist.")
         args.passwords = None
-    args.trusted_domains = os.path.join(args.rules, args.trusted_domains)
-    if not os.path.exists(args.trusted_domains):
-        logger.warning(f"{args.trusted_domains} does not exist. Skipping "
-                       f"trusted domain check.")
-        args.trusted_domains = None
-    args.trusted_domains_yara = os.path.join(args.rules,
-                                             args.trusted_domains_yara)
-    if not os.path.exists(args.trusted_domains_yara):
-        logger.warning(f"{args.trusted_domains_yara} does not exist. Skipping "
-                       f"trusted domain check with required safe YARA "
-                       f"verdict.")
-        args.trusted_domains_yara = None
+    args.implicit_safe_domains = os.path.join(
+        args.rules,
+        args.implicit_safe_domains)
+    if not os.path.exists(args.implicit_safe_domains):
+        logger.warning(f"{args.implicit_safe_domains} does not exist.")
+        args.implicit_safe_domains = None
 
-    trusted_domains = []
-    if args.trusted_domains is not None:
+    yara_safe_optional_domains = []
+    if args.implicit_safe_domains is not None:
         try:
-            with open(args.trusted_domains) as trusted_domains_file:
-                trusted_domains = trusted_domains_file.read().strip().split(
-                    "\n")
+            with open(args.implicit_safe_domains) as yara_optional_file:
+                yara_safe_optional_domains = yara_optional_file.read().strip()
+                yara_safe_optional_domains = yara_safe_optional_domains.split(
+                    "\n"
+                )
         except Exception as e:
-            logger.error(f"Error reading {args.trusted_domains}: {e}")
-    trusted_domains_yara_safe = []
-    if args.trusted_domains_yara is not None:
-        try:
-            with open(args.trusted_domains_yara) as f:
-                trusted_domains_yara_safe = f.read().strip().split(
-                    "\n")
-        except Exception as e:
-            logger.error(f"Error reading {args.trusted_domains}: {e}")
+            logger.error(
+                f"Error reading {args.implicit_safe_domains}: {e}")
 
     try:
         scanner = MailScanner(
@@ -160,12 +144,10 @@ def _main():
             body_rules=args.body_rules,
             header_body_rules=args.header_body_rules,
             attachment_rules=args.attachment_rules,
+            implicit_safe_domains=yara_safe_optional_domains,
             passwords=args.passwords,
-            trusted_domains=trusted_domains,
-            trusted_domains_yara_safe_required=trusted_domains_yara_safe,
             allow_multiple_authentication_results=args.multi_auth,
             use_authentication_results_original=args.auth_original,
-            include_sld_in_auth_check=args.sld,
             max_zip_depth=args.max_zip_depth
         )
     except Exception as e:
@@ -202,13 +184,13 @@ def _main():
                             if verdict != category:
                                 results = simplejson.dumps(results)
                                 logger.error(
-                                    f"fail:path={msg_path}:verdict={verdict}:"
-                                    f"expected={category}:results={results}")
+                                    f"fail|path={msg_path}|verdict={verdict}|"
+                                    f"expected={category}|results={results}")
                                 test_failures += 1
                             elif verbose:
                                 logger.info(
-                                    f"pass:path={msg_path}:verdict={verdict}:"
-                                    f"expected={category}:results={results}")
+                                    f"pass|path={msg_path}|verdict={verdict}|"
+                                    f"expected={category}|results={results}")
                         except Exception as e_:
                             logger.warning(f"{msg_path}: {e_}")
                             test_failures += 1

@@ -1,5 +1,40 @@
 # Changelog
 
+## 3.0.0
+
+*Warning*
+This release is a major rewrite that includes changes breaking existing use
+
+- Logic changes
+  - Rules with a category of `safe` must have a `from_domain` `meta` value for the category to apply
+    - This logic replaces `trusted_domains_yara_safe_required`
+    -  `trusted_domain_yara_safe_required`, and `auth_optional` removed from results
+  - The `auth_optional`rule `meta` key only applies to that rule 
+  - Warnings are located inside a `warnings` list in each match, instead of as a `verdict`
+    - A rule category does not apply if one or more warning is raised
+      - Possible warnings include
+        - `domain-authentication-failed` - Authentication of the message
+            From domain failed
+          - `from-domain-mismatch` - The message From domain did not exactly
+            match the value of the `meta` key `from_domain`
+          - `safe-rule-missing-from-domain` - The rule is missing a
+            `from_domain` `meta` key that is required for rules with the
+            `category` meta key set to `safe`
+          - `unexpected-attachment` - An email win an attachment matched a
+            rule with the `meta` key `no attachment` or `no_attachments`
+            set to `true`
+  - Trusted domains are now called implicit safe domains
+- API changes
+  - `trusted_domains` renamed to `implisit_safe_domains`
+  - `trusted_domains_yara_safe_required` parameter removed
+  - `include_sld_in_auth_check` parameter removed
+  - Returned data structure changed (see docs for details)
+- CLI changes
+  - `--trusted-domains` renamed to `--implicit-safe-domains`
+  - `--trusted-domains-yara` removed
+  - `--sld` removed
+  - Log output delimiter changed from `:` to `|` to avoid conflicting with JSON
+
 ## 2.1.0
 
 - Use email body content to brute force password-protected ZIPs
