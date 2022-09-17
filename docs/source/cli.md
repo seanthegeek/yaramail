@@ -8,7 +8,7 @@ usage: A YARA scanner for emails [-h] [-V] [-v] [-m] [-o] [-r] [-b] [-s] [-t]
                                  [--header-body-rules HEADER_BODY_RULES]
                                  [--attachment-rules ATTACHMENT_RULES]
                                  [--passwords PASSWORDS]
-                                 [--yara-safe-optional-domains YARA_SAFE_OPTIONAL_DOMAINS]
+                                 [--implicit-safe-domains IMPLICIT_SAFE_DOMAINS]
                                  [--max-zip-depth MAX_ZIP_DEPTH]
                                  scan_path
 
@@ -55,11 +55,11 @@ options:
                         Filename of a list of passwords to try against
                         password-protected files in addition to email body
                         content (default: passwords.txt)
-  --yara-safe-optional-domains YARA_SAFE_OPTIONAL_DOMAINS
+  --implicit-safe-domains IMPLICIT_SAFE_DOMAINS
                         Filename of a list of message From domains that return
                         a safe verdict if the domain is authenticated and no
                         YARA categories match other than safe (default:
-                        yara_safe_optional_domains.txt)
+                        implicit_safe_domains.txt)
   --max-zip-depth MAX_ZIP_DEPTH
                         The maximum number of times to recurse into nested ZIP
                         files (default: None)
