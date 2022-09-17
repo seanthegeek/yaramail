@@ -135,13 +135,13 @@ that category. If multiple categories are listed, the verdict is set to
 `ambiguous`. If no categories are listed, the verdict is set to `None`.
 
 :::{note}
-In extremely rare cases, a domain may send a wide variety of automated emails
-that do not fit into patterns, making YARA rules impractical. to account for
-this, a domain can be added to the `implicit_safe_domains_list`, which will
-add a `category` of `safe` to every email from that domain, as long as the
-domain is authenticated. The emails will still be scanned by YARA, so any
-YARA category matches other than `safe` will still return an `anbigious`
-verdict.
+In extremely rare cases, a trusted domain may send a wide variety of automated 
+emails that do not fit into patterns, making YARA rules impractical. 
+To account for this, a domain can be added to the `implicit_safe_domains`
+list, which will add a `category` of `safe` to every email from that
+domain, as long as the domain is authenticated. The emails will still be
+scanned by YARA, so any YARA category matches other than `safe` will still
+return an `ambiguous` verdict.
 
 *Only do this as a last resort*, because implicitly trusting all emails from
 a domain would cause a malicious email to be categorized as `safe`.
@@ -151,15 +151,19 @@ a domain would cause a malicious email to be categorized as `safe`.
 
 Do not require domain authentication for the rule's category to apply.
 
+:::{note}
+This only applies when `from_domain` is set.
+:::
+
 :::{important}
 Only set this key to true if the sender is known to not properly DKIM sign
 their email.
 :::
 
 :::{warning}
-Emails without proper authentication may have a spoofed
-message `From` domain, so take extra care to write YARA rules matching known
-safe content as detailed and narrow as possible.
+Emails without proper authentication may have a spoofed message `From`
+domain, so take extra care to write YARA rules matching known safe content as
+detailed and narrow as possible.
 :::
 
 ##### authentication_optional

@@ -520,17 +520,19 @@ class MailScanner(object):
         has_attachment = len(attachments) > 0
         for match in matches:
             auth_optional = False
+            if "authentication_optional" in match["meta"]:
+                auth_optional = match["meta"]["authentication_optional"]
             if "auth_optional" in match["meta"]:
                 auth_optional = match["meta"]["auth_optional"]
             passed_authentication = authenticated_domain or auth_optional
+            no_attachment = False
             if "no_attachments" in match["meta"]:
-                if match["meta"]["no_attachments"] and has_attachment:
-                    match["warnings"].append("unexpected-attachment")
-                    continue
+                no_attachment = match["meta"]["no_attachments"]
             if "no_attachment" in match["meta"]:
-                if match["meta"]["no_attachment"] and has_attachment:
-                    match["warnings"].append("unexpected-attachment")
-                    continue
+                no_attachment = match["meta"]["no_attachment"]
+            if no_attachment and has_attachment:
+                match["warnings"].append("unexpected-attachment")
+                continue
             rule_from_domains = None
             if "from_domains" in match["meta"]:
                 rule_from_domains = match["meta"]["from_domains"]
