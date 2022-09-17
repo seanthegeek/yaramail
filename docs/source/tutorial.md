@@ -34,22 +34,9 @@ into the upstream `main` branch.
 The `yaramail` module contains a `MailScanner` class. When `MailScanner` scans
 an email, it attempts to use a combination of email authentication results and
 YARA rule matches to categorize an email and reach a `verdict`. To do this, it
-does several things. First, it scans the contents of the email headers, body,
-and attachments with user-provided YARA rules. Then, the `meta` section of each
-matching rule is checked for a `category` key. Each match category is
-added to a deduplicated list of `categories`. If a `from_domain` key
-exists in the `meta` section of a matching rule (which is required for rules
-with a `safe` category). the `category` of the rule is
-only added to the list of `categories` if the message `From` domain of the
-email matches the `from_domain` value. If a `meta` key named `no_attachments`
-is set to `true`,  the `category` of the matching rule is only added to the
-list of`categories` if the email as no attachments.
+does several things.
 
-If a single category is in the list of `categories`, the `verdict` is set to
-that category. If multiple categories are listed, the verdict is set to
-`ambiguous`. If no categories are listed, the verdict is set to `None`.
-
-Then, the `Authentication-Results` of the email is parsed. The
+First, the `Authentication-Results` header of the email is parsed. The
 `Authentication-Results` header is added by the receiving mail server as a way
 of logging the results of authentication checks that prove that the domain
 in the message `From` header was not spoofed. Most email services — including
@@ -57,7 +44,7 @@ Microsoft 365 and Gmail — use a single `Authentication-Results` header
 to log the results of all authentication checks. By default,
 all `Authentication-Results` headers will be ignored if multiple
 `Authentication-Results` headers are found in an email. This is done to avoid
-false positives when an attacker adds their own`Authentication-Results`
+false positives when an attacker adds their own `Authentication-Results`
 header to an email before it reaches the destination mail server.
 
 Postfix mail servers use a separate `Authentication-Results` header for each
@@ -65,11 +52,6 @@ authentication check. If your mail service does this, set the
 `allow_multiple_authentication_results` parameter to `True`.
 This allows multiple headers, but all `Authentication-Results` headers will
 be ignored if multiple DMARC results are found, to avoid spoofed results.
-
-If a matching rule has a `from_domain` meta key (required for rules with a
-`safe` category), the domain of the message `From` address must match this
-domain for the rule's category to apply. Domain authentication must 
-pass, unless that rule has an `auth_optional` `meta` key value set to `true`.
 
 :::{warning}
 Authentication results are not verified by `yaramail`, so only use it on
@@ -96,12 +78,29 @@ such as Abnormal Security.
 Read [Demystifying DMARC][DMARC] for more details about SPF, DKIM, and DMARC.
 :::
 
+Then, the `meta` section of each matching rule is checked for a `category`
+key. Each match category is added to a deduplicated list of `categories`, if 
+the additional criteria specified in the rule's `meta` section is met.
+
+If a matching rule has a `from_domain` meta key (required for rules with a
+`safe` category), the exact domain (including any subdomains) of the message
+`From` address must match the `from_domain` key value for the rule's category
+to be added to the `categories` list. Domain authentication must pass, unless
+that rule has an `auth_optional` meta key with the value set to `true`. This 
+
+If a single category is in the list of `categories`, the `verdict` is set to
+that category. If multiple categories are listed, the verdict is set to
+`ambiguous`. If no categories are listed, the verdict is set to `None`.
+
 The `safe` verdict is special. In order to reach a `safe` verdict, one of the
 following set of conditions must be met.
 
-1. The domain of the email address in the message `From` header is in the `yara_safe_optional_domains` list, domain authentication passed, **and** no categories match other than `safe`
-2. A rule with a `safe` category has a `from_domain` meta value that matches the message `From` domain, the meta value `auth_optiona`, set to `true`, **and** the categories list contains one value, `safe`
-3. A rule with a `safe` category has a `from_domain` meta value that matches the message `From` domain, domain authentication passed, **and** the categories list contains one value, `safe` 
+1. A rule with a `safe` category has a `from_domain` meta value that matches the message `From` domain, domain authentication passed, **and** the categories list contains one value, `safe`
+2. A rule with a `safe` category has a `from_domain` meta value that matches the message `From` domain, the meta value `auth_optional`, set to `true`, **and** the categories list contains one value, `safe`
+3. The domain of the email address in the message `From` header is in the `yara_safe_optional_domains` list, domain authentication passed, **and** no categories match other than `safe`
+
+The first scenario is the most trusted, because the message `From` domain has
+been authenticated **and** the email includes known safe content.
 
 The first scenario is useful in situations where the sending domain is
 trusted, but the email content is not consistent enough for a YARA rule.
@@ -109,8 +108,7 @@ trusted, but the email content is not consistent enough for a YARA rule.
 The second scenario is useful is situations where the sender can't or won't
 use DKIM properly, but very specific email content traits can be identified.
 
-The third scenario is the most trusted, because the message `From` domain has
-been authenticated **and** the email includes known safe content.
+
 
 ## Getting started
 
@@ -125,7 +123,7 @@ import logging
 from yaramail import MailScanner
 
 logger = logging.getLogger("scanner")
-logging.BasicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO)
 
 # Initialize the scanner
 scanner = None  # Avoid an IDE warning
@@ -558,7 +556,7 @@ from mailsuite.utils import parse_email
 from yaramail import MailScanner
 
 logger = logging.getLogger("scanner")
-logging.BasicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO)
 
 def escalate_to_incident_response(_report_email: Dict,
                                   priority: str = "normal"):
