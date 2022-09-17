@@ -11,7 +11,7 @@ from mailsuite.utils import parse_email
 from yaramail import __version__, MailScanner
 
 formatter = logging.Formatter(
-    fmt='%(levelname)8s:%(message)s',
+    fmt='%(levelname)s:%(message)s',
     datefmt='%Y-%m-%d:%H:%M:%S')
 handler = logging.StreamHandler()
 handler.setFormatter(formatter)
