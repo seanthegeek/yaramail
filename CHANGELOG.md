@@ -13,10 +13,16 @@ This release is a major rewrite that includes changes breaking existing use
   - Warnings are located inside a `warnings` list in each match, instead of as a `verdict`
     - A rule category does not apply if one or more warning is raised
       - Possible warnings include
-        - `unexpected-attachment` - A rule with a `meta` value `no_attachment` or `no_attachments` set to `true` matched an email with one or more attachments
-        - `from-domain-mismatch` - The `from_domain` rule `meta` value does not match the from domain of the email message
-        - `domain-authentication-failed` - Domain authentication failed for a rule with a `from_domain` `meta` value set. This warning can be suppressed by setting the `auth_optional` `meta` value to `true`
-        - `safe-rule-missing-from-domain` - A rule with a `category` of `safe` does not have the required `from_domain` `meta` value
+        - `domain-authentication-failed` - Authentication of the message
+            From domain failed
+          - `from-domain-mismatch` - The message From domain did not exactly
+            match the value of the `meta` key `from_domain`
+          - `safe-rule-missing-from-domain` - The rule is missing a
+            `from_domain` `meta` key that is required for rules with the
+            `category` meta key set to `safe`
+          - `unexpected-attachment` - An email win an attachment matched a
+            rule with the `meta` key `no attachment` or `no_attachments`
+            set to `true`
   - Trusted domains are now called implicit safe domains
 - API changes
   - `trusted_domains` renamed to `implisit_safe_domains`
