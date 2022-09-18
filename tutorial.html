@@ -237,7 +237,7 @@ list, which will add a <code class="docutils literal notranslate"><span class="p
 domain, as long as the domain is authenticated. The emails will still be
 scanned by YARA, so any YARA category matches other than <code class="docutils literal notranslate"><span class="pre">safe</span></code> will still
 return an <code class="docutils literal notranslate"><span class="pre">ambiguous</span></code> verdict.</p>
-<p><em>Only do this as a last resort</em>, because implicitly trusting all emails from
+<p><strong>Only do this as a last resort</strong>, because implicitly trusting all emails from
 a domain would cause a malicious email to be categorized as <code class="docutils literal notranslate"><span class="pre">safe</span></code>.</p>
 </div>
 <section id="auth-optional">
@@ -249,7 +249,7 @@ a domain would cause a malicious email to be categorized as <code class="docutil
 </div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>Only set this key to true if the sender is known to not properly DKIM sign
+<p>Only set this key to <code class="docutils literal notranslate"><span class="pre">true</span></code> if the sender is known to not properly DKIM sign
 their email.</p>
 </div>
 <div class="admonition warning">
