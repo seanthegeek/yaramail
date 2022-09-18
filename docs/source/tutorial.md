@@ -143,7 +143,7 @@ domain, as long as the domain is authenticated. The emails will still be
 scanned by YARA, so any YARA category matches other than `safe` will still
 return an `ambiguous` verdict.
 
-*Only do this as a last resort*, because implicitly trusting all emails from
+**Only do this as a last resort**, because implicitly trusting all emails from
 a domain would cause a malicious email to be categorized as `safe`.
 :::
 
@@ -156,7 +156,7 @@ This only applies when `from_domain` is set.
 :::
 
 :::{important}
-Only set this key to true if the sender is known to not properly DKIM sign
+Only set this key to `true` if the sender is known to not properly DKIM sign
 their email.
 :::
 

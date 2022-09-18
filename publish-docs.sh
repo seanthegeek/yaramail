@@ -1,4 +1,5 @@
 #!/bin/bash
+git pull
 cd ../yaramail-docs || exit
 git pull
 cd ../yaramail || exit
