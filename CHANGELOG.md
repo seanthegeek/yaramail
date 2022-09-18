@@ -8,8 +8,8 @@ This release is a major rewrite that includes changes breaking existing use
 - Logic changes
   - Rules with a category of `safe` must have a `from_domain` `meta` value for the category to apply
     - This logic replaces `trusted_domains_yara_safe_required`
-    -  `trusted_domain_yara_safe_required`, and `auth_optional` removed from results
-  - The `auth_optional`rule `meta` key only applies to that rule 
+    - `trusted_domain_yara_safe_required`, and `auth_optional` removed from results
+  - The `auth_optional`rule `meta` key only applies to that rule
   - Warnings are located inside a `warnings` list in each match, instead of as a `verdict`
     - A rule category does not apply if one or more warning is raised
       - Possible warnings include
