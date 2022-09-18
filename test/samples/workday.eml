@@ -1,0 +1,206 @@
+Received: from PH0PR04MB7143.namprd04.prod.outlook.com (2603:10b6:510:15::12)
+ by CH2PR04MB6694.namprd04.prod.outlook.com with HTTPS; Mon, 1 Aug 2022
+ 15:47:34 +0000
+Received: from DM6PR07CA0065.namprd07.prod.outlook.com (2603:10b6:5:74::42) by
+ PH0PR04MB7143.namprd04.prod.outlook.com (2603:10b6:510:15::12) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5482.11; Mon, 1 Aug 2022 15:47:34 +0000
+Received: from DM6NAM11FT037.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:74:cafe::63) by DM6PR07CA0065.outlook.office365.com
+ (2603:10b6:5:74::42) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.23 via Frontend
+ Transport; Mon, 1 Aug 2022 15:47:33 +0000
+Authentication-Results: spf=fail (sender IP is 216.71.0.0)
+ smtp.mailfrom=myworkday.com; dkim=pass (signature was verified)
+ header.d=myworkday.com;dmarc=pass action=none
+ header.from=myworkday.com;compauth=pass reason=100
+Received-SPF: Fail (protection.outlook.com: domain of myworkday.com does not
+ designate 216.71.0.0 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.71.0.0; helo=esa.hcREDACTED.iphmx.com;
+Received: from esa.hcREDACTED.iphmx.com (216.71.0.0) by
+ DM6NAM11FT037.mail.protection.outlook.com (10.13.172.122) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5482.10 via Frontend Transport; Mon, 1 Aug 2022 15:47:33 +0000
+Received-SPF: Pass (esa.hcREDACTED.iphmx.com: domain of
+  REDACTED@myworkday.com designates 209.177.165.161 as
+  permitted sender) identity=mailfrom;
+  client-ip=209.177.165.161; receiver=esa.hcREDACTED.iphmx.com;
+  envelope-from="REDACTED@myworkday.com";
+  x-sender="REDACTED@myworkday.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 ip4:209.177.160.0/20 ip4:37.0.0.0/21
+  -all"
+Authentication-Results-Original: esa.hcREDACTED.iphmx.com; spf=Pass
+ smtp.mailfrom=REDACTED@myworkday.com; dkim=pass (signature verified)
+ header.i=@myworkday.com; dmarc=pass (p=reject dis=none) d=myworkday.com
+Received: from wd1-az-mail-nat.myworkday.com ([209.177.165.161])
+  by esa3.hcREDACTED.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2022 11:47:30 -0400
+X-MSH: v 0.10.1
+DKIM-Filter: OpenDKIM Filter v2.11.0 wd1-az-mail-nat.myworkday.com 40D0F10B10CA
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=myworkday.com;
+	s=0scbm2p1; t=1659368849;
+	bh=c1/LbLPcvCBCGPcDsa7rZLUVxP+fZ5h81n4MEOmhb1Q=;
+	h=From:Reply-To:To:Subject:Date:From;
+	b=HU40DKM7vXRZnPqkZOM9+oMMxRpuasR5Wg8M37USGA8bQRBD7plq15XDL+8/4Su6k
+	 hgGa0akc1oiFLISXQ8dLTR7HPWia6FKqOvEBGLSPi8Z5EsSubbmGl7LXESzu3u3bEy
+	 IO7C2DFPnUFrayGRKm5Fj00EwU7UJ4zRjRyBcqyc=
+From: DoNotReply REDACTED <REDACTED@myworkday.com>
+Reply-To: DoNotReply@REDACTED.com
+To: REDACTED@REDACTED.com
+Message-ID: <REDACTED.JavaMail.wday@s-f52p182.sys.az1.cust.ash.wd>
+Subject: A Task Awaits You: REDACTED
+ Setting & Development Plan Conversation - Due September 30: REDACTED
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Date: Mon,  1 Aug 2022 15:47:29 +0000 (UTC)
+Return-Path: REDACTED@myworkday.com
+MIME-Version: 1.0
+
+<!doctype html><html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"u=
+rn:schemas-microsoft-com:office:office"><head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dutf-8">
+      <title></title><style type=3D"text/css">body, table {
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 12px; width:100%;
+}
+div {
+  padding-top:5px;
+  padding-bottom:5px;
+}
+img=20
+{
+  border:0px;
+}</style></head>
+   <body><div>
+      Please log into the Workday system to complete this action.
+      </div><div>
+      <br>
+      </div><div>
+      Business Process: REDACTED
+      </div><div>
+      <br>
+      </div><div>
+      Subject: REDACTED
+      </div><div>
+      <br>
+      </div><div>
+      <br>
+      </div><div>
+      <br>
+      </div><div>
+      <a href=3D"https://www.myworkday.com/REDACTED/email-universal/i=
+nst/779$23022609/rel-task/2997$4086.htmld">Click Here to view the notificat=
+ion details.</a>
+      </div><div>
+      <br>
+      </div><div>
+      <img src=3D"http://www.REDACTED.com/images/logo.png">
+      </div><div>
+      <br>
+      </div><div>
+      <br>
+      </div><div>
+      <b> Powered by Workday: A New Day, A Better Way. </b>
+      </div>
+      	     <div>
+      	    <!--[if mso | IE]>
+      	      <table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" width=
+=3D"600" align=3D"center"
+      style=3D"width:600px;">
+      	        <tr>
+      	          <td style=3D"line-height:0px;font-size:0px;mso-line-height=
+-rule:exactly;">
+      	      <![endif]-->
+      	    <div style=3D"margin:0 auto;max-width:600px;">
+      	      <table cellpadding=3D"0" cellspacing=3D"0" style=3D"font-size:=
+0px;width:100%;" align=3D"center" border=3D"0">
+      	        <tbody>
+      	          <tr>
+      	            <td style=3D"text-align:center;vertical-align:top;font-s=
+ize:0px;padding:20px
+      0px;"></td>
+      	          </tr>
+      	        </tbody>
+      	      </table>
+      	    </div>
+      	    <!--[if mso | IE]>
+      	      </td></tr></table>
+      	      <![endif]-->
+      	    <!--[if mso | IE]>
+      	      <table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" width=
+=3D"600" align=3D"center"
+      style=3D"width:600px;">
+      	        <tr>
+      	          <td style=3D"line-height:0px;font-size:0px;mso-line-height=
+-rule:exactly;">
+      	      <![endif]-->
+      	    <div style=3D"margin:0 auto;max-width:600px;">
+      	      <table cellpadding=3D"0" cellspacing=3D"0" style=3D"font-size:=
+0px;width:100%;" align=3D"center" border=3D"0">
+      	        <tbody>
+      	          <tr>
+      	            <td style=3D"text-align:center;vertical-align:top;font-s=
+ize:0px;padding:20px
+      0px;"></td>
+      	          </tr>
+      	        </tbody>
+      	      </table>
+      	    </div>
+      	    <!--[if mso | IE]>
+      	      </td></tr></table>
+      	      <![endif]-->
+     =20
+      <!--[if mso | IE]>
+	      <table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" width=3D"600=
+" align=3D"center" style=3D"width:600px;">
+	        <tr>
+	          <td style=3D"line-height:0px;font-size:0px;mso-line-height-rule:=
+exactly;">
+	      <![endif]-->
+      <div xmlns:wd=3D"urn:com.workday/bsvc" style=3D"margin:0 auto;max-wid=
+th:600px;">
+         <table cellpadding=3D"0" cellspacing=3D"0" style=3D"font-size:0px;=
+width:100%;" align=3D"center" border=3D"0">
+            <tbody>
+               <tr>
+                  <td style=3D"text-align:center;vertical-align:top;font-si=
+ze:0px;padding:20px 0px;">
+                     <!--[if mso | IE]>
+	 <table border=3D"0" cellpadding=3D"0" cellspacing=3D"0"><tr><td style=3D"=
+vertical-align:top;width:600px;">
+	      <![endif]-->
+                     <div aria-labelledby=3D"mj-column-per-100" class=3D"mj=
+-column-per-100" style=3D"vertical-align:top;display:inline-block;font-size=
+:13px;text-align:left;width:100%;">
+                        <table cellpadding=3D"0" cellspacing=3D"0" width=3D=
+"100%" border=3D"0">
+                           <tbody>
+                              <tr>
+                                 <td style=3D"word-break:break-word;font-si=
+ze:0px;padding-bottom:0px;" align=3D"center">
+                                    <div style=3D"cursor:auto;color:#98a0a6=
+;font-family:Roboto;font-size:12px;font-weight:400;line-height:22px;">This =
+email was intended for REDACTED@REDACTED.com =C2=B7  <a href=3D" h=
+ttps://www.myworkday.com/REDACTED/d/task/2998$2725.htmld" style=3D"co=
+lor:#0067AC;text-decoration:none;
+                                       	                                   =
+                     "> Manage Preferences </a>
+                                    </div>
+                                 </td>
+                              </tr>
+                           </tbody>
+                        </table>
+                     </div>
+                     <!--[if mso | IE]>
+	      </td></tr></table>
+	      <![endif]-->
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+      </div>
+      <!--[if mso | IE]>
+	      </td></tr></table>
+	      <![endif]-->
+   </body>
+</html>
