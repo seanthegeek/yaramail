@@ -144,8 +144,7 @@ class MailScanner(object):
                  attachment_rules: Union[str, IOBase, yara.Rules] = None,
                  passwords: Union[List[str], IOBase, str] = None,
                  max_zip_depth: int = None,
-                 implicit_safe_domains: Union[List[str], IOBase,
-                                              str] = None,
+                 implicit_safe_domains: Union[List[str], IOBase, str] = None,
                  allow_multiple_authentication_results: bool = False,
                  use_authentication_results_original: bool = False):
         """
