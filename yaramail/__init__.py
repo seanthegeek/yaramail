@@ -14,10 +14,10 @@ from mailsuite.utils import parse_email, from_trusted_domain, decode_base64
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
-__version__ = "3.0.0"
+__version__ = "3.0.1"
 
 
-delimiters = ["r\"", r"'", r"`", r"\*\*",
+delimiters = ["r\"", r"'", r"`", r"\*", r"\*\*",
               r"_", (r"\(", r"\)"), (r"\[", r"\]"), (r"\{", r"\}")]
 
 password_regex = [re.compile(r"\s*(\S+)\s*", re.MULTILINE)]
@@ -416,7 +416,7 @@ class MailScanner(object):
         - ``msg_from_domain`` -  Message From domain details
 
           - ``domain``  - The message From domain
-          - ``domain_authenticated`` - bool: domain is authenticated
+          - ``authenticated`` - bool: domain is authenticated
           - ``implicit_safe_domain`` - bool: YARA safe match is optional
             for the domain
 
@@ -562,7 +562,7 @@ class MailScanner(object):
         msg_from_domain_results = dict(
             domain=msg_from_domain,
             authenticated=authenticated_domain,
-            implicit_safe_domain=implicit_safe_domain)
+            implicit_safe=implicit_safe_domain)
 
         return dict(matches=matches, categories=categories,
                     msg_from_domain=msg_from_domain_results,

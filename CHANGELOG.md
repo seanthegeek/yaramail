@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.0.1
+
+- in the dictionary returned by `MailScanner.scan_email()`, rename
+  `["msg_from_domain"]["implicit_safe_domain"]` to `["msg_from_domain"]["implicit_safe"]`
+
 ## 3.0.0
 
 *Warning*
@@ -25,7 +30,7 @@ This release is a major rewrite that includes changes breaking existing use
             set to `true`
   - Trusted domains are now called implicit safe domains
 - API changes
-  - `trusted_domains` renamed to `implisit_safe_domains`
+  - `trusted_domains` renamed to `implicit_safe_domains`
   - `trusted_domains_yara_safe_required` parameter removed
   - `include_sld_in_auth_check` parameter removed
   - Returned data structure changed (see docs for details)
