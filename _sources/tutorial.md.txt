@@ -156,8 +156,8 @@ This only applies when `from_domain` is set.
 :::
 
 :::{important}
-Only set this key to `true` if the sender is known to not properly DKIM sign
-their email.
+Only set the `auth_optional` key to `true` if the sender is known to not
+properly DKIM sign their email.
 :::
 
 :::{warning}
