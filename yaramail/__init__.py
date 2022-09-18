@@ -506,7 +506,7 @@ class MailScanner(object):
         verdict = None
         multi_auth_headers = self.allow_multiple_authentication_results
         use_og_auth_results = self.use_authentication_results_original
-        yara_safe_optional_domain = from_trusted_domain(
+        implicit_safe_domain = from_trusted_domain(
             parsed_email, self.implicit_safe_domains,
             allow_multiple_authentication_results=multi_auth_headers,
             use_authentication_results_original=use_og_auth_results,
@@ -552,7 +552,7 @@ class MailScanner(object):
                 if len(match["warnings"]) == 0:
                     categories.append(match["meta"]["category"].lower())
 
-        if yara_safe_optional_domain:
+        if implicit_safe_domain:
             categories.append("safe")
         categories = _deduplicate_list(categories)
         if len(categories) == 1:
@@ -563,7 +563,7 @@ class MailScanner(object):
         msg_from_domain_results = dict(
             domain=msg_from_domain,
             authenticated=authenticated_domain,
-            implicit_safe_domain=yara_safe_optional_domain)
+            implicit_safe_domain=implicit_safe_domain)
 
         return dict(matches=matches, categories=categories,
                     msg_from_domain=msg_from_domain_results,
