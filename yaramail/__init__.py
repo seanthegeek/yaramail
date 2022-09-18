@@ -17,7 +17,7 @@ logger.addHandler(logging.NullHandler())
 __version__ = "3.0.0"
 
 
-delimiters = ["r\"", r"'", r"`", r"\*",
+delimiters = ["r\"", r"'", r"`", r"\**",
               r"_", (r"\(", r"\)"), (r"\[", r"\]"), (r"\{", r"\}")]
 
 password_regex = [re.compile(r"\s*(\S+)\s*", re.MULTILINE)]
