@@ -417,8 +417,8 @@ class MailScanner(object):
 
           - ``domain``  - The message From domain
           - ``authenticated`` - bool: domain is authenticated
-          - ``implicit_safe`` - bool: domain is in the implicit_safe_domains \
-             list
+          - ``implicit_safe`` - bool: domain is in the implicit_safe_domains
+            list
 
         - ``has_attachment`` - bool: The email sample has an attachment
 
