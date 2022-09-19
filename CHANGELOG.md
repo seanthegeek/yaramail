@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.0.2
+
+- Increase minimum version requirement for `mailsuite` to `1.9.8`
+  - Fix parsing of email addresses in message `From` headers with encoded display names.
+
 ## 3.0.1
 
 - in the dictionary returned by `MailScanner.scan_email()`, rename
