@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorial &mdash; yaramail 3.1.0 documentation</title>
+  <title>Tutorial &mdash; yaramail 3.1.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -648,10 +648,11 @@ multiple files at once. This is useful for seeing what samples have in common.</
 <p>To test <code class="docutils literal notranslate"><span class="pre">verdict</span></code> values across an entire collection of email samples, use the
 <code class="docutils literal notranslate"><span class="pre">-t/--test</span></code> option, and pass in a path to a directory of samples that are
 sorted into subdirectories by expected verdict.</p>
-<p><code class="docutils literal notranslate"><span class="pre">yaramail</span></code> will print any test failures to standard error (stderr), print
-passed/total numbers to standard output (stdout), and use the number of test
+<p><code class="docutils literal notranslate"><span class="pre">yaramail</span></code> will output the test results as JSON, and use the number of test
 failures as the return code. This is designed for developer use, and for CI/CD
 testing pipelines.</p>
+<p>To see more details about the emails that failed, including headers, body
+content, URLs, and attachment names, add the <code class="docutils literal notranslate"><span class="pre">-v/--verbose</span></code> option.</p>
 </section>
 </section>
 <section id="automating-phishing-report-triage">
