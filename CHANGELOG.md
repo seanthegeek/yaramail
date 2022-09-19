@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.1.0
+
+- Update minium `mailsuite` version to `>=1.9.9`
+  - Fix header and body separation when Windows line breaks (`\r\n`) are used
+- CLI changes
+  - Remove unused formats in verbose output
+  - Remove attachment payloads in verbose output
+  - Test results are now in JSON
+  - Using the verbose option in testing now is the same as normal operations, instead of outputting all results
+
 ## 3.0.3
 
 - Fix: Other warnings were ignored when the `unexpected-attachment` warning was raised

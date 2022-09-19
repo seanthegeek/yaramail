@@ -32,9 +32,7 @@ arg_parser.add_argument("scan_path", type=str,
 arg_parser.add_argument("-V", "--version", action="version",
                         version=__version__)
 arg_parser.add_argument("-v", "--verbose", action="store_true",
-                        help="Output the entire parsed email. "
-                             "When used with -t/--test, this option outputs "
-                             "passing results along with failing results.")
+                        help="Output the entire parsed email.")
 arg_parser.add_argument("-m", "--multi-auth",  action="store_true",
                         help="Allow multiple Authentication-Results headers")
 arg_parser.add_argument("-o", "--auth-original", action="store_true",
@@ -155,13 +153,28 @@ def _main():
         logger.error(f"Failed to parse YARA rules: {e}")
         exit(-1)
 
+    def _prune_parsed_email(_parsed_email):
+        del parsed_email["text_plain"]
+        del parsed_email["text_html"]
+        del parsed_email["body"]
+        for attachment in parsed_email["attachments"]:
+            del attachment["payload"]
+        if args.raw_headers:
+            del parsed_email["headers_string"]
+        else:
+            del parsed_email["raw_headers"]
+        if args.raw_body:
+            del parsed_email["body_markdown"]
+        else:
+            del parsed_email["raw_body"]
+        return _parsed_email
+
     def _test_rules(samples_dir, verbose=False):
         """Test YARA rules against known email samples"""
         if not os.path.isdir(samples_dir):
             logger.error(f"{samples_dir} is not a directory")
             exit(-1)
-        logger.info("Testing email rules...")
-        test_failures = 0
+        test_failures = []
         total = 0
         for dirname, dirnames, filenames in os.walk(samples_dir):
             for directory in dirnames:
@@ -181,24 +194,28 @@ def _main():
                                 use_raw_headers=args.raw_headers,
                                 use_raw_body=args.raw_body)
                             verdict = results["verdict"]
+                            if verbose:
+                                pruned_email = _prune_parsed_email(
+                                    parsed_email)
+                                pruned_email["yaramail"] = results
+                                results = pruned_email
                             if verdict != category:
-                                results = simplejson.dumps(results)
-                                logger.error(
-                                    f"fail|path={msg_path}|verdict={verdict}|"
-                                    f"expected={category}|results={results}")
-                                test_failures += 1
-                            elif verbose:
-                                logger.info(
-                                    f"pass|path={msg_path}|verdict={verdict}|"
-                                    f"expected={category}|results={results}")
+                                failure = dict(path=msg_path,
+                                               verdict=verdict,
+                                               expected=category,
+                                               results=results)
+                                test_failures.append(failure)
                         except Exception as e_:
-                            logger.warning(f"{msg_path}: {e_}")
-                            test_failures += 1
-                            exit()
+                            logger.error(f"{msg_path}: {e_}")
+                            exit(1)
+        num_failed = len(test_failures)
+        passed = total - num_failed
 
-        passed = total - test_failures
-        logger.info(f"{passed}/{total} emails passed\n")
-        exit(test_failures)
+        print(simplejson.dumps(dict(test_failures=test_failures,
+                                    passed=passed,
+                                    failed=num_failed,
+                                    total=total), indent=2))
+        exit(num_failed)
 
     if args.test:
         _test_rules(args.scan_path[0], verbose=args.verbose)
@@ -225,6 +242,7 @@ def _main():
         except Exception as e:
             logger.error(f"Failed to scan {file_path}: {e}")
             continue
+        parsed_email = _prune_parsed_email(parsed_email)
         if args.verbose:
             scanned_emails[file_path] = parsed_email
         else:

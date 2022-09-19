@@ -14,7 +14,7 @@ from mailsuite.utils import parse_email, from_trusted_domain, decode_base64
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
-__version__ = "3.0.3"
+__version__ = "3.1.0"
 
 
 delimiters = ["r\"", r"'", r"`", r"\*", r"\*\*",
