@@ -15,7 +15,7 @@ rule robot_devil_pdf {
     meta:
         author = "Sean Whalen"
         date = "2022-08-09"
-        category = "cred-harvesting"
+        category = "credential-harvesting"
         description = "Robot Devil credential harvesting PDF"
     strings:
         $pdf = {25 50 44 46 2D}
