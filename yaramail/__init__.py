@@ -14,7 +14,7 @@ from mailsuite.utils import parse_email, from_trusted_domain, decode_base64
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
-__version__ = "3.0.2"
+__version__ = "3.0.3"
 
 
 delimiters = ["r\"", r"'", r"`", r"\*", r"\*\*",
@@ -531,7 +531,6 @@ class MailScanner(object):
                 no_attachment = match["meta"]["no_attachment"]
             if no_attachment and has_attachment:
                 match["warnings"].append("unexpected-attachment")
-                continue
             rule_from_domains = None
             if "from_domains" in match["meta"]:
                 rule_from_domains = match["meta"]["from_domains"]

@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.3
+
+- Fix: Other warnings were ignored when the `unexpected-attachment` warning was raised
+
 ## 3.0.2
 
 - Increase minimum version requirement for `mailsuite` to `1.9.8`
