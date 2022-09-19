@@ -154,19 +154,19 @@ def _main():
         exit(-1)
 
     def _prune_parsed_email(_parsed_email):
-        del parsed_email["text_plain"]
-        del parsed_email["text_html"]
-        del parsed_email["body"]
-        for attachment in parsed_email["attachments"]:
+        del _parsed_email["text_plain"]
+        del _parsed_email["text_html"]
+        del _parsed_email["body"]
+        for attachment in _parsed_email["attachments"]:
             del attachment["payload"]
         if args.raw_headers:
-            del parsed_email["headers_string"]
+            del _parsed_email["headers_string"]
         else:
-            del parsed_email["raw_headers"]
+            del _parsed_email["raw_headers"]
         if args.raw_body:
-            del parsed_email["body_markdown"]
+            del _parsed_email["body_markdown"]
         else:
-            del parsed_email["raw_body"]
+            del _parsed_email["raw_body"]
         return _parsed_email
 
     def _test_rules(samples_dir, verbose=False):
@@ -189,14 +189,15 @@ def _main():
                         try:
                             with open(msg_path, "r") as msg_file:
                                 email = msg_file.read()
+                            _parsed_email = parse_email(email)
                             results = scanner.scan_email(
-                                email,
+                                _parsed_email,
                                 use_raw_headers=args.raw_headers,
                                 use_raw_body=args.raw_body)
                             verdict = results["verdict"]
                             if verbose:
                                 pruned_email = _prune_parsed_email(
-                                    parsed_email)
+                                    _parsed_email)
                                 pruned_email["yaramail"] = results
                                 results = pruned_email
                             if verdict != category:

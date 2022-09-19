@@ -572,10 +572,12 @@ To test `verdict` values across an entire collection of email samples, use the
 `-t/--test` option, and pass in a path to a directory of samples that are
 sorted into subdirectories by expected verdict.
 
-`yaramail` will print any test failures to standard error (stderr), print
-passed/total numbers to standard output (stdout), and use the number of test
+`yaramail` will output the test results as JSON, and use the number of test
 failures as the return code. This is designed for developer use, and for CI/CD
 testing pipelines.
+
+To see more details about the emails that failed, including headers, body
+content, URLs, and attachment names, add the `-v/--verbose` option.
 
 ## Automating phishing report triage
 
