@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.3
+
+- Add `|` and `< >` as possible password delimiters
+
 ## 3.1.2
 
 - Update minium `mailsuite` version to `>=1.9.12`

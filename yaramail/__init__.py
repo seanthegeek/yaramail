@@ -14,11 +14,11 @@ from mailsuite.utils import parse_email, from_trusted_domain, decode_base64
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
-__version__ = "3.1.2"
+__version__ = "3.1.3"
 
 
-delimiters = ["r\"", r"'", r"`", r"\*", r"\*\*",
-              r"_", (r"\(", r"\)"), (r"\[", r"\]"), (r"\{", r"\}")]
+delimiters = ["r\"", r"'", r"`", r"\*", r"\*\*", r"_", r"|",
+              (r"\(", r"\)"), (r"\[", r"\]"), (r"\{", r"\}"), (r"<", r">")]
 
 password_regex = [re.compile(r"\s*(\S+)\s*", re.MULTILINE)]
 for delimiter in delimiters:
