@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.1.2
+
+- Update minium `mailsuite` version to `>=1.9.12`
+  - Fix parsing of `Authentication-Results` and `DKIM-Signature` headers when Windows line breaks (`\r\n`) are used
+  - Strip leading and trailing spaces from `DKIM-Signature` header `h=` list item
+
 ## 3.1.1
 
 - Fix testing in verbose mode
