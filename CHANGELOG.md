@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.4
+
+- Fix issue where the `from_domain` rule meta key value was not split into a list as expected 
+
 ## 3.1.3
 
 - Add `|` and `< >` as possible password delimiters

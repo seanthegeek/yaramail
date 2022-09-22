@@ -14,7 +14,7 @@ from mailsuite.utils import parse_email, from_trusted_domain, decode_base64
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
-__version__ = "3.1.3"
+__version__ = "3.1.4"
 
 
 delimiters = ["r\"", r"'", r"`", r"\*", r"\*\*", r"_", r"|",
@@ -537,7 +537,7 @@ class MailScanner(object):
             elif "from_domain" in match["meta"]:
                 rule_from_domains = match["meta"]["from_domain"]
             if rule_from_domains is not None:
-                rule_from_domains.split(" ")
+                rule_from_domains = rule_from_domains.split(" ")
                 if parsed_email["from"]["domain"] not in rule_from_domains:
                     match["warnings"].append("from-domain-mismatch")
                 if not passed_authentication:
