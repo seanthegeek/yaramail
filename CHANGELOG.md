@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.1.5
+
+- Add possible password delimiters
+  - Start and end HTML tags
+  - Other forms of quotation marks used in various languages
+
 ## 3.1.4
 
 - Fix issue where the `from_domain` rule meta key value was not split into a list as expected 
