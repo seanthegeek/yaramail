@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.6
+
+- More quotation mark password delimiter variations
+
 ## 3.1.5
 
 - Add possible password delimiters
