@@ -25,9 +25,9 @@ if [ -x "$(command -v dnf)" ]; then
     sudo dnf install python3-virtualenv
   fi
   elif [ -x "$(command -v yum)" ]; then
-  sudo dnf install gcc-c++ pkgconfig poppler-cpp-devel python3-devel
+  sudo yum install gcc-c++ pkgconfig poppler-cpp-devel python3-devel
     if [ ! -x "$(command -v virtualenv)" ]; then
-      sudo apt yum install python3-virtualenv
+      sudo yum install python3-virtualenv
     fi
 fi
 
