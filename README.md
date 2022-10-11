@@ -1,6 +1,6 @@
-<div>
-  <img src="https://seanthegeek.github.io/yaramail/_static/yaramail-logo.png" style="padding-top: 10px; display:block;float:none;margin-left:auto;margin-right:auto;" alt="yaramail logo">
-<h1 style="text-align: center;">yaramail</h1>
+<div align="center">
+  <img src="https://seanthegeek.github.io/yaramail/_static/yaramail-logo.png" alt="yaramail logo">
+<h1 style=>yaramail</h1>
 
   [![Python tests](https://github.com/seanthegeek/yaramail/actions/workflows/python-tests.yaml/badge.svg)](https://github.com/seanthegeek/yaramail/actions/workflows/python-tests.yaml)
   [![PyPI](https://img.shields.io/pypi/v/yara-mail)](https://pypi.org/project/yara-mail/)
