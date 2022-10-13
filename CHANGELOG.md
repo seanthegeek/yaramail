@@ -3,6 +3,7 @@
 ## 3.1.8
 
 - Require `mailsuite>=1.9.2`
+  - Ignore all `dmarc` `Authentication-Results` if multiple `dmarc` results are found
 
 ## 3.1.7
 
