@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.8
+
+- Require `mailsuite>=1.9.2`
+
 ## 3.1.7
 
 - Add even more quote punctuation as password delimiters
