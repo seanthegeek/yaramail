@@ -1,7 +1,7 @@
 # Collecting email samples
 
 In order to be properly analyzed, email samples must be stored or sent with
-the foll content intact, including any headers. The process of obtaining
+the full content intact, including any headers. The process of obtaining
 raw/original depends on the email service or client being used.
 
 ## AOL webmail

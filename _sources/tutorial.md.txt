@@ -135,8 +135,8 @@ that category. If multiple categories are listed, the verdict is set to
 `ambiguous`. If no categories are listed, the verdict is set to `None`.
 
 :::{note}
-In extremely rare cases, a trusted domain may send a wide variety of automated 
-emails that do not fit into patterns, making YARA rules impractical. 
+In extremely rare cases, a trusted domain may send a wide variety of automated
+emails that do not fit into patterns, making YARA rules impractical.
 To account for this, a domain can be added to the `implicit_safe_domains`
 list, which will add a `category` of `safe` to every email from that
 domain, as long as the domain is authenticated. The emails will still be
@@ -683,7 +683,6 @@ for email in emails:
 
 [DMARC]: https://seanthegeek.net/459/demystifying-dmarc/
 [yara_rules]: https://yara.readthedocs.io/en/stable/writingrules.html
-[yara_include]: https://yara.readthedocs.io/en/stable/writingrules.html#including-files
 [yara_meta]: https://yara.readthedocs.io/en/stable/writingrules.html#metadata
 [yara_strings]: https://yara.readthedocs.io/en/stable/writingrules.html#strings
 [yara_text_strings]: https://yara.readthedocs.io/en/stable/writingrules.html#text-strings
