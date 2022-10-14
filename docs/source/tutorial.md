@@ -115,7 +115,7 @@ Then, the message header, body, and attachment content is scanned with
 user-provided [YARA rules][yara_rules] that provide a flexible method of
 checking content against known malicious and trusted patterns.
 
-### Anatomy of a YARA rule
+## Anatomy of a YARA rule
 
 YARA rules consist of three sections: `meta`, `strings`, and `condition`.
 
@@ -123,7 +123,7 @@ YARA rules consist of three sections: `meta`, `strings`, and `condition`.
 For better organization of rules, use the [include directive][yara_include] to include content from other rule files.
 :::
 
-#### meta
+### meta
 
 The [meta section][yara_meta] specifies arbitrary metadata key-value
 pairs of metadata that can be useful to humans and/or the scanner application.
@@ -151,7 +151,7 @@ return an `ambiguous` verdict.
 a domain would cause a malicious email to be categorized as `safe`.
 :::
 
-##### auth_optional
+#### auth_optional
 
 Do not require domain authentication for the rule's category to apply.
 
@@ -170,17 +170,17 @@ domain, so take extra care to write YARA rules matching known safe content as
 detailed and narrow as possible.
 :::
 
-##### authentication_optional
+#### authentication_optional
 
 Alias of `auth_optional`.
 
-##### category
+#### category
 
 The `category` of the rule. This can be any string, but the value `safe` is
 special. Rules without a `category` key are considered informational, and do
 not contribute to the `verdict`.
 
-##### from_domain
+#### from_domain
 
 :::{important}
 This key **must** be set for rules with a category of `safe`.
@@ -193,20 +193,20 @@ specified in this value by separating them with spaces.
 Domain authentication must pass, unless that rule has an `auth_optional` meta
 key with the value set to `true`.
 
-##### from_domains
+#### from_domains
 
 Alias of `from_domain`.
 
-##### no_attachment
+#### no_attachment
 
 If this key is `true`, the rule’s `category` only applies to emails with no
 attachments.
 
-##### no_attachments
+#### no_attachments
 
 Alias of `no_attachment`.
 
-#### strings
+### strings
 
 The [strings section][yara_strings] specifies strings to match.
 
@@ -217,7 +217,7 @@ The [strings section][yara_strings] specifies strings to match.
 [String modifiers][yara_string_modifiers] set case sensitivity, full word match
 only, and more.
 
-#### condition
+### condition
 
 The [condition section][yara_condition] consists of a Boolean expression that
 describes when the rule should match.
