@@ -119,6 +119,10 @@ checking content against known malicious and trusted patterns.
 
 YARA rules consist of three sections: `meta`, `strings`, and `condition`.
 
+:::{tip}
+For better organization of rules, use the [include directive][yara_include] to include content from other rule files.
+:::
+
 #### meta
 
 The [meta section][yara_meta] specifies arbitrary metadata key-value
@@ -683,6 +687,7 @@ for email in emails:
 
 [DMARC]: https://seanthegeek.net/459/demystifying-dmarc/
 [yara_rules]: https://yara.readthedocs.io/en/stable/writingrules.html
+[yara_include]: https://yara.readthedocs.io/en/stable/writingrules.html#including-files
 [yara_meta]: https://yara.readthedocs.io/en/stable/writingrules.html#metadata
 [yara_strings]: https://yara.readthedocs.io/en/stable/writingrules.html#strings
 [yara_text_strings]: https://yara.readthedocs.io/en/stable/writingrules.html#text-strings
