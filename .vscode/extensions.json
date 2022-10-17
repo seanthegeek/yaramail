@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "ms-python.vscode-pylance",
+        "infosec-intern.yara",
+        "eamodio.gitlens",
+        "leighlondon.eml",
+        "ms-vscode-remote.vscode-remote-extensionpack"
+    ]
+}

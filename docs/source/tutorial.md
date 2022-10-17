@@ -29,6 +29,22 @@ submit their changes for review, they create a Pull Request, and a project
 maintainer reviews the proposed changes before squashing and merging commits
 into the upstream `main` branch.
 
+It is recommended to use [Visual Studio Code][vscode] as a YARA rule
+editor, with the following the following extensions installed:
+
+- [Email][email-extension]
+- [GitLens][gitlens-extension]
+- [Python][python-extension]
+- [Remote Development][remote-development-extension]
+- [YARA][yara-extension]
+
+:::{note}
+If you use Visual Studio Code on Windows Subsystem for Linux (WSL) or remote
+host, Visual Studio Code Extensions must be installed in Visual Studio Code for
+Windows, and installed again in the WSL distribution or remote host once a new
+WSL or remote host window is open.
+:::
+
 ## Getting started
 
 Follow the [installation guide](installation).
@@ -700,6 +716,12 @@ for email in emails:
 
 ```
 
+[vscode]: https://code.visualstudio.com/
+[email-extension]: https://marketplace.visualstudio.com/items?itemName=leighlondon.eml
+[gitlens-extension]: https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens
+[python-extension]: https://marketplace.visualstudio.com/items?itemName=ms-python.python
+[remote-development-extension]: https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack
+[yara-extension]: https://marketplace.visualstudio.com/items?itemName=infosec-intern.yara
 [DMARC]: https://seanthegeek.net/459/demystifying-dmarc/
 [yara_rules]: https://yara.readthedocs.io/en/stable/writingrules.html
 [ssdeep]: https://pypi.org/project/ssdeep/
