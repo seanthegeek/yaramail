@@ -513,7 +513,7 @@ doing inbox triage. YARA rules can help reduce this noise.
 
 Start by looking through junk emails that have been reported. Make note of
 words or phrases that are common across different marketing campaigns,
-businesses, and industries. Some common examples include:
+businesses, and industries. For example:
 
 - discount
 - trial
