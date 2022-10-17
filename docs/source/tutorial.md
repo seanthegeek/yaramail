@@ -73,7 +73,7 @@ First, the `Authentication-Results` header of the email is parsed. The
 `Authentication-Results` header is added by the receiving mail server as a way
 of logging the results of authentication checks that prove that the domain
 in the message `From` header was not spoofed. Most email services — including
-Microsoft 365 and Gmail — use a single `Authentication-Results` header
+Microsoft 365, and Gmail — use a single `Authentication-Results` header
 to log the results of all authentication checks. By default,
 all `Authentication-Results` headers will be ignored if multiple
 `Authentication-Results` headers are found in an email. This is done to avoid
@@ -87,9 +87,12 @@ This allows multiple headers, but all `Authentication-Results` headers will
 be ignored if multiple DMARC results are found, to avoid spoofed results.
 
 :::{warning}
-Authentication results are not verified by `yaramail`, so only use it on
-emails that have been received by trusted mail servers, and not on
-third-party emails.
+`Authentication-Results` are not verified by `yaramail`. This is by design.
+Most receiving organizations modify the message subject and/or body prior to
+delivery to warn users that an email came from an external source. As a
+result, DKIM signatures are not valid after delivery to end user mailboxes.
+Only use `yaramail` on emails that have been received by trusted mail
+servers, and not on emails received by third parties.
 :::
 
 :::{warning}
@@ -115,12 +118,23 @@ Then, the message header, body, and attachment content is scanned with
 user-provided [YARA rules][yara_rules] that provide a flexible method of
 checking content against known malicious and trusted patterns.
 
+### Deduplication
+
+The purpose of `yaramail` is to identify known safe, known malicious, and
+likely junk email samples in phishing reporting inboxes. It will not catch
+everything. For proper automation, It is important to implement some form of
+deduplication for emails for reported emails that have been manually triaged.
+Consider using fuzzy matching approaches such as [ssdeep][ssdeep], or use
+machine learning capabilities included in many Security Orchestration Automation
+and Response (SOAR) platforms.
+
 ## Anatomy of a YARA rule
 
 YARA rules consist of three sections: `meta`, `strings`, and `condition`.
 
 :::{tip}
-For better organization of rules, use the [include directive][yara_include] to include content from other rule files.
+For better organization of rules, use the [include directive][yara_include] to
+include content from other rule files.
 :::
 
 ### meta
@@ -655,6 +669,7 @@ for email in emails:
     continue
   try:
     sample = scan_email(attached_email["payload"])
+    #TODO: Do something to deduplicate manually triaged emails
   except Exception as _e:
     logger.warning(f"Invalid email sample: {_e}")
     report_email["valid_report"] = False
@@ -687,6 +702,7 @@ for email in emails:
 
 [DMARC]: https://seanthegeek.net/459/demystifying-dmarc/
 [yara_rules]: https://yara.readthedocs.io/en/stable/writingrules.html
+[ssdeep]: https://pypi.org/project/ssdeep/
 [yara_include]: https://yara.readthedocs.io/en/stable/writingrules.html#including-files
 [yara_meta]: https://yara.readthedocs.io/en/stable/writingrules.html#metadata
 [yara_strings]: https://yara.readthedocs.io/en/stable/writingrules.html#strings
