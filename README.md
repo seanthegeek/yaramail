@@ -13,7 +13,7 @@
 ## CLI Demo
 
 <div align="center">
-[![asciicast](https://asciinema.org/a/529625.svg)](https://asciinema.org/a/529625)
+  <a href="https://asciinema.org/a/529625" target="_blank"><img src="https://asciinema.org/a/529625.svg" alt="asciicast"></a>
 </div>
 
 ## Features
