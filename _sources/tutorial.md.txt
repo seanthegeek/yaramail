@@ -558,7 +558,7 @@ time, but the reduction in alert fatigue is well worth the effort.
 
 ## Using the CLI
 
-<script id="asciicast-529801" src="https://asciinema.org/a/529801.js" async/>
+<script id="asciicast-529801" src="https://asciinema.org/a/529801.js" async></script>
 
 the [`yaramail` CLI](cli) has built-in support for scanning  individual
 samples, or an entire collection of samples.
