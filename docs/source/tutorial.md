@@ -30,7 +30,7 @@ maintainer reviews the proposed changes before squashing and merging commits
 into the upstream `main` branch.
 
 It is recommended to use [Visual Studio Code][vscode] as a YARA rule
-editor, with the following the following extensions installed:
+editor, with the following extensions installed:
 
 - [Email][email-extension]
 - [GitLens][gitlens-extension]
