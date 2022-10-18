@@ -12,9 +12,7 @@
 
 ## CLI Demo
 
-<div align="center">
-  <a href="https://asciinema.org/a/529625" target="_blank"><img src="https://asciinema.org/a/529625.svg" alt="asciicast"></a>
-</div>
+[![asciicast](https://asciinema.org/a/529801.svg)](https://asciinema.org/a/529801)
 
 ## Features
 
