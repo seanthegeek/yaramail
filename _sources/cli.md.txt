@@ -1,6 +1,6 @@
 # CLI
 
-<script id="asciicast-529625" src="https://asciinema.org/a/529625.js" async></script>
+<script id="asciicast-529801" src="https://asciinema.org/a/529801.js" async></script>
 
 ```text
 usage: A YARA scanner for emails [-h] [-V] [-v] [-m] [-o] [-r] [-b] [-s] [-t]
