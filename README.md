@@ -12,7 +12,7 @@
 
 ## CLI Demo
 
-[![asciicast](https://asciinema.org/a/529801.svg)](https://asciinema.org/a/529801)
+[![asciicast](https://asciinema.org/a/529801.svg)][cli-demo]
 
 ## Features
 
@@ -32,3 +32,4 @@
 - Parses `Authentication-Results` headers
 
 [yara]: https://yara.readthedocs.io/en/stable/writingrules.html
+[cli-demo]: https://seanthegeek.github.io/yaramail/tutorial.html#using-the-cli
