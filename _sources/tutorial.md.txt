@@ -556,6 +556,10 @@ links, and maybe even a tracking image.
 Finding the right combination of strings and condition logic may take some
 time, but the reduction in alert fatigue is well worth the effort.
 
+:::{tip}
+Use a separate junk/marketing rule for each language spoken by your users.
+:::
+
 ## Using the CLI
 
 <script id="asciicast-529801" src="https://asciinema.org/a/529801.js" async></script>
