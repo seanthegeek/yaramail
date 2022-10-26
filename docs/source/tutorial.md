@@ -495,7 +495,8 @@ Every Workday notification email
 - Has the message `From` domain `myworkday.com`
 - Is DKIM signed by a key at the domain `myworkday.com`
 - The organization's logo as a remote image
-- Contains at least one link, and all links start with `https://www.myworkday.com/`
+- Contains at least one link, and all links start with
+  `https://www.myworkday.com/`
 - Contains the string "Powered by Workday: A New Day, A Better Way."
 
 Because of this, `myworkday.com` can be added to the
@@ -573,10 +574,11 @@ files can be found:
 - `header.yar` - Rules that apply to email header content
 - `body.yar` - Rules that apply to email body content
 - `header_body.yar` - Rules that apply to header and/or body content
-- `attachments.yar` - Rules that apply to email attachment content
+- `attachment.yar` - Rules that apply to email attachment content
 - `passwords.txt` - A list of passwords to try on password-protected attachments
-- `trusted_domains.txt` - A list of message from domains that return a `safe` verdict if the domain is authenticated and no YARA categories match other than safe
-- `trusted_domains_yara_safe_required.txt` - A list of message From domains that return a `safe` verdict if the domain is authenticated *and* the email itself has a YARA `safe` verdict
+- `implicit_safe_domains.txt` - a list of message From domains that return
+  a safe verdict if the domain is authenticated and no
+  YARA categories match other than safe
 
 :::{note}
 The expected names of these files can be changed using command-line arguments.
