@@ -660,10 +660,11 @@ files can be found:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">header.yar</span></code> - Rules that apply to email header content</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">body.yar</span></code> - Rules that apply to email body content</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">header_body.yar</span></code> - Rules that apply to header and/or body content</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">attachments.yar</span></code> - Rules that apply to email attachment content</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">attachment.yar</span></code> - Rules that apply to email attachment content</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">passwords.txt</span></code> - A list of passwords to try on password-protected attachments</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">trusted_domains.txt</span></code> - A list of message from domains that return a <code class="docutils literal notranslate"><span class="pre">safe</span></code> verdict if the domain is authenticated and no YARA categories match other than safe</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">trusted_domains_yara_safe_required.txt</span></code> - A list of message From domains that return a <code class="docutils literal notranslate"><span class="pre">safe</span></code> verdict if the domain is authenticated <em>and</em> the email itself has a YARA <code class="docutils literal notranslate"><span class="pre">safe</span></code> verdict</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">implicit_safe_domains.txt</span></code> - a list of message From domains that return
+a safe verdict if the domain is authenticated and no
+YARA categories match other than safe</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
