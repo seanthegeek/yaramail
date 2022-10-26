@@ -495,7 +495,8 @@ Every Workday notification email
 - Has the message `From` domain `myworkday.com`
 - Is DKIM signed by a key at the domain `myworkday.com`
 - The organization's logo as a remote image
-- Contains at least one link, and all links start with `https://www.myworkday.com/`
+- Contains at least one link, and all links start with
+  `https://www.myworkday.com/`
 - Contains the string "Powered by Workday: A New Day, A Better Way."
 
 Because of this, `myworkday.com` can be added to the
