@@ -155,7 +155,7 @@ include content from other rule files.
 
 ### meta
 
-The [meta section][yara_meta] specifies arbitrary metadata key-value
+The [meta section][yara_meta] specifies arbitrary metadata key = value
 pairs of metadata that can be useful to humans and/or the scanner application.
 `yaramail` uses a few specific `meta` keys.
 
@@ -238,19 +238,34 @@ Alias of `no_attachment`.
 
 ### strings
 
-The [strings section][yara_strings] specifies strings to match.
+The [strings section][yara_strings] specifies strings to match, assigned to
+variable names in the format `$variable = value`.
 
 - [Text strings][yara_text_strings] are surrounded by `"`
 - [Hexadecimal strings][yara_hex_strings] are surrounded by `{}`
 - [Regular expressions][yara_regex] are surrounded by `/`
 
-[String modifiers][yara_string_modifiers] set case sensitivity, full word match
-only, and more.
+[String modifiers][yara_string_modifiers] can be added after the string value
+to set case sensitivity, full word match only, and more.
 
 ### condition
 
-The [condition section][yara_condition] consists of a Boolean expression that
-describes when the rule should match.
+The [condition section][yara_condition] describes when the rule should match.
+Condition statements can be combined using `and/or`.
+
+Here are some simple examples.
+
+| Example                             | Meaning                                                                                                                                                                                                  |
+|-------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `all of them`                       | All of the strings must exist                                                                                                                                                                            |
+| `any of them`                       | Any of the strings must exist                                                                                                                                                                            |
+| `4 of them`                         | At least four instances of any of the strings must exist                                                                                                                                                 |
+| `$magic`                            | The string assigned to the variable `$magic` must exist                                                                                                                                                  |
+| `$magic at 0`                       | The string assigned to the variable `$magic` must exist at offset `0`                                                                                                                                    |
+| `3 of ($foo_*)`                     | At least three instances of any string assigned to a variable starting with `$foo_` must exist                                                                                                           |
+| `(#foo_*) < 4`                      | The total number of instances of any string assigned to a variable starting with `$foo_`must be less than four                                                                                           |
+| `$url and #url == (#trusted_url_*)` | At least one URL must exist **and** the number of instances of the string assigned to `$url` must equal the total number of instances of any string assigned to a variable starting with `$trusted_url_` |
+
 
 ## Practical YARA rule examples
 

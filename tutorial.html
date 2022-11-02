@@ -264,7 +264,7 @@ include content from other rule files.</p>
 </div>
 <section id="meta">
 <h3>meta<a class="headerlink" href="#meta" title="Permalink to this heading"></a></h3>
-<p>The <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#metadata">meta section</a> specifies arbitrary metadata key-value
+<p>The <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#metadata">meta section</a> specifies arbitrary metadata key = value
 pairs of metadata that can be useful to humans and/or the scanner application.
 <code class="docutils literal notranslate"><span class="pre">yaramail</span></code> uses a few specific <code class="docutils literal notranslate"><span class="pre">meta</span></code> keys.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">meta</span></code> section of each matching rule is checked
@@ -343,19 +343,54 @@ attachments.</p>
 </section>
 <section id="strings">
 <h3>strings<a class="headerlink" href="#strings" title="Permalink to this heading"></a></h3>
-<p>The <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#strings">strings section</a> specifies strings to match.</p>
+<p>The <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#strings">strings section</a> specifies strings to match, assigned to
+variable names in the format <code class="docutils literal notranslate"><span class="pre">$variable</span> <span class="pre">=</span> <span class="pre">value</span></code>.</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#text-strings">Text strings</a> are surrounded by <code class="docutils literal notranslate"><span class="pre">&quot;</span></code></p></li>
 <li><p><a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#hexadecimal-strings">Hexadecimal strings</a> are surrounded by <code class="docutils literal notranslate"><span class="pre">{}</span></code></p></li>
 <li><p><a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#regular-expressions">Regular expressions</a> are surrounded by <code class="docutils literal notranslate"><span class="pre">/</span></code></p></li>
 </ul>
-<p><a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#string-modifier-summary">String modifiers</a> set case sensitivity, full word match
-only, and more.</p>
+<p><a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#string-modifier-summary">String modifiers</a> can be added after the string value
+to set case sensitivity, full word match only, and more.</p>
 </section>
 <section id="condition">
 <h3>condition<a class="headerlink" href="#condition" title="Permalink to this heading"></a></h3>
-<p>The <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#conditions">condition section</a> consists of a Boolean expression that
-describes when the rule should match.</p>
+<p>The <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#conditions">condition section</a> describes when the rule should match.
+Condition statements can be combined using <code class="docutils literal notranslate"><span class="pre">and/or</span></code>.</p>
+<p>Here are some simple examples.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Example</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">all</span> <span class="pre">of</span> <span class="pre">them</span></code></p></td>
+<td><p>All of the strings must exist</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">any</span> <span class="pre">of</span> <span class="pre">them</span></code></p></td>
+<td><p>Any of the strings must exist</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">4</span> <span class="pre">of</span> <span class="pre">them</span></code></p></td>
+<td><p>At least four instances of any of the strings must exist</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">$magic</span></code></p></td>
+<td><p>The string assigned to the variable <code class="docutils literal notranslate"><span class="pre">$magic</span></code> must exist</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">$magic</span> <span class="pre">at</span> <span class="pre">0</span></code></p></td>
+<td><p>The string assigned to the variable <code class="docutils literal notranslate"><span class="pre">$magic</span></code> must exist at offset <code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">3</span> <span class="pre">of</span> <span class="pre">($foo_*)</span></code></p></td>
+<td><p>At least three instances of any string assigned to a variable starting with <code class="docutils literal notranslate"><span class="pre">$foo_</span></code> must exist</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">(#foo_*)</span> <span class="pre">&lt;</span> <span class="pre">4</span></code></p></td>
+<td><p>The total number of instances of any string assigned to a variable starting with <code class="docutils literal notranslate"><span class="pre">$foo_</span></code>must be less than four</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">$url</span> <span class="pre">and</span> <span class="pre">#url</span> <span class="pre">==</span> <span class="pre">(#trusted_url_*)</span></code></p></td>
+<td><p>At least one URL must exist <strong>and</strong> the number of instances of the string assigned to <code class="docutils literal notranslate"><span class="pre">$url</span></code> must equal the total number of instances of any string assigned to a variable starting with <code class="docutils literal notranslate"><span class="pre">$trusted_url_</span></code></p></td>
+</tr>
+</tbody>
+</table>
 </section>
 </section>
 <section id="practical-yara-rule-examples">
