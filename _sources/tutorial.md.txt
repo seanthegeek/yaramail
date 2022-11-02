@@ -434,7 +434,7 @@ rule small_iso {
         category = "malware"
         description = "A small ISO file"
     strings:
-        $iso = "CD001"
+        $iso = {43 44 30 30 31} // CD001
     condition:
         ($iso at 8001 or $iso at 8801 or $iso at 9001)
         and filesize < 200MB
@@ -471,7 +471,7 @@ rule robot_devil_pdf {
         category = "credential-harvesting"
         description = "Robot Devil credential harvesting PDF"
     strings:
-        $pdf = {25 50 44 46 2D}
+        $pdf = {25 50 44 46 2D} // %PDF-
         $s_author = "Author(The Robot Devil)" ascii wide
         $s_uri = /URI\(.+\)/
     condition:

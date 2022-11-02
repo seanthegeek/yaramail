@@ -105,8 +105,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Tutorial</li>
+      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Tutorial</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/tutorial.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -527,7 +527,7 @@ the special YARA variable <a class="reference external" href="https://yara.readt
         category = &quot;malware&quot;
         description = &quot;A small ISO file&quot;
     strings:
-        $iso = &quot;CD001&quot;
+        $iso = {43 44 30 30 31} // CD001
     condition:
         ($iso at 8001 or $iso at 8801 or $iso at 9001)
         and filesize &lt; 200MB
@@ -562,7 +562,7 @@ at least one clickable link.</p>
         category = &quot;credential-harvesting&quot;
         description = &quot;Robot Devil credential harvesting PDF&quot;
     strings:
-        $pdf = {25 50 44 46 2D}
+        $pdf = {25 50 44 46 2D} // %PDF-
         $s_author = &quot;Author(The Robot Devil)&quot; ascii wide
         $s_uri = /URI\(.+\)/
     condition:
