@@ -1,8 +1,11 @@
 # Changelog
 
+- Require `mailsuite>=1.9.13`
+  - Normalize the case of a header name when testing header values
+
 ## 3.1.8
 
-- Require `mailsuite>=1.9.2`
+- Require `mailsuite>=1.9.12`
   - Ignore all `dmarc` `Authentication-Results` if multiple `dmarc` results are found
 
 ## 3.1.7
