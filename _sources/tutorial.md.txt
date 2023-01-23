@@ -266,7 +266,6 @@ Here are some simple examples.
 | `(#foo_*) < 4`                      | The total number of instances of any string assigned to a variable starting with `$foo_`must be less than four                                                                                           |
 | `$url and #url == (#trusted_url_*)` | At least one URL must exist **and** the number of instances of the string assigned to `$url` must equal the total number of instances of any string assigned to a variable starting with `$trusted_url_` |
 
-
 ## Practical YARA rule examples
 
 Here are some of the ways YARA can be put to good use.
@@ -510,13 +509,12 @@ Every Workday notification email
 - Has the message `From` domain `myworkday.com`
 - Is DKIM signed by a key at the domain `myworkday.com`
 - The organization's logo as a remote image
-- Contains at least one link, and all links start with
-  `https://www.myworkday.com/`
+- Contains at least one link, and all link URLs start with
+  `https://www.myworkday.com/` and the employer's name
 - Contains the string "Powered by Workday: A New Day, A Better Way."
 
-Because of this, `myworkday.com` can be added to the
-`trusted_domains_yara_safe_required_list`, and a `body` YARA rule can be used
-to verify that the emails contain the expected content, with no unexpected
+Because of that, a `body` YARA rule can be used
+to verify that the emails came from the expected domain and contain the expected content, with no unexpected
 links or attachments.
 
 ```yara
