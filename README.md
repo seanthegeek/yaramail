@@ -8,7 +8,7 @@
 </div>
 
 `yaramail` is a Python package and command line utility for scanning emails with
-[YARA rules][yara]. It is Ideal for automated triage of phishing reports.
+[YARA rules][yara]. It is ideal for automated triage of phishing reports.
 
 ## CLI Demo
 
