@@ -14,7 +14,7 @@ from mailsuite.utils import parse_email, from_trusted_domain, decode_base64
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
-__version__ = "3.1.9"
+__version__ = "3.1.10"
 
 
 delimiters = ["r\"", r"'", r"`", r"\*", r"\*\*", r"_", r"|", r"”", r"”", r"’",
@@ -204,7 +204,7 @@ class MailScanner(object):
           solutions, such as Abnormal Security.
 
         .. note::
-          ``infected`` and ``malware`` and the contents of the message body \
+          ``infected`, ``malware``, and the contents of the message body \
             are always tried as passwords.
 
         .. note::

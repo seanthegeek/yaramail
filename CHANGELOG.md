@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.10
+
+- Pin `yara-python` version at `4.2.3`
+
 ## 3.1.9
 
 - Require `mailsuite>=1.9.13`
