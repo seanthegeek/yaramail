@@ -13,13 +13,13 @@ Some system dependencies **must** be installed before installing `yaramail`.
 ### Debian, Ubuntu, and friends
 
 ```text
-sudo apt install build-essential libpoppler-cpp-dev pkg-config python3-dev
+sudo apt install build-essential libssl-dev libpoppler-cpp-dev pkg-config python3-dev
 ```
 
 ### Fedora, Red Hat, and friends
 
 ```text
-sudo yum install gcc-c++ pkgconfig poppler-cpp-devel python3-devel
+sudo yum install gcc-c++ pkgconfig openssl-devel poppler-cpp-devel python3-devel
 ```
 
 ### macOS

@@ -1,95 +1,46 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>Tutorial &mdash; yaramail 3.1.9 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>Tutorial &mdash; yaramail 3.1.10 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Collecting email samples" href="collecting_samples.html" />
     <link rel="prev" title="Installation" href="installation.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="index.html">
           
-
-          
+          <a href="index.html">
             
-            <img src="_static/yaramail-logo.png" class="logo" alt="Logo"/>
-          
+              <img src="_static/yaramail-logo.png" class="logo" alt="Logo"/>
           </a>
-
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
@@ -142,76 +93,35 @@
 <li class="toctree-l1"><a class="reference internal" href="regex.html">regex quick reference</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">yaramail</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
-      <li>Tutorial</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tutorial</li>
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="_sources/tutorial.md.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <section class="tex2jax_ignore mathjax_ignore" id="tutorial">
-<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this heading">¶</a></h1>
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this heading"></a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">yaramail</span></code> provides a workflow for automated triage of phishing reports.</p>
 <section id="best-practices">
-<h2>Best practices<a class="headerlink" href="#best-practices" title="Permalink to this heading">¶</a></h2>
+<h2>Best practices<a class="headerlink" href="#best-practices" title="Permalink to this heading"></a></h2>
 <p>it is <strong>strongly recommended</strong> to create a private Git repository as a place
 to develop, store, and maintain  YARA rules, trusted domain lists, and sample
 emails, for a number of reasons.</p>
@@ -219,7 +129,7 @@ emails, for a number of reasons.</p>
 <li><p>Version control tracks who made what change when, with easy rollback</p></li>
 <li><p>Automation can (and should) pull a fresh copy of the repository
 before scanning</p></li>
-<li><p>CI/CD workflows can <a class="reference internal" href="#testing-a-collection-of-samples"><span class="std std-doc">run tests</span></a>
+<li><p>CI/CD workflows can <a class="reference internal" href="#testing-a-collection-of-samples">run tests</a>
 against a collection of emails samples before allowing the rules into
 production</p></li>
 </ul>
@@ -253,7 +163,7 @@ WSL or remote host window is open.</p>
 </div>
 </section>
 <section id="getting-started">
-<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this heading">¶</a></h2>
+<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this heading"></a></h2>
 <p>Follow the <a class="reference internal" href="installation.html"><span class="doc std std-doc">installation guide</span></a>.</p>
 <p>Import <code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> from <code class="docutils literal notranslate"><span class="pre">yaramail</span></code>, and create a new
 <a class="reference internal" href="api.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> object</span></a></p>
@@ -283,7 +193,7 @@ WSL or remote host window is open.</p>
 learn about the returned objects.</p>
 </section>
 <section id="methodology">
-<h2>Methodology<a class="headerlink" href="#methodology" title="Permalink to this heading">¶</a></h2>
+<h2>Methodology<a class="headerlink" href="#methodology" title="Permalink to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">yaramail</span></code> module contains a <code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> class. When <code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> scans
 an email, it attempts to use a combination of email authentication results and
 YARA rule matches to categorize an email and reach a <code class="docutils literal notranslate"><span class="pre">verdict</span></code>. To do this, it
@@ -335,7 +245,7 @@ such as Abnormal Security.</p>
 user-provided <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html">YARA rules</a> that provide a flexible method of
 checking content against known malicious and trusted patterns.</p>
 <section id="deduplication">
-<h3>Deduplication<a class="headerlink" href="#deduplication" title="Permalink to this heading">¶</a></h3>
+<h3>Deduplication<a class="headerlink" href="#deduplication" title="Permalink to this heading"></a></h3>
 <p>The purpose of <code class="docutils literal notranslate"><span class="pre">yaramail</span></code> is to identify known safe, known malicious, and
 likely junk email samples in phishing reporting inboxes. It will not catch
 everything. For proper automation, It is important to implement some form of
@@ -346,7 +256,7 @@ and Response (SOAR) platforms.</p>
 </section>
 </section>
 <section id="anatomy-of-a-yara-rule">
-<h2>Anatomy of a YARA rule<a class="headerlink" href="#anatomy-of-a-yara-rule" title="Permalink to this heading">¶</a></h2>
+<h2>Anatomy of a YARA rule<a class="headerlink" href="#anatomy-of-a-yara-rule" title="Permalink to this heading"></a></h2>
 <p>YARA rules consist of three sections: <code class="docutils literal notranslate"><span class="pre">meta</span></code>, <code class="docutils literal notranslate"><span class="pre">strings</span></code>, and <code class="docutils literal notranslate"><span class="pre">condition</span></code>.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -354,7 +264,7 @@ and Response (SOAR) platforms.</p>
 include content from other rule files.</p>
 </div>
 <section id="meta">
-<h3>meta<a class="headerlink" href="#meta" title="Permalink to this heading">¶</a></h3>
+<h3>meta<a class="headerlink" href="#meta" title="Permalink to this heading"></a></h3>
 <p>The <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#metadata">meta section</a> specifies arbitrary metadata key = value
 pairs of metadata that can be useful to humans and/or the scanner application.
 <code class="docutils literal notranslate"><span class="pre">yaramail</span></code> uses a few specific <code class="docutils literal notranslate"><span class="pre">meta</span></code> keys.</p>
@@ -378,7 +288,7 @@ return an <code class="docutils literal notranslate"><span class="pre">ambiguous
 a domain would cause a malicious email to be categorized as <code class="docutils literal notranslate"><span class="pre">safe</span></code>.</p>
 </div>
 <section id="auth-optional">
-<h4>auth_optional<a class="headerlink" href="#auth-optional" title="Permalink to this heading">¶</a></h4>
+<h4>auth_optional<a class="headerlink" href="#auth-optional" title="Permalink to this heading"></a></h4>
 <p>Do not require domain authentication for the rule’s category to apply.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -397,17 +307,17 @@ detailed and narrow as possible.</p>
 </div>
 </section>
 <section id="authentication-optional">
-<h4>authentication_optional<a class="headerlink" href="#authentication-optional" title="Permalink to this heading">¶</a></h4>
+<h4>authentication_optional<a class="headerlink" href="#authentication-optional" title="Permalink to this heading"></a></h4>
 <p>Alias of <code class="docutils literal notranslate"><span class="pre">auth_optional</span></code>.</p>
 </section>
 <section id="category">
-<h4>category<a class="headerlink" href="#category" title="Permalink to this heading">¶</a></h4>
+<h4>category<a class="headerlink" href="#category" title="Permalink to this heading"></a></h4>
 <p>The <code class="docutils literal notranslate"><span class="pre">category</span></code> of the rule. This can be any string, but the value <code class="docutils literal notranslate"><span class="pre">safe</span></code> is
 special. Rules without a <code class="docutils literal notranslate"><span class="pre">category</span></code> key are considered informational, and do
 not contribute to the <code class="docutils literal notranslate"><span class="pre">verdict</span></code>.</p>
 </section>
 <section id="from-domain">
-<h4>from_domain<a class="headerlink" href="#from-domain" title="Permalink to this heading">¶</a></h4>
+<h4>from_domain<a class="headerlink" href="#from-domain" title="Permalink to this heading"></a></h4>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>This key <strong>must</strong> be set for rules with a category of <code class="docutils literal notranslate"><span class="pre">safe</span></code>.</p>
@@ -419,21 +329,21 @@ specified in this value by separating them with spaces.</p>
 key with the value set to <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
 </section>
 <section id="from-domains">
-<h4>from_domains<a class="headerlink" href="#from-domains" title="Permalink to this heading">¶</a></h4>
+<h4>from_domains<a class="headerlink" href="#from-domains" title="Permalink to this heading"></a></h4>
 <p>Alias of <code class="docutils literal notranslate"><span class="pre">from_domain</span></code>.</p>
 </section>
 <section id="no-attachment">
-<h4>no_attachment<a class="headerlink" href="#no-attachment" title="Permalink to this heading">¶</a></h4>
+<h4>no_attachment<a class="headerlink" href="#no-attachment" title="Permalink to this heading"></a></h4>
 <p>If this key is <code class="docutils literal notranslate"><span class="pre">true</span></code>, the rule’s <code class="docutils literal notranslate"><span class="pre">category</span></code> only applies to emails with no
 attachments.</p>
 </section>
 <section id="no-attachments">
-<h4>no_attachments<a class="headerlink" href="#no-attachments" title="Permalink to this heading">¶</a></h4>
+<h4>no_attachments<a class="headerlink" href="#no-attachments" title="Permalink to this heading"></a></h4>
 <p>Alias of <code class="docutils literal notranslate"><span class="pre">no_attachment</span></code>.</p>
 </section>
 </section>
 <section id="strings">
-<h3>strings<a class="headerlink" href="#strings" title="Permalink to this heading">¶</a></h3>
+<h3>strings<a class="headerlink" href="#strings" title="Permalink to this heading"></a></h3>
 <p>The <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#strings">strings section</a> specifies strings to match, assigned to
 variable names in the format <code class="docutils literal notranslate"><span class="pre">$variable</span> <span class="pre">=</span> <span class="pre">value</span></code>.</p>
 <ul class="simple">
@@ -445,7 +355,7 @@ variable names in the format <code class="docutils literal notranslate"><span cl
 to set case sensitivity, full word match only, and more.</p>
 </section>
 <section id="condition">
-<h3>condition<a class="headerlink" href="#condition" title="Permalink to this heading">¶</a></h3>
+<h3>condition<a class="headerlink" href="#condition" title="Permalink to this heading"></a></h3>
 <p>The <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#conditions">condition section</a> describes when the rule should match.
 Condition statements can be combined using <code class="docutils literal notranslate"><span class="pre">and/or</span></code>.</p>
 <p>Here are some simple examples.</p>
@@ -485,10 +395,10 @@ Condition statements can be combined using <code class="docutils literal notrans
 </section>
 </section>
 <section id="practical-yara-rule-examples">
-<h2>Practical YARA rule examples<a class="headerlink" href="#practical-yara-rule-examples" title="Permalink to this heading">¶</a></h2>
+<h2>Practical YARA rule examples<a class="headerlink" href="#practical-yara-rule-examples" title="Permalink to this heading"></a></h2>
 <p>Here are some of the ways YARA can be put to good use.</p>
 <section id="checking-if-an-email-is-safe">
-<h3>Checking if an email is safe<a class="headerlink" href="#checking-if-an-email-is-safe" title="Permalink to this heading">¶</a></h3>
+<h3>Checking if an email is safe<a class="headerlink" href="#checking-if-an-email-is-safe" title="Permalink to this heading"></a></h3>
 <p>The following YARA body rule could be used to ensure that all URLs
 in an email body match the domain of a vendor.</p>
 <div class="highlight-yara notranslate"><div class="highlight"><pre><span></span>rule all_urls_example_vendor : urls {
@@ -523,7 +433,7 @@ in an email body match the domain of a vendor.</p>
 </div>
 </section>
 <section id="informational-rules">
-<h3>Informational rules<a class="headerlink" href="#informational-rules" title="Permalink to this heading">¶</a></h3>
+<h3>Informational rules<a class="headerlink" href="#informational-rules" title="Permalink to this heading"></a></h3>
 <p>To add additional context without affecting categorization or verdicts, write
 a rule without including a <code class="docutils literal notranslate"><span class="pre">category</span></code> value in the <code class="docutils literal notranslate"><span class="pre">meta</span></code> section. Any matches
 will still appear in the returned <code class="docutils literal notranslate"><span class="pre">matches</span></code>.</p>
@@ -541,7 +451,7 @@ will still appear in the returned <code class="docutils literal notranslate"><sp
 </div>
 </section>
 <section id="checking-for-impersonation">
-<h3>Checking for impersonation<a class="headerlink" href="#checking-for-impersonation" title="Permalink to this heading">¶</a></h3>
+<h3>Checking for impersonation<a class="headerlink" href="#checking-for-impersonation" title="Permalink to this heading"></a></h3>
 <p>Impersonating a top executive is a classic social engineering technique. Even
 if a target organization has fully implemented DMARC to prevent domain
 spoofing, people can still be impersonated in the display name of the
@@ -619,7 +529,7 @@ classify malware, so it is capable of much more complex pattern matching.
 Take the time to read over YARA’s documentation and other resources.</p>
 </section>
 <section id="checking-attachment-content">
-<h3>Checking attachment content<a class="headerlink" href="#checking-attachment-content" title="Permalink to this heading">¶</a></h3>
+<h3>Checking attachment content<a class="headerlink" href="#checking-attachment-content" title="Permalink to this heading"></a></h3>
 <p>As demonstrated by the previous examples, YARA rules don’t need
 to be complex to be effective. The same is true for file/attachment rules.</p>
 <p>File types can be identified by looking for a known sequence of bytes at a
@@ -634,7 +544,7 @@ Wikipedia. The <a class="reference external" href="https://www.loc.gov/preservat
 many different file types.</p>
 </div>
 <section id="small-iso-files">
-<h4>Small ISO files<a class="headerlink" href="#small-iso-files" title="Permalink to this heading">¶</a></h4>
+<h4>Small ISO files<a class="headerlink" href="#small-iso-files" title="Permalink to this heading"></a></h4>
 <p>Sometimes attackers will store malicious files inside ISO files, because the
 content of ISO files are often not scanned by email security controls.
 Although <code class="docutils literal notranslate"><span class="pre">yaramail</span></code> does not scan the contents of malicious ISO files, it can
@@ -667,7 +577,7 @@ being used as a filesystem scanner.</p>
 </div>
 </section>
 <section id="credential-harvesting-pdfs">
-<h4>Credential harvesting PDFs<a class="headerlink" href="#credential-harvesting-pdfs" title="Permalink to this heading">¶</a></h4>
+<h4>Credential harvesting PDFs<a class="headerlink" href="#credential-harvesting-pdfs" title="Permalink to this heading"></a></h4>
 <p>Attackers will sometimes create phishing lures and links inside an attached
 PDF file instead of the email body. If attackers are not careful about their
 Operational Security (OPSEC) when creating PDFs, file metadata will be
@@ -705,7 +615,7 @@ show full URLs in the list of matches.</p>
 </section>
 </section>
 <section id="real-world-example-workday">
-<h3>Real world example: Workday<a class="headerlink" href="#real-world-example-workday" title="Permalink to this heading">¶</a></h3>
+<h3>Real world example: Workday<a class="headerlink" href="#real-world-example-workday" title="Permalink to this heading"></a></h3>
 <p>Workday is a SaaS platform for HR management that is used by many large
 enterprises. Emails from Workday are very consistent.</p>
 <p>Every Workday notification email</p>
@@ -739,7 +649,7 @@ links or attachments.</p>
 </div>
 </section>
 <section id="checking-if-an-email-is-junk">
-<h3>Checking if an email is junk<a class="headerlink" href="#checking-if-an-email-is-junk" title="Permalink to this heading">¶</a></h3>
+<h3>Checking if an email is junk<a class="headerlink" href="#checking-if-an-email-is-junk" title="Permalink to this heading"></a></h3>
 <p>Users will often send marketing (i.e., junk) mail to a phishing report inbox,
 which can be a significant contributor to alert fatigue for those who are
 doing inbox triage. YARA rules can help reduce this noise.</p>
@@ -776,7 +686,7 @@ time, but the reduction in alert fatigue is well worth the effort.</p>
 </section>
 </section>
 <section id="using-the-cli">
-<h2>Using the CLI<a class="headerlink" href="#using-the-cli" title="Permalink to this heading">¶</a></h2>
+<h2>Using the CLI<a class="headerlink" href="#using-the-cli" title="Permalink to this heading"></a></h2>
 <script id="asciicast-529801" src="https://asciinema.org/a/529801.js" async></script>
 <p>the <a class="reference internal" href="cli.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">yaramail</span></code> CLI</span></a> has built-in support for scanning  individual
 samples, or an entire collection of samples.</p>
@@ -807,7 +717,7 @@ the scanner will still run using the data it does have.</p>
 tried as ZIP passwords, along with <code class="docutils literal notranslate"><span class="pre">infected</span></code> and <code class="docutils literal notranslate"><span class="pre">malware</span></code>.</p>
 </div>
 <section id="scanning-an-individual-sample">
-<h3>Scanning an individual sample<a class="headerlink" href="#scanning-an-individual-sample" title="Permalink to this heading">¶</a></h3>
+<h3>Scanning an individual sample<a class="headerlink" href="#scanning-an-individual-sample" title="Permalink to this heading"></a></h3>
 <p>To scan an individual sample, pass a path to the sample to <code class="docutils literal notranslate"><span class="pre">yaramail</span></code>.
 The scan results will be printed to the terminal’s standard output.</p>
 <div class="admonition tip">
@@ -816,12 +726,12 @@ The scan results will be printed to the terminal’s standard output.</p>
 </div>
 </section>
 <section id="scanning-multiple-samples">
-<h3>Scanning multiple samples<a class="headerlink" href="#scanning-multiple-samples" title="Permalink to this heading">¶</a></h3>
+<h3>Scanning multiple samples<a class="headerlink" href="#scanning-multiple-samples" title="Permalink to this heading"></a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">yaramail</span> <span class="pre">CLI</span></code> accepts wildcards (i.e., <code class="docutils literal notranslate"><span class="pre">*</span></code>) in the scan path to scan
 multiple files at once. This is useful for seeing what samples have in common.</p>
 </section>
 <section id="testing-a-collection-of-samples">
-<h3>Testing a collection of samples<a class="headerlink" href="#testing-a-collection-of-samples" title="Permalink to this heading">¶</a></h3>
+<h3>Testing a collection of samples<a class="headerlink" href="#testing-a-collection-of-samples" title="Permalink to this heading"></a></h3>
 <p>To test <code class="docutils literal notranslate"><span class="pre">verdict</span></code> values across an entire collection of email samples, use the
 <code class="docutils literal notranslate"><span class="pre">-t/--test</span></code> option, and pass in a path to a directory of samples that are
 sorted into subdirectories by expected verdict.</p>
@@ -833,7 +743,7 @@ content, URLs, and attachment names, add the <code class="docutils literal notra
 </section>
 </section>
 <section id="automating-phishing-report-triage">
-<h2>Automating phishing report triage<a class="headerlink" href="#automating-phishing-report-triage" title="Permalink to this heading">¶</a></h2>
+<h2>Automating phishing report triage<a class="headerlink" href="#automating-phishing-report-triage" title="Permalink to this heading"></a></h2>
 <p>Here’s a complete example of triage code.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
@@ -938,50 +848,33 @@ content, URLs, and attachment names, add the <code class="docutils literal notra
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="collecting_samples.html" class="btn btn-neutral float-right" title="Collecting email samples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="collecting_samples.html" class="btn btn-neutral float-right" title="Collecting email samples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2022, Sean Whalen.
-
-    </p>
+    <p>&#169; Copyright 2022, Sean Whalen.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
