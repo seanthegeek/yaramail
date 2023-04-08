@@ -85,13 +85,14 @@ arg_parser.add_argument("--max-zip-depth", type=int,
 
 def _main():
     args = arg_parser.parse_args()
-    if len(args.scan_path) == 0:
-        logger.error("At least one scan_path must be specified")
-        exit(-1)
 
     use_stdin = args.scan_path[0] == "-"
     if not use_stdin:
+        og_scan_path = args.scan_path
         args.scan_path = glob(str(args.scan_path))
+        if len(args.scan_path) == 0:
+            logger.error(f"No files matching {og_scan_path} were found.")
+            exit(-1)
 
     args.header_rules = os.path.join(args.rules, args.header_rules)
     if not os.path.exists(args.header_rules):
@@ -263,12 +264,18 @@ def _main():
     scanned_emails = simplejson.dumps(scanned_emails, indent=2)
     if args.output is not None:
         try:
-            with open(args.output, "w") as output_file:
-                output_file.write(scanned_emails)
+            if len(scanned_emails) > 0:
+                with open(args.output, "w") as output_file:
+                    output_file.write(scanned_emails)
+            else:
+               exit(-1)
         except Exception as e:
             logger.error(f"Error writing {args.output}: {e}")
     else:
-        print(scanned_emails)
+        if len(scanned_emails) > 0:
+            print(scanned_emails)
+        else:
+            exit(-1)
 
 
 if __name__ == "__main__":

@@ -32,7 +32,7 @@ dependencies = [
     "mailsuite>=1.9.13",
     "pdftotext==2.2.2",
     "simplejson>=3.17.6",
-    "yara-python==4.2.3",
+    "yara-python>=4.2.3",
 ]
 dynamic = [
     "version",

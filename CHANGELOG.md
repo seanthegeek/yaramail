@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.2.0
+
+- Support `yara-python` `4.3.0`
+- CLI: Output an error message if no files are found at the `scan_path`
+- CLI: Do not output an empty dictionary when no emails could be parsed
+
 ## 3.1.10
 
 - Pin `yara-python` version at `4.2.3`

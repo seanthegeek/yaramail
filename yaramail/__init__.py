@@ -14,7 +14,7 @@ from mailsuite.utils import parse_email, from_trusted_domain, decode_base64
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
-__version__ = "3.1.10"
+__version__ = "3.2.0"
 
 
 delimiters = ["r\"", r"'", r"`", r"\*", r"\*\*", r"_", r"|", r"”", r"”", r"’",
@@ -67,11 +67,19 @@ def _match_to_dict(match: Union[yara.Match,
                                 List[yara.Match]]) -> Union[List[Dict],
                                                             Dict]:
     def match_to_dict_(_match: yara.Match) -> Dict:
+        strings = []
+        for s in match.strings:
+            if type(s) == tuple:
+                strings.append(s)
+            else:
+                for i in s.instances:
+                    strings.append((i.offset, s.identifier, i.matched_data))
+            strings = sorted(strings, key=lambda x: x[0])
         return dict(rule=_match.rule,
                     namespace=_match.namespace,
                     tags=_match.tags,
                     meta=_match.meta,
-                    strings=_match.strings,
+                    strings=strings,
                     warnings=[]
                     )
     if isinstance(match, list):
