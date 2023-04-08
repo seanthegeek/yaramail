@@ -268,7 +268,7 @@ def _main():
                 with open(args.output, "w") as output_file:
                     output_file.write(scanned_emails)
             else:
-               exit(-1)
+                exit(-1)
         except Exception as e:
             logger.error(f"Error writing {args.output}: {e}")
     else:
