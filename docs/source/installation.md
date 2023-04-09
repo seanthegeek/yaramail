@@ -27,7 +27,10 @@ sudo yum install gcc-c++ pkgconfig openssl-devel poppler-cpp-devel python3-devel
 Install [Homebrew][homebrew], then run the following command in a terminal.
 
 ```text
-brew install pkg-config poppler python
+brew install pkg-config openssl@3 poppler python
+export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
+pip install yara-python
 ```
 
 ### Windows
