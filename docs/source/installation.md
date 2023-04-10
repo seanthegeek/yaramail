@@ -24,7 +24,7 @@ sudo yum install gcc-c++ pkgconfig openssl-devel poppler-cpp-devel python3-devel
 
 ### macOS
 
-Install [Homebrew][homebrew], then run the following command in a terminal.
+Install [Homebrew][homebrew], then run the following commands in a terminal.
 
 ```text
 brew install pkg-config openssl@3 poppler python
@@ -74,7 +74,7 @@ pip3 install -U yaramail
 ```
 
 Alternatively, if you would like to install the `yaramail` CLI as a user tool,
-run this command **outside** a virtual environment:
+run this command **outside** of a virtual environment:
 
 ```text
 pip3 install --user -U yaramail
