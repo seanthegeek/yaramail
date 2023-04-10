@@ -40,7 +40,7 @@ pip install yara-python
 3. Use Anaconda Navigator to create a new Anaconda Environment
 4. Click the play button for the Anaconda Environment
 5. Click Open Terminal
-6. Run `conda install -c conda-forge poppler` and leave the terminal open:
+6. Run `conda install -c conda-forge openssl poppler` and leave the terminal open:
 7. Configure your Python IDE/project to use the Anaconda Environment
 
 ## Install yaramail
