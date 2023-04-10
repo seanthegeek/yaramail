@@ -110,7 +110,10 @@ container or VM for additional security.</p>
 <section id="macos">
 <h3>macOS<a class="headerlink" href="#macos" title="Permalink to this heading"></a></h3>
 <p>Install <a class="reference external" href="https://brew.sh/">Homebrew</a>, then run the following command in a terminal.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>brew install pkg-config poppler python
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>brew install pkg-config openssl@3 poppler python
+export LDFLAGS=&quot;-L/opt/homebrew/opt/openssl@3/lib&quot;
+export CPPFLAGS=&quot;-I/opt/homebrew/opt/openssl@3/include&quot;
+pip install yara-python
 </pre></div>
 </div>
 </section>
