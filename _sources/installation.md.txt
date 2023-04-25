@@ -70,14 +70,14 @@ Once the virtual environment has been created and activated, use `pip` to
 install `yaramail`.
 
 ```text
-pip3 install -U yaramail
+pip3 install -U yara-mail
 ```
 
 Alternatively, if you would like to install the `yaramail` CLI as a user tool,
 run this command **outside** of a virtual environment:
 
 ```text
-pip3 install --user -U yaramail
+pip3 install --user -U yara-mail
 ```
 
 [homebrew]: https://brew.sh/
