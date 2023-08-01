@@ -29,6 +29,7 @@ case "$OSTYPE" in
     export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
     ;;
 esac
+pip install -U pip
 pip install -U -r requirements.txt
 cd docs
 make clean 
