@@ -69,7 +69,7 @@ def _match_to_dict(match: Union[yara.Match,
     def match_to_dict_(_match: yara.Match) -> Dict:
         strings = []
         for s in match.strings:
-            if type(s) == tuple:
+            if type(s) is tuple:
                 strings.append(s)
             else:
                 for i in s.instances:
