@@ -6,6 +6,18 @@ if [ ! -d "venv" ]; then
   virtualenv venv || exit
 fi
 
+# Use system CAs with pip
+if [ -d /etc/ssl/certs/ ]; then
+  # Debian/Ubuntu
+  export PIP_CERT=/etc/ssl/certs/
+  elif [ -d /etc/pki/ca-trust/extracted ]; then
+    # Arch/CentOS/RHEL/Rocky
+    export PIP_CERT=/etc/pki/ca-trust/extracted
+  elif [ -f /etc/ssl/cert.pem ]; then
+    # macOS
+    export PIP_CERT=/etc/ssl/cert.pem
+fi
+
 . venv/bin/activate
 case "$OSTYPE" in 
   *darwin*)
