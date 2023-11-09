@@ -11,11 +11,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=4f6ddb47"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -120,10 +120,10 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="tutorial">
-<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this heading"></a></h1>
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Link to this heading"></a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">yaramail</span></code> provides a workflow for automated triage of phishing reports.</p>
 <section id="best-practices">
-<h2>Best practices<a class="headerlink" href="#best-practices" title="Permalink to this heading"></a></h2>
+<h2>Best practices<a class="headerlink" href="#best-practices" title="Link to this heading"></a></h2>
 <p>it is <strong>strongly recommended</strong> to create a private Git repository as a place
 to develop, store, and maintain  YARA rules, trusted domain lists, and sample
 emails, for a number of reasons.</p>
@@ -165,7 +165,7 @@ WSL or remote host window is open.</p>
 </div>
 </section>
 <section id="getting-started">
-<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this heading"></a></h2>
+<h2>Getting started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h2>
 <p>Follow the <a class="reference internal" href="installation.html"><span class="doc std std-doc">installation guide</span></a>.</p>
 <p>Import <code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> from <code class="docutils literal notranslate"><span class="pre">yaramail</span></code>, and create a new
 <a class="reference internal" href="api.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> object</span></a></p>
@@ -195,7 +195,7 @@ WSL or remote host window is open.</p>
 learn about the returned objects.</p>
 </section>
 <section id="methodology">
-<h2>Methodology<a class="headerlink" href="#methodology" title="Permalink to this heading"></a></h2>
+<h2>Methodology<a class="headerlink" href="#methodology" title="Link to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">yaramail</span></code> module contains a <code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> class. When <code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> scans
 an email, it attempts to use a combination of email authentication results and
 YARA rule matches to categorize an email and reach a <code class="docutils literal notranslate"><span class="pre">verdict</span></code>. To do this, it
@@ -247,7 +247,7 @@ such as Abnormal Security.</p>
 user-provided <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html">YARA rules</a> that provide a flexible method of
 checking content against known malicious and trusted patterns.</p>
 <section id="deduplication">
-<h3>Deduplication<a class="headerlink" href="#deduplication" title="Permalink to this heading"></a></h3>
+<h3>Deduplication<a class="headerlink" href="#deduplication" title="Link to this heading"></a></h3>
 <p>The purpose of <code class="docutils literal notranslate"><span class="pre">yaramail</span></code> is to identify known safe, known malicious, and
 likely junk email samples in phishing reporting inboxes. It will not catch
 everything. For proper automation, It is important to implement some form of
@@ -258,7 +258,7 @@ and Response (SOAR) platforms.</p>
 </section>
 </section>
 <section id="anatomy-of-a-yara-rule">
-<h2>Anatomy of a YARA rule<a class="headerlink" href="#anatomy-of-a-yara-rule" title="Permalink to this heading"></a></h2>
+<h2>Anatomy of a YARA rule<a class="headerlink" href="#anatomy-of-a-yara-rule" title="Link to this heading"></a></h2>
 <p>YARA rules consist of three sections: <code class="docutils literal notranslate"><span class="pre">meta</span></code>, <code class="docutils literal notranslate"><span class="pre">strings</span></code>, and <code class="docutils literal notranslate"><span class="pre">condition</span></code>.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -266,7 +266,7 @@ and Response (SOAR) platforms.</p>
 include content from other rule files.</p>
 </div>
 <section id="meta">
-<h3>meta<a class="headerlink" href="#meta" title="Permalink to this heading"></a></h3>
+<h3>meta<a class="headerlink" href="#meta" title="Link to this heading"></a></h3>
 <p>The <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#metadata">meta section</a> specifies arbitrary metadata key = value
 pairs of metadata that can be useful to humans and/or the scanner application.
 <code class="docutils literal notranslate"><span class="pre">yaramail</span></code> uses a few specific <code class="docutils literal notranslate"><span class="pre">meta</span></code> keys.</p>
@@ -290,7 +290,7 @@ return an <code class="docutils literal notranslate"><span class="pre">ambiguous
 a domain would cause a malicious email to be categorized as <code class="docutils literal notranslate"><span class="pre">safe</span></code>.</p>
 </div>
 <section id="auth-optional">
-<h4>auth_optional<a class="headerlink" href="#auth-optional" title="Permalink to this heading"></a></h4>
+<h4>auth_optional<a class="headerlink" href="#auth-optional" title="Link to this heading"></a></h4>
 <p>Do not require domain authentication for the rule’s category to apply.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -309,17 +309,17 @@ detailed and narrow as possible.</p>
 </div>
 </section>
 <section id="authentication-optional">
-<h4>authentication_optional<a class="headerlink" href="#authentication-optional" title="Permalink to this heading"></a></h4>
+<h4>authentication_optional<a class="headerlink" href="#authentication-optional" title="Link to this heading"></a></h4>
 <p>Alias of <code class="docutils literal notranslate"><span class="pre">auth_optional</span></code>.</p>
 </section>
 <section id="category">
-<h4>category<a class="headerlink" href="#category" title="Permalink to this heading"></a></h4>
+<h4>category<a class="headerlink" href="#category" title="Link to this heading"></a></h4>
 <p>The <code class="docutils literal notranslate"><span class="pre">category</span></code> of the rule. This can be any string, but the value <code class="docutils literal notranslate"><span class="pre">safe</span></code> is
 special. Rules without a <code class="docutils literal notranslate"><span class="pre">category</span></code> key are considered informational, and do
 not contribute to the <code class="docutils literal notranslate"><span class="pre">verdict</span></code>.</p>
 </section>
 <section id="from-domain">
-<h4>from_domain<a class="headerlink" href="#from-domain" title="Permalink to this heading"></a></h4>
+<h4>from_domain<a class="headerlink" href="#from-domain" title="Link to this heading"></a></h4>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>This key <strong>must</strong> be set for rules with a category of <code class="docutils literal notranslate"><span class="pre">safe</span></code>.</p>
@@ -331,21 +331,21 @@ specified in this value by separating them with spaces.</p>
 key with the value set to <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
 </section>
 <section id="from-domains">
-<h4>from_domains<a class="headerlink" href="#from-domains" title="Permalink to this heading"></a></h4>
+<h4>from_domains<a class="headerlink" href="#from-domains" title="Link to this heading"></a></h4>
 <p>Alias of <code class="docutils literal notranslate"><span class="pre">from_domain</span></code>.</p>
 </section>
 <section id="no-attachment">
-<h4>no_attachment<a class="headerlink" href="#no-attachment" title="Permalink to this heading"></a></h4>
+<h4>no_attachment<a class="headerlink" href="#no-attachment" title="Link to this heading"></a></h4>
 <p>If this key is <code class="docutils literal notranslate"><span class="pre">true</span></code>, the rule’s <code class="docutils literal notranslate"><span class="pre">category</span></code> only applies to emails with no
 attachments.</p>
 </section>
 <section id="no-attachments">
-<h4>no_attachments<a class="headerlink" href="#no-attachments" title="Permalink to this heading"></a></h4>
+<h4>no_attachments<a class="headerlink" href="#no-attachments" title="Link to this heading"></a></h4>
 <p>Alias of <code class="docutils literal notranslate"><span class="pre">no_attachment</span></code>.</p>
 </section>
 </section>
 <section id="strings">
-<h3>strings<a class="headerlink" href="#strings" title="Permalink to this heading"></a></h3>
+<h3>strings<a class="headerlink" href="#strings" title="Link to this heading"></a></h3>
 <p>The <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#strings">strings section</a> specifies strings to match, assigned to
 variable names in the format <code class="docutils literal notranslate"><span class="pre">$variable</span> <span class="pre">=</span> <span class="pre">value</span></code>.</p>
 <ul class="simple">
@@ -357,7 +357,7 @@ variable names in the format <code class="docutils literal notranslate"><span cl
 to set case sensitivity, full word match only, and more.</p>
 </section>
 <section id="condition">
-<h3>condition<a class="headerlink" href="#condition" title="Permalink to this heading"></a></h3>
+<h3>condition<a class="headerlink" href="#condition" title="Link to this heading"></a></h3>
 <p>The <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#conditions">condition section</a> describes when the rule should match.
 Condition statements can be combined using <code class="docutils literal notranslate"><span class="pre">and/or</span></code>.</p>
 <p>Here are some simple examples.</p>
@@ -397,63 +397,63 @@ Condition statements can be combined using <code class="docutils literal notrans
 </section>
 </section>
 <section id="practical-yara-rule-examples">
-<h2>Practical YARA rule examples<a class="headerlink" href="#practical-yara-rule-examples" title="Permalink to this heading"></a></h2>
+<h2>Practical YARA rule examples<a class="headerlink" href="#practical-yara-rule-examples" title="Link to this heading"></a></h2>
 <p>Here are some of the ways YARA can be put to good use.</p>
 <section id="checking-if-an-email-is-safe">
-<h3>Checking if an email is safe<a class="headerlink" href="#checking-if-an-email-is-safe" title="Permalink to this heading"></a></h3>
+<h3>Checking if an email is safe<a class="headerlink" href="#checking-if-an-email-is-safe" title="Link to this heading"></a></h3>
 <p>The following YARA body rule could be used to ensure that all URLs
 in an email body match the domain of a vendor.</p>
-<div class="highlight-yara notranslate"><div class="highlight"><pre><span></span>rule all_urls_example_vendor : urls {
-    // YARA rules can include C-style comments like this one
+<div class="highlight-yara notranslate"><div class="highlight"><pre><span></span><span class="kd">rule</span><span class="w"> </span><span class="n">all_urls_example_vendor</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">urls</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// YARA rules can include C-style comments like this one</span>
 
-    /*
-    The &quot; : urls&quot; after the rule name sets an optional namespace
-    that can be useful for organizing rules.
-    The default namespace is &quot;default&quot;.
-    */
+<span class="w">    </span><span class="cm">/*</span>
+<span class="cm">    The &quot; : urls&quot; after the rule name sets an optional namespace</span>
+<span class="cm">    that can be useful for organizing rules.</span>
+<span class="cm">    The default namespace is &quot;default&quot;.</span>
+<span class="cm">    */</span>
 
-    meta:
-        author = &quot;Sean Whalen&quot;
-        date = &quot;2022-07-13&quot;
-        category = &quot;safe&quot;
-        from_domain = &quot;example.com&quot; // Only applies to emails from example.com
-        description = &quot;All URLs point to the example.com domain&quot;
-    strings:
-        $url = &quot;://&quot; ascii wide nocase
-        $example_url = &quot;https://example.com&quot; ascii wide nocase
-    condition:
-        /*
-        Require at least one URL for this rule, otherwise all emails with no
-        URLs would match.
+<span class="w">    </span><span class="k">meta</span><span class="p">:</span>
+<span class="w">        </span><span class="n">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;Sean Whalen&quot;</span>
+<span class="w">        </span><span class="n">date</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;2022-07-13&quot;</span>
+<span class="w">        </span><span class="n">category</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;safe&quot;</span>
+<span class="w">        </span><span class="n">from_domain</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;example.com&quot;</span><span class="w"> </span><span class="c1">// Only applies to emails from example.com</span>
+<span class="w">        </span><span class="n">description</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;All URLs point to the example.com domain&quot;</span>
+<span class="w">    </span><span class="k">strings</span><span class="p">:</span>
+<span class="w">        </span><span class="nv">$url</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;://&quot;</span><span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span><span class="w"> </span><span class="nb">nocase</span>
+<span class="w">        </span><span class="nv">$example_url</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;https://example.com&quot;</span><span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span><span class="w"> </span><span class="nb">nocase</span>
+<span class="w">    </span><span class="k">condition</span><span class="p">:</span>
+<span class="w">        </span><span class="cm">/*</span>
+<span class="cm">        Require at least one URL for this rule, otherwise all emails with no</span>
+<span class="cm">        URLs would match.</span>
 
-        The total number of URLs must match the number of example.com URls.
-        */
+<span class="cm">        The total number of URLs must match the number of example.com URls.</span>
+<span class="cm">        */</span>
 
-        $url and #url == #example_url
-}
+<span class="w">        </span><span class="nv">$url</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="c1">#url == #example_url</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="informational-rules">
-<h3>Informational rules<a class="headerlink" href="#informational-rules" title="Permalink to this heading"></a></h3>
+<h3>Informational rules<a class="headerlink" href="#informational-rules" title="Link to this heading"></a></h3>
 <p>To add additional context without affecting categorization or verdicts, write
 a rule without including a <code class="docutils literal notranslate"><span class="pre">category</span></code> value in the <code class="docutils literal notranslate"><span class="pre">meta</span></code> section. Any matches
 will still appear in the returned <code class="docutils literal notranslate"><span class="pre">matches</span></code>.</p>
-<div class="highlight-yara notranslate"><div class="highlight"><pre><span></span>rule short_url {
-    meta:
-        author = &quot;Sean Whalen&quot;
-        date = &quot;2022-08-04&quot;
-        description = &quot;Contains a short URL&quot;
-    strings:
-        $s = /https?:\/\/[\w.]{3,12}\/\w{5,14}[\s|&quot;|)|#|&gt;]/ ascii wide nocase
-    condition:
-        any of them
-}
+<div class="highlight-yara notranslate"><div class="highlight"><pre><span></span><span class="kd">rule</span><span class="w"> </span><span class="n">short_url</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">meta</span><span class="p">:</span>
+<span class="w">        </span><span class="n">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;Sean Whalen&quot;</span>
+<span class="w">        </span><span class="n">date</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;2022-08-04&quot;</span>
+<span class="w">        </span><span class="n">description</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;Contains a short URL&quot;</span>
+<span class="w">    </span><span class="k">strings</span><span class="p">:</span>
+<span class="w">        </span><span class="nv">$s</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="sr">/https?:\/</span>\<span class="sr">/[\w.]{3,12}\/</span>\<span class="n">w</span><span class="p">{</span>5<span class="p">,</span>14<span class="p">}[</span>\<span class="n">s</span><span class="p">|</span>&quot;<span class="p">|)|</span><span class="c1">#|&gt;]/ ascii wide nocase</span>
+<span class="w">    </span><span class="k">condition</span><span class="p">:</span>
+<span class="w">        </span><span class="ow">any</span><span class="w"> </span><span class="nb">of</span><span class="w"> </span><span class="nb">them</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="checking-for-impersonation">
-<h3>Checking for impersonation<a class="headerlink" href="#checking-for-impersonation" title="Permalink to this heading"></a></h3>
+<h3>Checking for impersonation<a class="headerlink" href="#checking-for-impersonation" title="Link to this heading"></a></h3>
 <p>Impersonating a top executive is a classic social engineering technique. Even
 if a target organization has fully implemented DMARC to prevent domain
 spoofing, people can still be impersonated in the display name of the
@@ -473,47 +473,47 @@ also add patterns to make exceptions to the rule. This is useful for dealing
 with false positives. An exemption to a malicious rule <strong>does not</strong> mean that
 the content is safe — it only means that the rule cannot be used for that
 content.</p>
-<div class="highlight-yara notranslate"><div class="highlight"><pre><span></span>rule planet_express_vip_impersonation {
-    meta:
-        author = &quot;Sean Whalen&quot;
-        date = &quot;2022-07-14&quot;
-        category = &quot;fraud&quot;
-        description = &quot;Impersonation of key employees of Planet Express&quot;
-    strings:
-        /*
-        /(Hubert|Hugh|Prof\\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/
-        
-        Hubert Farnsworth
-        Hugh Farnsworth
-        Professor Farnsworth
-        Prof. Farnsworth
-        Prof Farnsworth
-        Professor Hubert Farnsworth
-        Professor Hugh Farnsworth
-        Prof. Hubert Farnsworth
-        Prof Hubert Farnsworth
-        Prof. Hugh Farnsworth
-        Prof Hugh Farnsworth
-        
-        /Phil(ip)? (J\\.? )?Fry/
-        
-        Philip Fry
-        Philip J. Fry
-        Philip J Fry
-        Phil Fry
-        Phil J. Fry
-        Phil J Fry
-        */
-        $external = &quot;[EXT]&quot; ascii wide nocase // External email warning
-        $vip_ceo = /(Hubert|Hugh|Prof\\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/ ascii wide nocase
-        $vip_cfo = &quot;Hermes Conrad&quot; ascii wide nocase
-        $vip_cto = &quot;Turanga Leela&quot; ascii wide nocase
-        $vip_admin = &quot;Amy Wong&quot; ascii wide nocase
-        $vip_cdo = /Phil(ip)? (J\\.? )?Fry/ ascii wide nocase
-        $except_slug = &quot;Brain Slug Fundraiser&quot; ascii wide
-    condition:
-        $external and any of ($vip_*) and not any of ($except_*)
-}
+<div class="highlight-yara notranslate"><div class="highlight"><pre><span></span><span class="kd">rule</span><span class="w"> </span><span class="n">planet_express_vip_impersonation</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">meta</span><span class="p">:</span>
+<span class="w">        </span><span class="n">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;Sean Whalen&quot;</span>
+<span class="w">        </span><span class="n">date</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;2022-07-14&quot;</span>
+<span class="w">        </span><span class="n">category</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;fraud&quot;</span>
+<span class="w">        </span><span class="n">description</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;Impersonation of key employees of Planet Express&quot;</span>
+<span class="w">    </span><span class="k">strings</span><span class="p">:</span>
+<span class="w">        </span><span class="cm">/*</span>
+<span class="cm">        /(Hubert|Hugh|Prof\\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/</span>
+<span class="cm">        </span>
+<span class="cm">        Hubert Farnsworth</span>
+<span class="cm">        Hugh Farnsworth</span>
+<span class="cm">        Professor Farnsworth</span>
+<span class="cm">        Prof. Farnsworth</span>
+<span class="cm">        Prof Farnsworth</span>
+<span class="cm">        Professor Hubert Farnsworth</span>
+<span class="cm">        Professor Hugh Farnsworth</span>
+<span class="cm">        Prof. Hubert Farnsworth</span>
+<span class="cm">        Prof Hubert Farnsworth</span>
+<span class="cm">        Prof. Hugh Farnsworth</span>
+<span class="cm">        Prof Hugh Farnsworth</span>
+<span class="cm">        </span>
+<span class="cm">        /Phil(ip)? (J\\.? )?Fry/</span>
+<span class="cm">        </span>
+<span class="cm">        Philip Fry</span>
+<span class="cm">        Philip J. Fry</span>
+<span class="cm">        Philip J Fry</span>
+<span class="cm">        Phil Fry</span>
+<span class="cm">        Phil J. Fry</span>
+<span class="cm">        Phil J Fry</span>
+<span class="cm">        */</span>
+<span class="w">        </span><span class="nv">$external</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;[EXT]&quot;</span><span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span><span class="w"> </span><span class="nb">nocase</span><span class="w"> </span><span class="c1">// External email warning</span>
+<span class="w">        </span><span class="nv">$vip_ceo</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="sr">/(Hubert|Hugh|Prof\\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/</span><span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span><span class="w"> </span><span class="nb">nocase</span>
+<span class="w">        </span><span class="nv">$vip_cfo</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;Hermes Conrad&quot;</span><span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span><span class="w"> </span><span class="nb">nocase</span>
+<span class="w">        </span><span class="nv">$vip_cto</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;Turanga Leela&quot;</span><span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span><span class="w"> </span><span class="nb">nocase</span>
+<span class="w">        </span><span class="nv">$vip_admin</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;Amy Wong&quot;</span><span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span><span class="w"> </span><span class="nb">nocase</span>
+<span class="w">        </span><span class="nv">$vip_cdo</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="sr">/Phil(ip)? (J\\.? )?Fry/</span><span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span><span class="w"> </span><span class="nb">nocase</span>
+<span class="w">        </span><span class="nv">$except_slug</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;Brain Slug Fundraiser&quot;</span><span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span>
+<span class="w">    </span><span class="k">condition</span><span class="p">:</span>
+<span class="w">        </span><span class="nv">$external</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">any</span><span class="w"> </span><span class="nb">of</span><span class="w"> </span><span class="p">(</span><span class="nv">$vip_</span><span class="p">*)</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">any</span><span class="w"> </span><span class="nb">of</span><span class="w"> </span><span class="p">(</span><span class="nv">$except_</span><span class="p">*)</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <div class="admonition tip">
@@ -531,7 +531,7 @@ classify malware, so it is capable of much more complex pattern matching.
 Take the time to read over YARA’s documentation and other resources.</p>
 </section>
 <section id="checking-attachment-content">
-<h3>Checking attachment content<a class="headerlink" href="#checking-attachment-content" title="Permalink to this heading"></a></h3>
+<h3>Checking attachment content<a class="headerlink" href="#checking-attachment-content" title="Link to this heading"></a></h3>
 <p>As demonstrated by the previous examples, YARA rules don’t need
 to be complex to be effective. The same is true for file/attachment rules.</p>
 <p>File types can be identified by looking for a known sequence of bytes at a
@@ -546,7 +546,7 @@ Wikipedia. The <a class="reference external" href="https://www.loc.gov/preservat
 many different file types.</p>
 </div>
 <section id="small-iso-files">
-<h4>Small ISO files<a class="headerlink" href="#small-iso-files" title="Permalink to this heading"></a></h4>
+<h4>Small ISO files<a class="headerlink" href="#small-iso-files" title="Link to this heading"></a></h4>
 <p>Sometimes attackers will store malicious files inside ISO files, because the
 content of ISO files are often not scanned by email security controls.
 Although <code class="docutils literal notranslate"><span class="pre">yaramail</span></code> does not scan the contents of malicious ISO files, it can
@@ -558,18 +558,18 @@ smaller, because they only contain malware payloads.</p>
 <p>ISO files contain the bytes <code class="docutils literal notranslate"><span class="pre">43</span> <span class="pre">44</span> <span class="pre">30</span> <span class="pre">30</span> <span class="pre">31</span></code> (which is <code class="docutils literal notranslate"><span class="pre">CD001</span></code> in ASCII) at
 offsets <code class="docutils literal notranslate"><span class="pre">0x8001</span></code>, <code class="docutils literal notranslate"><span class="pre">0x8801</span></code>, or <code class="docutils literal notranslate"><span class="pre">0x9001</span></code>. This information can be combined with
 the special YARA variable <a class="reference external" href="https://yara.readthedocs.io/en/stable/writingrules.html#file-size">filesize</a> to look for small ISO files.</p>
-<div class="highlight-yara notranslate"><div class="highlight"><pre><span></span>rule small_iso {
-    meta:
-        author = &quot;Sean Whalen&quot;
-        date = &quot;2022-07-21&quot;
-        category = &quot;malware&quot;
-        description = &quot;A small ISO file&quot;
-    strings:
-        $iso = {43 44 30 30 31} // CD001
-    condition:
-        ($iso at 8001 or $iso at 8801 or $iso at 9001)
-        and filesize &lt; 200MB
-}
+<div class="highlight-yara notranslate"><div class="highlight"><pre><span></span><span class="kd">rule</span><span class="w"> </span><span class="n">small_iso</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">meta</span><span class="p">:</span>
+<span class="w">        </span><span class="n">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;Sean Whalen&quot;</span>
+<span class="w">        </span><span class="n">date</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;2022-07-21&quot;</span>
+<span class="w">        </span><span class="n">category</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;malware&quot;</span>
+<span class="w">        </span><span class="n">description</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;A small ISO file&quot;</span>
+<span class="w">    </span><span class="k">strings</span><span class="p">:</span>
+<span class="w">        </span><span class="nv">$iso</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">{</span>43<span class="w"> </span>44<span class="w"> </span>30<span class="w"> </span>30<span class="w"> </span>31<span class="p">}</span><span class="w"> </span><span class="c1">// CD001</span>
+<span class="w">    </span><span class="k">condition</span><span class="p">:</span>
+<span class="w">        </span><span class="p">(</span><span class="nv">$iso</span><span class="w"> </span><span class="nb">at</span><span class="w"> </span>8001<span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">$iso</span><span class="w"> </span><span class="nb">at</span><span class="w"> </span>8801<span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">$iso</span><span class="w"> </span><span class="nb">at</span><span class="w"> </span>9001<span class="p">)</span>
+<span class="w">        </span><span class="ow">and</span><span class="w"> </span><span class="nb">filesize</span><span class="w"> </span>&lt;<span class="w"> </span>200MB
+<span class="p">}</span>
 </pre></div>
 </div>
 <div class="admonition tip">
@@ -579,7 +579,7 @@ being used as a filesystem scanner.</p>
 </div>
 </section>
 <section id="credential-harvesting-pdfs">
-<h4>Credential harvesting PDFs<a class="headerlink" href="#credential-harvesting-pdfs" title="Permalink to this heading"></a></h4>
+<h4>Credential harvesting PDFs<a class="headerlink" href="#credential-harvesting-pdfs" title="Link to this heading"></a></h4>
 <p>Attackers will sometimes create phishing lures and links inside an attached
 PDF file instead of the email body. If attackers are not careful about their
 Operational Security (OPSEC) when creating PDFs, file metadata will be
@@ -593,19 +593,19 @@ types, including PDFs.</p>
 </div>
 <p>The YARA rule below identifies PDFs created by <code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">Robot</span> <span class="pre">Devil</span></code> that contain
 at least one clickable link.</p>
-<div class="highlight-yara notranslate"><div class="highlight"><pre><span></span>rule robot_devil_pdf {
-    meta:
-        author = &quot;Sean Whalen&quot;
-        date = &quot;2022-08-09&quot;
-        category = &quot;credential-harvesting&quot;
-        description = &quot;Robot Devil credential harvesting PDF&quot;
-    strings:
-        $pdf = {25 50 44 46 2D} // %PDF-
-        $s_author = &quot;Author(The Robot Devil)&quot; ascii wide
-        $s_uri = /URI\(.+\)/
-    condition:
-        $pdf at 0 and all of ($s_*)
-}
+<div class="highlight-yara notranslate"><div class="highlight"><pre><span></span><span class="kd">rule</span><span class="w"> </span><span class="n">robot_devil_pdf</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">meta</span><span class="p">:</span>
+<span class="w">        </span><span class="n">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;Sean Whalen&quot;</span>
+<span class="w">        </span><span class="n">date</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;2022-08-09&quot;</span>
+<span class="w">        </span><span class="n">category</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;credential-harvesting&quot;</span>
+<span class="w">        </span><span class="n">description</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;Robot Devil credential harvesting PDF&quot;</span>
+<span class="w">    </span><span class="k">strings</span><span class="p">:</span>
+<span class="w">        </span><span class="nv">$pdf</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">{</span>25<span class="w"> </span>50<span class="w"> </span>44<span class="w"> </span>46<span class="w"> </span>2D<span class="p">}</span><span class="w"> </span><span class="c1">// %PDF-</span>
+<span class="w">        </span><span class="nv">$s_author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;Author(The Robot Devil)&quot;</span><span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span>
+<span class="w">        </span><span class="nv">$s_uri</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="sr">/URI\(.+\)/</span>
+<span class="w">    </span><span class="k">condition</span><span class="p">:</span>
+<span class="w">        </span><span class="nv">$pdf</span><span class="w"> </span><span class="nb">at</span><span class="w"> </span>0<span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">all</span><span class="w"> </span><span class="nb">of</span><span class="w"> </span><span class="p">(</span><span class="nv">$s_</span><span class="p">*)</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -617,7 +617,7 @@ show full URLs in the list of matches.</p>
 </section>
 </section>
 <section id="real-world-example-workday">
-<h3>Real world example: Workday<a class="headerlink" href="#real-world-example-workday" title="Permalink to this heading"></a></h3>
+<h3>Real world example: Workday<a class="headerlink" href="#real-world-example-workday" title="Link to this heading"></a></h3>
 <p>Workday is a SaaS platform for HR management that is used by many large
 enterprises. Emails from Workday are very consistent.</p>
 <p>Every Workday notification email</p>
@@ -632,26 +632,26 @@ enterprises. Emails from Workday are very consistent.</p>
 <p>Because of that, a <code class="docutils literal notranslate"><span class="pre">body</span></code> YARA rule can be used
 to verify that the emails came from the expected domain and contain the expected content, with no unexpected
 links or attachments.</p>
-<div class="highlight-yara notranslate"><div class="highlight"><pre><span></span>rule workday {
-    meta:
-        author = &quot;Sean Whalen&quot;
-        date = &quot;2022-09-06&quot;
-        category = &quot;safe&quot;
-        from_domain = &quot;myworkday.com&quot;
-        no_attachments = true
-    strings:
-        $footer = &quot;Powered by Workday: A New Day, A Better Way.&quot; ascii wide
-        $url = /https?\:\/\// ascii wide nocase
-        $redacted_url = /https?\:\/\/(www\.)?REDACTED.com\// ascii wide nocase
-        $workday_url = &quot;https://www.myworkday.com/REDACTED/&quot; ascii wide nocase
-    condition:
-        all of them and #url == (#redacted_url + #workday_url)
-}
+<div class="highlight-yara notranslate"><div class="highlight"><pre><span></span><span class="kd">rule</span><span class="w"> </span><span class="n">workday</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">meta</span><span class="p">:</span>
+<span class="w">        </span><span class="n">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;Sean Whalen&quot;</span>
+<span class="w">        </span><span class="n">date</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;2022-09-06&quot;</span>
+<span class="w">        </span><span class="n">category</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;safe&quot;</span>
+<span class="w">        </span><span class="n">from_domain</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;myworkday.com&quot;</span>
+<span class="w">        </span><span class="n">no_attachments</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">    </span><span class="k">strings</span><span class="p">:</span>
+<span class="w">        </span><span class="nv">$footer</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;Powered by Workday: A New Day, A Better Way.&quot;</span><span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span>
+<span class="w">        </span><span class="nv">$url</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="sr">/https?\:\/</span>\<span class="c1">// ascii wide nocase</span>
+<span class="w">        </span><span class="nv">$redacted_url</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="sr">/https?\:\/</span>\<span class="sr">/(www\.)?REDACTED.com\/</span>/<span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span><span class="w"> </span><span class="nb">nocase</span>
+<span class="w">        </span><span class="nv">$workday_url</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;https://www.myworkday.com/REDACTED/&quot;</span><span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span><span class="w"> </span><span class="nb">nocase</span>
+<span class="w">    </span><span class="k">condition</span><span class="p">:</span>
+<span class="w">        </span><span class="ow">all</span><span class="w"> </span><span class="nb">of</span><span class="w"> </span><span class="nb">them</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="c1">#url == (#redacted_url + #workday_url)</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="checking-if-an-email-is-junk">
-<h3>Checking if an email is junk<a class="headerlink" href="#checking-if-an-email-is-junk" title="Permalink to this heading"></a></h3>
+<h3>Checking if an email is junk<a class="headerlink" href="#checking-if-an-email-is-junk" title="Link to this heading"></a></h3>
 <p>Users will often send marketing (i.e., junk) mail to a phishing report inbox,
 which can be a significant contributor to alert fatigue for those who are
 doing inbox triage. YARA rules can help reduce this noise.</p>
@@ -688,7 +688,7 @@ time, but the reduction in alert fatigue is well worth the effort.</p>
 </section>
 </section>
 <section id="using-the-cli">
-<h2>Using the CLI<a class="headerlink" href="#using-the-cli" title="Permalink to this heading"></a></h2>
+<h2>Using the CLI<a class="headerlink" href="#using-the-cli" title="Link to this heading"></a></h2>
 <script id="asciicast-529801" src="https://asciinema.org/a/529801.js" async></script>
 <p>the <a class="reference internal" href="cli.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">yaramail</span></code> CLI</span></a> has built-in support for scanning  individual
 samples, or an entire collection of samples.</p>
@@ -719,7 +719,7 @@ the scanner will still run using the data it does have.</p>
 tried as ZIP passwords, along with <code class="docutils literal notranslate"><span class="pre">infected</span></code> and <code class="docutils literal notranslate"><span class="pre">malware</span></code>.</p>
 </div>
 <section id="scanning-an-individual-sample">
-<h3>Scanning an individual sample<a class="headerlink" href="#scanning-an-individual-sample" title="Permalink to this heading"></a></h3>
+<h3>Scanning an individual sample<a class="headerlink" href="#scanning-an-individual-sample" title="Link to this heading"></a></h3>
 <p>To scan an individual sample, pass a path to the sample to <code class="docutils literal notranslate"><span class="pre">yaramail</span></code>.
 The scan results will be printed to the terminal’s standard output.</p>
 <div class="admonition tip">
@@ -728,12 +728,12 @@ The scan results will be printed to the terminal’s standard output.</p>
 </div>
 </section>
 <section id="scanning-multiple-samples">
-<h3>Scanning multiple samples<a class="headerlink" href="#scanning-multiple-samples" title="Permalink to this heading"></a></h3>
+<h3>Scanning multiple samples<a class="headerlink" href="#scanning-multiple-samples" title="Link to this heading"></a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">yaramail</span> <span class="pre">CLI</span></code> accepts wildcards (i.e., <code class="docutils literal notranslate"><span class="pre">*</span></code>) in the scan path to scan
 multiple files at once. This is useful for seeing what samples have in common.</p>
 </section>
 <section id="testing-a-collection-of-samples">
-<h3>Testing a collection of samples<a class="headerlink" href="#testing-a-collection-of-samples" title="Permalink to this heading"></a></h3>
+<h3>Testing a collection of samples<a class="headerlink" href="#testing-a-collection-of-samples" title="Link to this heading"></a></h3>
 <p>To test <code class="docutils literal notranslate"><span class="pre">verdict</span></code> values across an entire collection of email samples, use the
 <code class="docutils literal notranslate"><span class="pre">-t/--test</span></code> option, and pass in a path to a directory of samples that are
 sorted into subdirectories by expected verdict.</p>
@@ -745,7 +745,7 @@ content, URLs, and attachment names, add the <code class="docutils literal notra
 </section>
 </section>
 <section id="automating-phishing-report-triage">
-<h2>Automating phishing report triage<a class="headerlink" href="#automating-phishing-report-triage" title="Permalink to this heading"></a></h2>
+<h2>Automating phishing report triage<a class="headerlink" href="#automating-phishing-report-triage" title="Link to this heading"></a></h2>
 <p>Here’s a complete example of triage code.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>

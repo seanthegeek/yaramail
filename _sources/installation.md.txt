@@ -28,8 +28,8 @@ Install [Homebrew][homebrew], then run the following commands in a terminal.
 
 ```text
 brew install pkg-config openssl@3 poppler python
-export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
-export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
+export LDFLAGS="-L$(brew --prefix)/opt/openssl@3/lib"
+export CPPFLAGS="-I$(brew --prefix)/opt/openssl@3/include"
 pip install yara-python
 ```
 

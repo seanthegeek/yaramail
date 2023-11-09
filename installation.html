@@ -11,11 +11,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=4f6ddb47"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -87,7 +87,7 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h1>
+<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>It is recommended to use <code class="docutils literal notranslate"><span class="pre">yaramail</span></code> in a different OS than what is targeted by
@@ -95,32 +95,32 @@ the potential malware you are scanning. Consider using <code class="docutils lit
 container or VM for additional security.</p>
 </div>
 <section id="system-dependencies">
-<h2>System dependencies<a class="headerlink" href="#system-dependencies" title="Permalink to this heading"></a></h2>
+<h2>System dependencies<a class="headerlink" href="#system-dependencies" title="Link to this heading"></a></h2>
 <p>Some system dependencies <strong>must</strong> be installed before installing <code class="docutils literal notranslate"><span class="pre">yaramail</span></code>.</p>
 <section id="debian-ubuntu-and-friends">
-<h3>Debian, Ubuntu, and friends<a class="headerlink" href="#debian-ubuntu-and-friends" title="Permalink to this heading"></a></h3>
+<h3>Debian, Ubuntu, and friends<a class="headerlink" href="#debian-ubuntu-and-friends" title="Link to this heading"></a></h3>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>sudo apt install build-essential libssl-dev libpoppler-cpp-dev pkg-config python3-dev
 </pre></div>
 </div>
 </section>
 <section id="fedora-red-hat-and-friends">
-<h3>Fedora, Red Hat, and friends<a class="headerlink" href="#fedora-red-hat-and-friends" title="Permalink to this heading"></a></h3>
+<h3>Fedora, Red Hat, and friends<a class="headerlink" href="#fedora-red-hat-and-friends" title="Link to this heading"></a></h3>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>sudo yum install gcc-c++ pkgconfig openssl-devel poppler-cpp-devel python3-devel
 </pre></div>
 </div>
 </section>
 <section id="macos">
-<h3>macOS<a class="headerlink" href="#macos" title="Permalink to this heading"></a></h3>
+<h3>macOS<a class="headerlink" href="#macos" title="Link to this heading"></a></h3>
 <p>Install <a class="reference external" href="https://brew.sh/">Homebrew</a>, then run the following commands in a terminal.</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>brew install pkg-config openssl@3 poppler python
-export LDFLAGS=&quot;-L/opt/homebrew/opt/openssl@3/lib&quot;
-export CPPFLAGS=&quot;-I/opt/homebrew/opt/openssl@3/include&quot;
+export LDFLAGS=&quot;-L$(brew --prefix)/opt/openssl@3/lib&quot;
+export CPPFLAGS=&quot;-I$(brew --prefix)/opt/openssl@3/include&quot;
 pip install yara-python
 </pre></div>
 </div>
 </section>
 <section id="windows">
-<h3>Windows<a class="headerlink" href="#windows" title="Permalink to this heading"></a></h3>
+<h3>Windows<a class="headerlink" href="#windows" title="Link to this heading"></a></h3>
 <ol class="arabic simple">
 <li><p>Install the <a class="reference external" href="https://visualstudio.microsoft.com/downloads/#microsoft-visual-c-redistributable-for-visual-studio-2022">Microsoft Visual Studio Build Tools</a></p></li>
 <li><p>Install <a class="reference external" href="https://www.anaconda.com/products/distribution">Anaconda Distribution</a></p></li>
@@ -133,7 +133,7 @@ pip install yara-python
 </section>
 </section>
 <section id="install-yaramail">
-<h2>Install yaramail<a class="headerlink" href="#install-yaramail" title="Permalink to this heading"></a></h2>
+<h2>Install yaramail<a class="headerlink" href="#install-yaramail" title="Link to this heading"></a></h2>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>The official name for this project, package, and module is <code class="docutils literal notranslate"><span class="pre">yaramail</span></code>.
