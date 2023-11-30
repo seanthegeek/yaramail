@@ -8,6 +8,10 @@ case "$OSTYPE" in
       echo 'Error: Homebrew is not installed. Please install it.' >&2
       exit 1
     fi
+    if ! [ -x "$(command -v clang)" ]; then
+      echo 'Error: clang not found. Please run xcode-select --install.' >&2
+      exit 1
+    fi
     brew install pkg-config openssl@3 poppler python
     ;;
   *linux*)

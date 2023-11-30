@@ -25,6 +25,10 @@ case "$OSTYPE" in
       echo 'Error: Homebrew is not installed. Please install it.' >&2
       exit 1
     fi
+    if ! [ -x "$(command -v clang)" ]; then
+      echo 'Error: clang not found. Please run xcode-select --install.' >&2
+      exit 1
+    fi
     export LDFLAGS="-L/opt/homebrew/opt/openssl@3/lib"
     export CPPFLAGS="-I/opt/homebrew/opt/openssl@3/include"
     ;;
