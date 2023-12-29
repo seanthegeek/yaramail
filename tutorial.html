@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tutorial &mdash; yaramail 3.2.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -481,7 +483,7 @@ content.</p>
 <span class="w">        </span><span class="n">description</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;Impersonation of key employees of Planet Express&quot;</span>
 <span class="w">    </span><span class="k">strings</span><span class="p">:</span>
 <span class="w">        </span><span class="cm">/*</span>
-<span class="cm">        /(Hubert|Hugh|Prof\\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/</span>
+<span class="cm">        /(Hubert|Hugh|Prof\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/</span>
 <span class="cm">        </span>
 <span class="cm">        Hubert Farnsworth</span>
 <span class="cm">        Hugh Farnsworth</span>
@@ -495,7 +497,7 @@ content.</p>
 <span class="cm">        Prof. Hugh Farnsworth</span>
 <span class="cm">        Prof Hugh Farnsworth</span>
 <span class="cm">        </span>
-<span class="cm">        /Phil(ip)? (J\\.? )?Fry/</span>
+<span class="cm">        /Phil(ip)? (J\.? )?Fry/</span>
 <span class="cm">        </span>
 <span class="cm">        Philip Fry</span>
 <span class="cm">        Philip J. Fry</span>
@@ -505,11 +507,11 @@ content.</p>
 <span class="cm">        Phil J Fry</span>
 <span class="cm">        */</span>
 <span class="w">        </span><span class="nv">$external</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;[EXT]&quot;</span><span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span><span class="w"> </span><span class="nb">nocase</span><span class="w"> </span><span class="c1">// External email warning</span>
-<span class="w">        </span><span class="nv">$vip_ceo</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="sr">/(Hubert|Hugh|Prof\\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/</span><span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span><span class="w"> </span><span class="nb">nocase</span>
+<span class="w">        </span><span class="nv">$vip_ceo</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="sr">/(Hubert|Hugh|Prof\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/</span><span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span><span class="w"> </span><span class="nb">nocase</span>
 <span class="w">        </span><span class="nv">$vip_cfo</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;Hermes Conrad&quot;</span><span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span><span class="w"> </span><span class="nb">nocase</span>
 <span class="w">        </span><span class="nv">$vip_cto</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;Turanga Leela&quot;</span><span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span><span class="w"> </span><span class="nb">nocase</span>
 <span class="w">        </span><span class="nv">$vip_admin</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;Amy Wong&quot;</span><span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span><span class="w"> </span><span class="nb">nocase</span>
-<span class="w">        </span><span class="nv">$vip_cdo</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="sr">/Phil(ip)? (J\\.? )?Fry/</span><span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span><span class="w"> </span><span class="nb">nocase</span>
+<span class="w">        </span><span class="nv">$vip_cdo</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="sr">/Phil(ip)? (J\.? )?Fry/</span><span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span><span class="w"> </span><span class="nb">nocase</span>
 <span class="w">        </span><span class="nv">$except_slug</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;Brain Slug Fundraiser&quot;</span><span class="w"> </span><span class="nb">ascii</span><span class="w"> </span><span class="nb">wide</span>
 <span class="w">    </span><span class="k">condition</span><span class="p">:</span>
 <span class="w">        </span><span class="nv">$external</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">any</span><span class="w"> </span><span class="nb">of</span><span class="w"> </span><span class="p">(</span><span class="nv">$vip_</span><span class="p">*)</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="ow">any</span><span class="w"> </span><span class="nb">of</span><span class="w"> </span><span class="p">(</span><span class="nv">$except_</span><span class="p">*)</span>
