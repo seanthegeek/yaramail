@@ -357,7 +357,7 @@ rule planet_express_vip_impersonation {
         description = "Impersonation of key employees of Planet Express"
     strings:
         /*
-        /(Hubert|Hugh|Prof\\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/
+        /(Hubert|Hugh|Prof\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/
         
         Hubert Farnsworth
         Hugh Farnsworth
@@ -371,7 +371,7 @@ rule planet_express_vip_impersonation {
         Prof. Hugh Farnsworth
         Prof Hugh Farnsworth
         
-        /Phil(ip)? (J\\.? )?Fry/
+        /Phil(ip)? (J\.? )?Fry/
         
         Philip Fry
         Philip J. Fry
@@ -381,11 +381,11 @@ rule planet_express_vip_impersonation {
         Phil J Fry
         */
         $external = "[EXT]" ascii wide nocase // External email warning
-        $vip_ceo = /(Hubert|Hugh|Prof\\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/ ascii wide nocase
+        $vip_ceo = /(Hubert|Hugh|Prof\.?(essor)?) ((Hubert|Hugh) )?Farnsworth/ ascii wide nocase
         $vip_cfo = "Hermes Conrad" ascii wide nocase
         $vip_cto = "Turanga Leela" ascii wide nocase
         $vip_admin = "Amy Wong" ascii wide nocase
-        $vip_cdo = /Phil(ip)? (J\\.? )?Fry/ ascii wide nocase
+        $vip_cdo = /Phil(ip)? (J\.? )?Fry/ ascii wide nocase
         $except_slug = "Brain Slug Fundraiser" ascii wide
     condition:
         $external and any of ($vip_*) and not any of ($except_*)
