@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>yaramail &mdash; yaramail 3.2.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
@@ -74,18 +74,18 @@
            <div itemprop="articleBody">
              
   <h1>Source code for yaramail</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">binascii</span>
-<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span><span class="p">,</span> <span class="n">listdir</span>
-<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">IOBase</span><span class="p">,</span> <span class="n">BytesIO</span><span class="p">,</span> <span class="n">StringIO</span>
-<span class="kn">import</span> <span class="nn">zipfile</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">binascii</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">path</span><span class="p">,</span> <span class="n">listdir</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">IOBase</span><span class="p">,</span> <span class="n">BytesIO</span><span class="p">,</span> <span class="n">StringIO</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">zipfile</span>
 
-<span class="kn">import</span> <span class="nn">yara</span>
-<span class="kn">import</span> <span class="nn">pdftotext</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yara</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pdftotext</span>
 
-<span class="kn">from</span> <span class="nn">mailsuite.utils</span> <span class="kn">import</span> <span class="n">parse_email</span><span class="p">,</span> <span class="n">from_trusted_domain</span><span class="p">,</span> <span class="n">decode_base64</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mailsuite.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_email</span><span class="p">,</span> <span class="n">from_trusted_domain</span><span class="p">,</span> <span class="n">decode_base64</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">NullHandler</span><span class="p">())</span>
@@ -114,7 +114,7 @@
         <span class="n">password_regex</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">regex</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_carve_passwords</span><span class="p">(</span><span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_carve_passwords</span><span class="p">(</span><span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
     <span class="n">passwords</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">_regex</span> <span class="ow">in</span> <span class="n">password_regex</span><span class="p">:</span>
         <span class="n">matches</span> <span class="o">=</span> <span class="n">_regex</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
@@ -131,7 +131,7 @@
     <span class="k">return</span> <span class="n">passwords</span>
 
 
-<span class="k">def</span> <span class="nf">_deduplicate_list</span><span class="p">(</span><span class="n">og_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_deduplicate_list</span><span class="p">(</span><span class="n">og_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
     <span class="n">new_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">og_list</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new_list</span><span class="p">:</span>
@@ -139,10 +139,10 @@
     <span class="k">return</span> <span class="n">new_list</span>
 
 
-<span class="k">def</span> <span class="nf">_match_to_dict</span><span class="p">(</span><span class="n">match</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">yara</span><span class="o">.</span><span class="n">Match</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_match_to_dict</span><span class="p">(</span><span class="n">match</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">yara</span><span class="o">.</span><span class="n">Match</span><span class="p">,</span>
                                 <span class="n">List</span><span class="p">[</span><span class="n">yara</span><span class="o">.</span><span class="n">Match</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span>
                                                             <span class="n">Dict</span><span class="p">]:</span>
-    <span class="k">def</span> <span class="nf">match_to_dict_</span><span class="p">(</span><span class="n">_match</span><span class="p">:</span> <span class="n">yara</span><span class="o">.</span><span class="n">Match</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">match_to_dict_</span><span class="p">(</span><span class="n">_match</span><span class="p">:</span> <span class="n">yara</span><span class="o">.</span><span class="n">Match</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
         <span class="n">strings</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">match</span><span class="o">.</span><span class="n">strings</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">tuple</span><span class="p">:</span>
@@ -167,28 +167,28 @@
         <span class="k">return</span> <span class="n">match_to_dict_</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_is_pdf</span><span class="p">(</span><span class="n">file_bytes</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_pdf</span><span class="p">(</span><span class="n">file_bytes</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">file_bytes</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x25\x50\x44\x46\x2D</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
 
 
-<span class="k">def</span> <span class="nf">_is_zip</span><span class="p">(</span><span class="n">file_bytes</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_zip</span><span class="p">(</span><span class="n">file_bytes</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">file_bytes</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x50\x4B\03\04</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
 
 
-<span class="k">def</span> <span class="nf">_pdf_to_markdown</span><span class="p">(</span><span class="n">pdf_bytes</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_pdf_to_markdown</span><span class="p">(</span><span class="n">pdf_bytes</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_pdf</span><span class="p">(</span><span class="n">pdf_bytes</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not a PDF file&quot;</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">BytesIO</span><span class="p">(</span><span class="n">pdf_bytes</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pdftotext</span><span class="o">.</span><span class="n">PDF</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
 
 
-<span class="k">def</span> <span class="nf">_input_to_str_list</span><span class="p">(</span><span class="n">_input</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">,</span> <span class="n">IOBase</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_input_to_str_list</span><span class="p">(</span><span class="n">_input</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">,</span> <span class="n">IOBase</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
     <span class="n">_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">_input</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">_list</span>
@@ -207,7 +207,7 @@
     <span class="k">return</span> <span class="n">_list</span>
 
 
-<span class="k">def</span> <span class="nf">_compile_rules</span><span class="p">(</span><span class="n">rules</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">yara</span><span class="o">.</span><span class="n">Rules</span><span class="p">,</span> <span class="n">IOBase</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">yara</span><span class="o">.</span><span class="n">Rules</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_compile_rules</span><span class="p">(</span><span class="n">rules</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">yara</span><span class="o">.</span><span class="n">Rules</span><span class="p">,</span> <span class="n">IOBase</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">yara</span><span class="o">.</span><span class="n">Rules</span><span class="p">:</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">yara</span><span class="o">.</span><span class="n">Rules</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">rules</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rules</span><span class="p">,</span> <span class="n">IOBase</span><span class="p">):</span>
@@ -227,8 +227,8 @@
 
 <div class="viewcode-block" id="MailScanner">
 <a class="viewcode-back" href="../api.html#yaramail.MailScanner">[docs]</a>
-<span class="k">class</span> <span class="nc">MailScanner</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header_rules</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IOBase</span><span class="p">,</span> <span class="n">yara</span><span class="o">.</span><span class="n">Rules</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MailScanner</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header_rules</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IOBase</span><span class="p">,</span> <span class="n">yara</span><span class="o">.</span><span class="n">Rules</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">body_rules</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IOBase</span><span class="p">,</span> <span class="n">yara</span><span class="o">.</span><span class="n">Rules</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">header_body_rules</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IOBase</span><span class="p">,</span> <span class="n">yara</span><span class="o">.</span><span class="n">Rules</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">attachment_rules</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IOBase</span><span class="p">,</span> <span class="n">yara</span><span class="o">.</span><span class="n">Rules</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -321,7 +321,7 @@
         <span class="n">use_og_auth</span> <span class="o">=</span> <span class="n">use_authentication_results_original</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_authentication_results_original</span> <span class="o">=</span> <span class="n">use_og_auth</span>
 
-    <span class="k">def</span> <span class="nf">_scan_pdf_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">BytesIO</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scan_pdf_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">BytesIO</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">BytesIO</span><span class="p">):</span>
             <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_pdf</span><span class="p">(</span><span class="n">payload</span><span class="p">):</span>
@@ -336,7 +336,7 @@
 
         <span class="k">return</span> <span class="n">markdown_matches</span>
 
-    <span class="k">def</span> <span class="nf">_scan_zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">BytesIO</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scan_zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">BytesIO</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
                   <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">passwords</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                   <span class="n">_current_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -409,9 +409,9 @@
 
                 <span class="k">return</span> <span class="n">zip_matches</span>
 
-    <span class="k">def</span> <span class="nf">_scan_attachments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attachments</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scan_attachments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attachments</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
                           <span class="n">passwords</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
-        <span class="k">def</span> <span class="nf">add_location</span><span class="p">(</span><span class="n">_attachment_matches</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span> <span class="n">_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">add_location</span><span class="p">(</span><span class="n">_attachment_matches</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span> <span class="n">_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">_attachment_matches</span><span class="p">:</span>
                 <span class="n">base_location</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;attachment:</span><span class="si">{</span><span class="n">_filename</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="k">if</span> <span class="s2">&quot;location&quot;</span> <span class="ow">in</span> <span class="n">match</span><span class="p">:</span>
@@ -473,7 +473,7 @@
 
 <div class="viewcode-block" id="MailScanner.scan_email">
 <a class="viewcode-back" href="../api.html#yaramail.MailScanner.scan_email">[docs]</a>
-    <span class="k">def</span> <span class="nf">scan_email</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IOBase</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">scan_email</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">IOBase</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
                    <span class="n">use_raw_headers</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                    <span class="n">use_raw_body</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

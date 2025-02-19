@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tutorial &mdash; yaramail 3.2.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
@@ -169,9 +169,9 @@ WSL or remote host window is open.</p>
 <p>Follow the <a class="reference internal" href="installation.html"><span class="doc std std-doc">installation guide</span></a>.</p>
 <p>Import <code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> from <code class="docutils literal notranslate"><span class="pre">yaramail</span></code>, and create a new
 <a class="reference internal" href="api.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">MailScanner</span></code> object</span></a></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">yaramail</span> <span class="kn">import</span> <span class="n">MailScanner</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaramail</span><span class="w"> </span><span class="kn">import</span> <span class="n">MailScanner</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;scanner&quot;</span><span class="p">)</span>
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
@@ -747,17 +747,17 @@ content, URLs, and attachment names, add the <code class="docutils literal notra
 <section id="automating-phishing-report-triage">
 <h2>Automating phishing report triage<a class="headerlink" href="#automating-phishing-report-triage" title="Link to this heading"></a></h2>
 <p>Here’s a complete example of triage code.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
 
-<span class="kn">from</span> <span class="nn">mailsuite.utils</span> <span class="kn">import</span> <span class="n">parse_email</span>
-<span class="kn">from</span> <span class="nn">yaramail</span> <span class="kn">import</span> <span class="n">MailScanner</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mailsuite.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_email</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaramail</span><span class="w"> </span><span class="kn">import</span> <span class="n">MailScanner</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;scanner&quot;</span><span class="p">)</span>
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">escalate_to_incident_response</span><span class="p">(</span><span class="n">_report_email</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">escalate_to_incident_response</span><span class="p">(</span><span class="n">_report_email</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
                                   <span class="n">priority</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span><span class="p">):</span>
   <span class="n">m</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Escalating </span><span class="si">{</span><span class="n">priority</span><span class="si">}</span><span class="s2"> priority email&quot;</span>
   <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
@@ -781,7 +781,7 @@ content, URLs, and attachment names, add the <code class="docutils literal notra
   <span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">scan_email</span><span class="p">(</span><span class="n">email_sample</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">scan_email</span><span class="p">(</span><span class="n">email_sample</span><span class="p">):</span>
   <span class="n">email_sample</span><span class="p">[</span><span class="s2">&quot;yaramail&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scanner</span><span class="o">.</span><span class="n">scan_email</span><span class="p">(</span><span class="n">email_sample</span><span class="p">)</span>
   <span class="k">return</span> <span class="n">email_sample</span>
 
