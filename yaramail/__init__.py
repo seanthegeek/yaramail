@@ -476,7 +476,8 @@ class MailScanner(object):
             parsed_email = parse_email(email)
         msg_from_domain = None
         if "from" in parsed_email:
-            msg_from_domain = parsed_email["from"]["domain"]
+            if "domain" in parse_email["from"]:
+                msg_from_domain = parsed_email["from"]["domain"]
         if use_raw_headers:
             headers = parsed_email["raw_headers"]
         else:
@@ -523,7 +524,7 @@ class MailScanner(object):
             use_authentication_results_original=use_og_auth_results,
         )
         authenticated_domain = from_trusted_domain(
-            parsed_email, [parsed_email["from"]["domain"]],
+            parsed_email, [msg_from_domain],
             allow_multiple_authentication_results=multi_auth_headers,
             use_authentication_results_original=use_og_auth_results,
         )
@@ -550,7 +551,7 @@ class MailScanner(object):
                 rule_from_domains = match["meta"]["from_domain"]
             if rule_from_domains is not None:
                 rule_from_domains = rule_from_domains.split(" ")
-                if parsed_email["from"]["domain"] not in rule_from_domains:
+                if msg_from_domain not in rule_from_domains:
                     match["warnings"].append("from-domain-mismatch")
                 if not passed_authentication:
                     match["warnings"].append("domain-authentication-failed")
