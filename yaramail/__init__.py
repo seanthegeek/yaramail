@@ -476,7 +476,7 @@ class MailScanner(object):
             parsed_email = parse_email(email)
         msg_from_domain = None
         if "from" in parsed_email:
-            if "domain" in parse_email["from"]:
+            if "domain" in parsed_email["from"]:
                 msg_from_domain = parsed_email["from"]["domain"]
         if use_raw_headers:
             headers = parsed_email["raw_headers"]
