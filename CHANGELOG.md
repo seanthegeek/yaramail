@@ -2,7 +2,7 @@
 
 ## 3.2.1
 
-- Upgrade `mailsuite` requirement to `>=1.9.19`
+- Upgrade `mailsuite` requirement to `>=1.9.10`
 - Gracefully handle an invalid email from address
 
 ## 3.2.0
