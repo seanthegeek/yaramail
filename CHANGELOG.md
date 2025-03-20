@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.2.1
+
+- Upgrade `mailsuite` requirement to `>=1.9.19`
+- Gracefully handle an invalid email from address
+
 ## 3.2.0
 
 - Support `yara-python` `4.3.0`
