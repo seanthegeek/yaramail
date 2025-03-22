@@ -14,7 +14,7 @@ from mailsuite.utils import parse_email, from_trusted_domain, decode_base64
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
-__version__ = "3.2.1"
+__version__ = "3.2.2"
 
 
 delimiters = ["r\"", r"'", r"`", r"\*", r"\*\*", r"_", r"|", r"”", r"”", r"’",
@@ -474,7 +474,7 @@ class MailScanner(object):
             parsed_email = email
         else:
             parsed_email = parse_email(email)
-        msg_from_domain = None
+        msg_from_domain = ""
         if "from" in parsed_email:
             if "domain" in parsed_email["from"]:
                 msg_from_domain = parsed_email["from"]["domain"]

@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.2.2
+
+- Better handling of an invalid email from address
+
 ## 3.2.1
 
 - Upgrade `mailsuite` requirement to `>=1.9.20`
