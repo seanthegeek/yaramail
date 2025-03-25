@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.2.3
+
+- Better validation of data from `mailsuite`
+
 ## 3.2.2
 
 - Better handling of an invalid email from address

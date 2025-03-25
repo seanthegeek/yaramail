@@ -14,7 +14,7 @@ from mailsuite.utils import parse_email, from_trusted_domain, decode_base64
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
-__version__ = "3.2.2"
+__version__ = "3.2.3"
 
 
 delimiters = ["r\"", r"'", r"`", r"\*", r"\*\*", r"_", r"|", r"”", r"”", r"’",
@@ -474,8 +474,8 @@ class MailScanner(object):
             parsed_email = email
         else:
             parsed_email = parse_email(email)
-        msg_from_domain = ""
-        if "from" in parsed_email:
+        msg_from_domain = None
+        if "from" in parsed_email and parsed_email["from"] is not None:
             if "domain" in parsed_email["from"]:
                 msg_from_domain = parsed_email["from"]["domain"]
         if use_raw_headers:
@@ -490,7 +490,9 @@ class MailScanner(object):
                 body = "\n\n".join(parsed_email["text_html"])
         else:
             body = parsed_email["body_markdown"]
-        attachments = parsed_email["attachments"]
+        attachments = []
+        if "attachments" in parsed_email:
+            attachments = parsed_email["attachments"]
 
         matches = []
         if self._header_rules:
@@ -524,7 +526,7 @@ class MailScanner(object):
             use_authentication_results_original=use_og_auth_results,
         )
         authenticated_domain = from_trusted_domain(
-            parsed_email, [msg_from_domain],
+            parsed_email, [msg_from_domain or ""],
             allow_multiple_authentication_results=multi_auth_headers,
             use_authentication_results_original=use_og_auth_results,
         )
