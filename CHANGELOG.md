@@ -1,5 +1,21 @@
 # Changelog
 
+## 3.3.0
+
+## Breaking changes
+
+`parse_email()` no longer checks the file path for security reasons.will mo longer treat input as a potential file path. Applications must now do this explicitly themselves when needed.
+
+## Improvements
+
+- The password `infected` will now automatically by tried when scanning zip files.
+- Better typing across the library.
+- Code reformatting with `ruff`.
+
+## Fixes
+
+- Fixed potential crashes when scanning zip files.
+
 ## 3.2.3
 
 - Better validation of data from `mailsuite`

@@ -1,5 +1,5 @@
 import logging
-from typing import Union, List, Dict
+from typing import Union, Optional, Any, overload
 import re
 import binascii
 from os import path, listdir
@@ -14,15 +14,45 @@ from mailsuite.utils import parse_email, from_trusted_domain, decode_base64
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
-__version__ = "3.2.3"
+__version__ = "3.3.0"
 
 
-delimiters = ["r\"", r"'", r"`", r"\*", r"\*\*", r"_", r"|", r"”", r"”", r"’",
-              r"‚", r"＂", r"“", r"〝", r"‟", r"〞", r"”", ("❝", r"❞"),
-              (r"❮", r"❯"),  (r"\(", r"\)"), (r"\[", r"\]"), (r"\{", r"\}"),
-              (r"<", r">"), (r">", "</"), (r"”", r"„"), (r"‘", r"’"),
-              (r"‹", "›"), (r"»", "«"), (r"«", r"»"), (r"「", r"」"),
-              (r"〔", r"〕"), (r"『", r"』"), (r"「", r"」"), (r"❬", "❭")]
+delimiters = [
+    'r"',
+    r"'",
+    r"`",
+    r"\*",
+    r"\*\*",
+    r"_",
+    r"|",
+    r"”",
+    r"”",
+    r"’",
+    r"‚",
+    r"＂",
+    r"“",
+    r"〝",
+    r"‟",
+    r"〞",
+    r"”",
+    ("❝", r"❞"),
+    (r"❮", r"❯"),
+    (r"\(", r"\)"),
+    (r"\[", r"\]"),
+    (r"\{", r"\}"),
+    (r"<", r">"),
+    (r">", "</"),
+    (r"”", r"„"),
+    (r"‘", r"’"),
+    (r"‹", "›"),
+    (r"»", "«"),
+    (r"«", r"»"),
+    (r"「", r"」"),
+    (r"〔", r"〕"),
+    (r"『", r"』"),
+    (r"「", r"」"),
+    (r"❬", "❭"),
+]
 
 password_regex = [re.compile(r"\s*(\S+)\s*", re.MULTILINE)]
 for delimiter in delimiters:
@@ -38,7 +68,7 @@ for delimiter in delimiters:
         password_regex.append(regex)
 
 
-def _carve_passwords(content: str) -> List[str]:
+def _carve_passwords(content: str) -> list[str]:
     passwords = []
     for _regex in password_regex:
         matches = _regex.findall(content)
@@ -63,44 +93,53 @@ def _deduplicate_list(og_list: list):
     return new_list
 
 
-def _match_to_dict(match: Union[yara.Match,
-                                List[yara.Match]]) -> Union[List[Dict],
-                                                            Dict]:
-    def match_to_dict_(_match: yara.Match) -> Dict:
-        strings = []
-        for s in match.strings:
-            if type(s) is tuple:
+@overload
+def _match_to_dict(match: yara.Match) -> dict[str, Any]: ...
+@overload
+def _match_to_dict(match: list[yara.Match]) -> list[dict[str, Any]]: ...  # pyright: ignore[reportOverlappingOverload]
+
+
+def _match_to_dict(
+    match: Union[yara.Match, list[yara.Match]],
+) -> Union[dict[str, Any], list[dict[str, Any]]]:
+    def match_to_dict_(_match: yara.Match) -> dict[str, Any]:
+        strings: list[Any] = []
+        for s in _match.strings:
+            if isinstance(s, tuple):
                 strings.append(s)
             else:
                 for i in s.instances:
                     strings.append((i.offset, s.identifier, i.matched_data))
-            strings = sorted(strings, key=lambda x: x[0])
-        return dict(rule=_match.rule,
-                    namespace=_match.namespace,
-                    tags=_match.tags,
-                    meta=_match.meta,
-                    strings=strings,
-                    warnings=[]
-                    )
+        strings = sorted(strings, key=lambda x: x[0])
+        return dict(
+            rule=_match.rule,
+            namespace=_match.namespace,
+            tags=_match.tags,
+            meta=_match.meta,
+            strings=strings,
+            warnings=[],
+        )
+
     if isinstance(match, list):
         matches = match.copy()
         for i in range(len(matches)):
-            matches[i] = _match_to_dict(matches[i])
+            matches[i] = match_to_dict_(matches[i])
         return matches
     elif isinstance(match, yara.Match):
         return match_to_dict_(match)
+    raise TypeError(f"Unsupported match type: {type(match)!r}")
 
 
 def _is_pdf(file_bytes: bytes) -> bool:
     try:
-        return file_bytes.startswith(b"\x25\x50\x44\x46\x2D")
+        return file_bytes.startswith(b"\x25\x50\x44\x46\x2d")
     except TypeError:
         return False
 
 
 def _is_zip(file_bytes: bytes) -> bool:
     try:
-        return file_bytes.startswith(b"\x50\x4B\03\04")
+        return file_bytes.startswith(b"\x50\x4b\03\04")
     except TypeError:
         return False
 
@@ -112,8 +151,8 @@ def _pdf_to_markdown(pdf_bytes: bytes) -> str:
         return "\n\n".join(pdftotext.PDF(f))
 
 
-def _input_to_str_list(_input: Union[List[str], str, IOBase]) -> list:
-    _list = []
+def _input_to_str_list(_input: Union[list[str], str, IOBase, None]) -> list[str]:
+    _list: list[str] = []
     if _input is None:
         return _list
     if isinstance(_input, list):
@@ -136,29 +175,34 @@ def _compile_rules(rules: Union[yara.Rules, IOBase, str]) -> yara.Rules:
         return rules
     if isinstance(rules, IOBase):
         rules = rules.read()
-    if not path.exists(rules):
-        return yara.compile(source=rules)
-    if not path.isdir(rules):
-        return yara.compile(filepath=rules)
-    rules_str = ""
-    for filename in listdir():
-        file_path = path.join(rules, filename)
-        if not path.isdir(file_path):
-            with open(file_path) as rules_file:
-                rules_str += rules_file.read()
-    return yara.compile(source=rules_str)
+    if isinstance(rules, str):
+        if not path.exists(rules):
+            return yara.compile(source=rules)
+        if not path.isdir(rules):
+            return yara.compile(filepath=rules)
+        rules_str = ""
+        for filename in listdir(rules):
+            file_path = path.join(rules, filename)
+            if not path.isdir(file_path):
+                with open(file_path) as rules_file:
+                    rules_str += rules_file.read()
+        return yara.compile(source=rules_str)
+    raise TypeError(f"Unsupported rules type: {type(rules)!r}")
 
 
 class MailScanner(object):
-    def __init__(self, header_rules: Union[str, IOBase, yara.Rules] = None,
-                 body_rules: Union[str, IOBase, yara.Rules] = None,
-                 header_body_rules: Union[str, IOBase, yara.Rules] = None,
-                 attachment_rules: Union[str, IOBase, yara.Rules] = None,
-                 passwords: Union[List[str], IOBase, str] = None,
-                 max_zip_depth: int = None,
-                 implicit_safe_domains: Union[List[str], IOBase, str] = None,
-                 allow_multiple_authentication_results: bool = False,
-                 use_authentication_results_original: bool = False):
+    def __init__(
+        self,
+        header_rules: Optional[Union[str, IOBase, yara.Rules]] = None,
+        body_rules: Optional[Union[str, IOBase, yara.Rules]] = None,
+        header_body_rules: Optional[Union[str, IOBase, yara.Rules]] = None,
+        attachment_rules: Optional[Union[str, IOBase, yara.Rules]] = None,
+        passwords: Optional[Union[list, IOBase, str]] = None,
+        max_zip_depth: Optional[int] = None,
+        implicit_safe_domains: Optional[Union[list[str], IOBase, str]] = None,
+        allow_multiple_authentication_results: bool = False,
+        use_authentication_results_original: bool = False,
+    ):
         """
         A YARA scanner for emails that can also check Authentication-Results
         headers.
@@ -220,37 +264,39 @@ class MailScanner(object):
           automatically tried as passwords for password-protected ZIP \
           attachments.
         """
-        self._header_rules = header_rules
-        self._body_rules = body_rules
-        self._header_body_rules = header_body_rules
-        self._attachment_rules = attachment_rules
-        if header_rules:
-            self._header_rules = _compile_rules(header_rules)
-        if body_rules:
-            self._body_rules = _compile_rules(body_rules)
-        if header_body_rules:
-            self._header_body_rules = _compile_rules(header_body_rules)
-        if attachment_rules:
-            self._attachment_rules = _compile_rules(attachment_rules)
+        self._header_rules: Optional[yara.Rules] = (
+            _compile_rules(header_rules) if header_rules else None
+        )
+        self._body_rules: Optional[yara.Rules] = (
+            _compile_rules(body_rules) if body_rules else None
+        )
+        self._header_body_rules: Optional[yara.Rules] = (
+            _compile_rules(header_body_rules) if header_body_rules else None
+        )
+        self._attachment_rules: Optional[yara.Rules] = (
+            _compile_rules(attachment_rules) if attachment_rules else None
+        )
         self.passwords = _input_to_str_list(passwords)
         self.passwords += ["malware", "infected"]
         self.passwords = _deduplicate_list(self.passwords)
         self.max_zip_depth = max_zip_depth
-        self.implicit_safe_domains = _input_to_str_list(
-            implicit_safe_domains)
+        self.implicit_safe_domains = _input_to_str_list(implicit_safe_domains)
         allow_multi_auth = allow_multiple_authentication_results
         self.allow_multiple_authentication_results = allow_multi_auth
         use_og_auth = use_authentication_results_original
         self.use_authentication_results_original = use_og_auth
 
-    def _scan_pdf_text(self, payload: Union[bytes, BytesIO]) -> List[Dict]:
+    def _scan_pdf_text(self, payload: Union[bytes, BytesIO]) -> list[dict]:
         if isinstance(payload, BytesIO):
             payload = payload.read()
         if not _is_pdf(payload):
             raise ValueError("Payload is not a PDF file")
         pdf_markdown = _pdf_to_markdown(payload)
+        if self._attachment_rules is None:
+            return []
         markdown_matches = _match_to_dict(
-            self._attachment_rules.match(data=pdf_markdown))
+            self._attachment_rules.match(data=pdf_markdown)
+        )
         for match in markdown_matches:
             tags = match["tags"].copy()
             tags.append("pdf2text")
@@ -258,9 +304,15 @@ class MailScanner(object):
 
         return markdown_matches
 
-    def _scan_zip(self, payload: Union[bytes, BytesIO, str],
-                  filename: str = None, passwords: List[str] = None,
-                  _current_depth: int = 0):
+    def _scan_zip(
+        self,
+        payload: Union[bytes, BytesIO, str],
+        filename: Optional[str] = None,
+        passwords: Optional[list[Union[str, None]]] = None,
+        _current_depth: int = 0,
+    ):
+        if self._attachment_rules is None:
+            return []
         if isinstance(payload, str):
             if not path.exists(payload):
                 raise FileNotFoundError(f"{payload} not found")
@@ -273,17 +325,21 @@ class MailScanner(object):
                 raise ValueError("Payload is not a ZIP file")
         payload = BytesIO(payload)
         _current_depth += 1
+        matches = []
+        tags = []
         zip_matches = []
+        member_content = None
         with zipfile.ZipFile(payload) as zip_file:
             for name in zip_file.namelist():
                 if passwords is None:
                     passwords = []
                 if None not in passwords:
-                    passwords = [None] + passwords
+                    passwords.append(None)
+                if "infected" not in passwords:
+                    passwords.append("infected")
                 for password in passwords:
                     if isinstance(password, str):
                         password = password.encode("utf-8")
-                    member_content = None
                     matches = []
                     try:
                         with zip_file.open(name, pwd=password) as member:
@@ -293,17 +349,17 @@ class MailScanner(object):
                                 location = "{}:{}".format(filename, name)
                             member_content = member.read()
                             matches = _match_to_dict(
-                                self._attachment_rules.match(
-                                    data=member_content))
+                                self._attachment_rules.match(data=member_content)
+                            )
                             break
                     except RuntimeError:
                         continue
 
                 if member_content is None:
-                    logger.warning("Unable to read the contents "
-                                   "of the ZIP file")
+                    logger.warning("Unable to read the contents of the ZIP file")
                     return zip_matches
                 for match in matches:
+                    location = None
                     if "location" in match:
                         existing_location = match["location"]
                         location = f"{existing_location}:{location}"
@@ -311,13 +367,13 @@ class MailScanner(object):
                 zip_matches += matches
                 if _is_pdf(member_content):
                     try:
-                        zip_matches += self._scan_pdf_text(
-                            member_content)
+                        zip_matches += self._scan_pdf_text(member_content)
                     except Exception as e:
                         logger.warning(
                             "Unable to convert PDF to markdown. "
                             f"{e} Scanning raw file content only"
-                            ".")
+                            "."
+                        )
                 elif _is_zip(member_content):
                     max_depth = self.max_zip_depth
                     if max_depth is None or _current_depth > max_depth:
@@ -325,15 +381,17 @@ class MailScanner(object):
                             member_content,
                             filename=name,
                             passwords=passwords,
-                            _current_depth=_current_depth)
+                            _current_depth=_current_depth,
+                        )
                 for match in zip_matches:
                     match["tags"] = _deduplicate_list(match["tags"] + tags)
 
-                return zip_matches
+        return zip_matches
 
-    def _scan_attachments(self, attachments: Union[List, Dict],
-                          passwords: List[str] = None) -> List[Dict]:
-        def add_location(_attachment_matches: List[Dict], _filename: str):
+    def _scan_attachments(
+        self, attachments: Union[list, dict], passwords: Optional[list] = None
+    ) -> list[dict]:
+        def add_location(_attachment_matches: list[dict], _filename: str):
             for match in _attachment_matches:
                 base_location = f"attachment:{_filename}"
                 if "location" in match:
@@ -353,34 +411,35 @@ class MailScanner(object):
             filename = attachment["filename"]
             file_extension = filename.lower().split(".")[-1]
             payload = attachment["payload"]
-            is_binary = attachment.get('binary', False)
+            is_binary = attachment.get("binary", False)
             if is_binary:
                 try:
                     payload = decode_base64(attachment["payload"])
                 except binascii.Error:
                     pass
+            if self._attachment_rules is None:
+                return []
             attachment_matches = _match_to_dict(
-                self._attachment_rules.match(data=payload))
+                self._attachment_rules.match(data=payload)
+            )
             attachment_matches = add_location(attachment_matches, filename)
             combined_attachment_matches += attachment_matches
             if is_binary and _is_pdf(payload):
                 try:
                     attachment_matches = self._scan_pdf_text(payload)
-                    attachment_matches = add_location(attachment_matches,
-                                                      filename)
+                    attachment_matches = add_location(attachment_matches, filename)
                     combined_attachment_matches += attachment_matches
                 except Exception as e:
                     logger.warning(
                         f"Unable to convert {filename} to markdown. {e}. "
-                        f"Scanning raw file content only.")
+                        f"Scanning raw file content only."
+                    )
             elif is_binary and _is_zip(payload):
                 try:
                     attachment_matches += self._scan_zip(
-                        payload,
-                        passwords=passwords,
-                        filename=filename)
-                    attachment_matches = add_location(attachment_matches,
-                                                      filename)
+                        payload, passwords=passwords, filename=filename
+                    )
+                    attachment_matches = add_location(attachment_matches, filename)
                     combined_attachment_matches += attachment_matches
                 except UserWarning as e:
                     logger.warning(f"Unable to scan {filename}. {e}.")
@@ -393,15 +452,17 @@ class MailScanner(object):
 
         return combined_attachment_matches
 
-    def scan_email(self, email: Union[str, IOBase, Dict],
-                   use_raw_headers: bool = False,
-                   use_raw_body: bool = False) -> Dict:
+    def scan_email(
+        self,
+        email: Union[str, bytes, dict],
+        use_raw_headers: bool = False,
+        use_raw_body: bool = False,
+    ) -> dict:
         """
         Scans an email using YARA rules
 
         Args:
-            email: Email file content, a path to an email \
-            file, a file-like object, or output from \
+            email: Email file content or output from \
             ``mailsuite.utils.parse_email()``
             use_raw_headers: Scan headers with indentations included
             use_raw_body: Scan the raw email body instead of converting it to \
@@ -466,10 +527,6 @@ class MailScanner(object):
            - Any custom ``category`` specified in the ``meta`` section of a
              YARA rule
         """
-        if isinstance(email, str):
-            if path.exists(email):
-                with open(email, "rb") as email_file:
-                    email = email_file.read()
         if isinstance(email, dict):
             parsed_email = email
         else:
@@ -495,25 +552,24 @@ class MailScanner(object):
             attachments = parsed_email["attachments"]
 
         matches = []
-        if self._header_rules:
-            header_matches = _match_to_dict(self._header_rules.match(
-                data=headers))
+        if self._header_rules is not None:
+            header_matches = _match_to_dict(self._header_rules.match(data=headers))
             for header_match in header_matches:
                 header_match["location"] = "header"
                 matches.append(header_match)
-        if self._body_rules:
-            body_matches = _match_to_dict(self._body_rules.match(
-                data=body))
+        if self._body_rules is not None:
+            body_matches = _match_to_dict(self._body_rules.match(data=body))
             for body_match in body_matches:
                 body_match["location"] = "body"
                 matches.append(body_match)
-        if self._header_body_rules:
+        if self._header_body_rules is not None:
             header_body_matches = _match_to_dict(
-                self._header_body_rules.match(data=f"{headers}\n\n{body}"))
+                self._header_body_rules.match(data=f"{headers}\n\n{body}")
+            )
             for header_body_match in header_body_matches:
                 header_body_match["location"] = "header_body"
                 matches.append(header_body_match)
-        if self._attachment_rules:
+        if self._attachment_rules is not None:
             passwords = _carve_passwords(parsed_email["body_markdown"])
             matches += self._scan_attachments(attachments, passwords=passwords)
 
@@ -521,12 +577,14 @@ class MailScanner(object):
         multi_auth_headers = self.allow_multiple_authentication_results
         use_og_auth_results = self.use_authentication_results_original
         implicit_safe_domain = from_trusted_domain(
-            parsed_email, self.implicit_safe_domains,
+            parsed_email,
+            self.implicit_safe_domains,
             allow_multiple_authentication_results=multi_auth_headers,
             use_authentication_results_original=use_og_auth_results,
         )
         authenticated_domain = from_trusted_domain(
-            parsed_email, [msg_from_domain or ""],
+            parsed_email,
+            [msg_from_domain or ""],
             allow_multiple_authentication_results=multi_auth_headers,
             use_authentication_results_original=use_og_auth_results,
         )
@@ -560,8 +618,7 @@ class MailScanner(object):
             if "category" in match["meta"]:
                 if match["meta"]["category"] == "safe":
                     if rule_from_domains is None:
-                        match["warnings"].append(
-                            "safe-rule-missing-from-domain")
+                        match["warnings"].append("safe-rule-missing-from-domain")
                 if len(match["warnings"]) == 0:
                     categories.append(match["meta"]["category"].lower())
 
@@ -576,9 +633,13 @@ class MailScanner(object):
         msg_from_domain_results = dict(
             domain=msg_from_domain,
             authenticated=authenticated_domain,
-            implicit_safe=implicit_safe_domain)
+            implicit_safe=implicit_safe_domain,
+        )
 
-        return dict(matches=matches, categories=categories,
-                    msg_from_domain=msg_from_domain_results,
-                    has_attachment=has_attachment,
-                    verdict=verdict)
+        return dict(
+            matches=matches,
+            categories=categories,
+            msg_from_domain=msg_from_domain_results,
+            has_attachment=has_attachment,
+            verdict=verdict,
+        )

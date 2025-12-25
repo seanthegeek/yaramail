@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Python: Current File",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
@@ -14,12 +14,12 @@
         },
         {
             "name": "cli",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "yaramail._cli",
             "args": ["-v",
                      "-o",
-                     "${workspaceFolder}/test/samples/safe/sans.eml",
+                     "${workspaceFolder}/test/samples/credential-harvesting/Invoice.eml",
                      "--rules",
                     "${workspaceFolder}/test"],
             "console": "integratedTerminal",

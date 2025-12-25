@@ -11,8 +11,8 @@ from mailsuite.utils import parse_email
 from yaramail import __version__, MailScanner
 
 formatter = logging.Formatter(
-    fmt='%(levelname)s|%(message)s',
-    datefmt='%Y-%m-%d:%H:%M:%S')
+    fmt="%(levelname)s|%(message)s", datefmt="%Y-%m-%d:%H:%M:%S"
+)
 handler = logging.StreamHandler()
 handler.setFormatter(formatter)
 
@@ -21,66 +21,110 @@ logger.setLevel(logging.INFO)
 logger.addHandler(handler)
 
 arg_parser = argparse.ArgumentParser(
-    "A YARA scanner for emails",
-    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-arg_parser.add_argument("scan_path", type=str,
-                        help="The file(s) to scan. Wildcards allowed. "
-                             "Use - to read from stdin. When used with "
-                             "-t/--test, this must be the directory where "
-                             "samples are stored, instead of an individual "
-                             "file or wildcard path.")
-arg_parser.add_argument("-V", "--version", action="version",
-                        version=__version__)
-arg_parser.add_argument("-v", "--verbose", action="store_true",
-                        help="Output the entire parsed email.")
-arg_parser.add_argument("-m", "--multi-auth",  action="store_true",
-                        help="Allow multiple Authentication-Results headers")
-arg_parser.add_argument("-o", "--auth-original", action="store_true",
-                        help="Use Authentication-Results-Original instead of "
-                             "Authentication-Results")
-arg_parser.add_argument("-r", "--raw-headers", action="store_true",
-                        help="Scan headers with indentations included")
-arg_parser.add_argument("-b", "--raw-body", action="store_true",
-                        help="Scan the raw email body instead of converting "
-                             "it to Markdown first")
-arg_parser.add_argument("-s", "--sld", action="store_true",
-                        help="Use From domain the Second-Level Domain (SLD) "
-                             "for authentication in addition to the "
-                             "Fully-Qualified Domain Name (FQDN)")
-arg_parser.add_argument("-t", "--test", action="store_true",
-                        help="Test rules based on verdicts matching the name "
-                             "of the subdirectory a sample is in")
-arg_parser.add_argument("--output", type=str,
-                        help="Redirect output to a file")
-arg_parser.add_argument("--rules", type=str,
-                        help="A path to a directory that contains YARA rules",
-                        default=".")
-arg_parser.add_argument("--header-rules", type=str,
-                        help="Filename of the header rules file",
-                        default="header.yar")
-arg_parser.add_argument("--body-rules", type=str,
-                        help="Filename of the body rules file",
-                        default="body.yar")
-arg_parser.add_argument("--header-body-rules", type=str,
-                        help="Filename of the header_body rules file",
-                        default="header_body.yar")
-arg_parser.add_argument("--attachment-rules", type=str,
-                        help="Filename of the attachment rules file",
-                        default="attachment.yar")
-arg_parser.add_argument("--passwords", type=str,
-                        help="Filename of a list of passwords to try against "
-                             "password-protected files in addition to email "
-                             "body content",
-                        default="passwords.txt")
-arg_parser.add_argument("--implicit-safe-domains", type=str,
-                        help="Filename of a list of message From domains that "
-                             "return a safe verdict if the domain is "
-                             "authenticated and no YARA categories match "
-                             "other than safe",
-                        default="implicit_safe_domains.txt")
-arg_parser.add_argument("--max-zip-depth", type=int,
-                        help="The maximum number of times to recurse into "
-                             "nested ZIP files")
+    "A YARA scanner for emails", formatter_class=argparse.ArgumentDefaultsHelpFormatter
+)
+arg_parser.add_argument(
+    "scan_path",
+    type=str,
+    help="The file(s) to scan. Wildcards allowed. "
+    "Use - to read from stdin. When used with "
+    "-t/--test, this must be the directory where "
+    "samples are stored, instead of an individual "
+    "file or wildcard path.",
+)
+arg_parser.add_argument("-V", "--version", action="version", version=__version__)
+arg_parser.add_argument(
+    "-v", "--verbose", action="store_true", help="Output the entire parsed email."
+)
+arg_parser.add_argument(
+    "-m",
+    "--multi-auth",
+    action="store_true",
+    help="Allow multiple Authentication-Results headers",
+)
+arg_parser.add_argument(
+    "-o",
+    "--auth-original",
+    action="store_true",
+    help="Use Authentication-Results-Original instead of Authentication-Results",
+)
+arg_parser.add_argument(
+    "-r",
+    "--raw-headers",
+    action="store_true",
+    help="Scan headers with indentations included",
+)
+arg_parser.add_argument(
+    "-b",
+    "--raw-body",
+    action="store_true",
+    help="Scan the raw email body instead of converting it to Markdown first",
+)
+arg_parser.add_argument(
+    "-s",
+    "--sld",
+    action="store_true",
+    help="Use From domain the Second-Level Domain (SLD) "
+    "for authentication in addition to the "
+    "Fully-Qualified Domain Name (FQDN)",
+)
+arg_parser.add_argument(
+    "-t",
+    "--test",
+    action="store_true",
+    help="Test rules based on verdicts matching the name "
+    "of the subdirectory a sample is in",
+)
+arg_parser.add_argument("--output", type=str, help="Redirect output to a file")
+arg_parser.add_argument(
+    "--rules",
+    type=str,
+    help="A path to a directory that contains YARA rules",
+    default=".",
+)
+arg_parser.add_argument(
+    "--header-rules",
+    type=str,
+    help="Filename of the header rules file",
+    default="header.yar",
+)
+arg_parser.add_argument(
+    "--body-rules", type=str, help="Filename of the body rules file", default="body.yar"
+)
+arg_parser.add_argument(
+    "--header-body-rules",
+    type=str,
+    help="Filename of the header_body rules file",
+    default="header_body.yar",
+)
+arg_parser.add_argument(
+    "--attachment-rules",
+    type=str,
+    help="Filename of the attachment rules file",
+    default="attachment.yar",
+)
+arg_parser.add_argument(
+    "--passwords",
+    type=str,
+    help="Filename of a list of passwords to try against "
+    "password-protected files in addition to email "
+    "body content",
+    default="passwords.txt",
+)
+arg_parser.add_argument(
+    "--implicit-safe-domains",
+    type=str,
+    help="Filename of a list of message From domains that "
+    "return a safe verdict if the domain is "
+    "authenticated and no YARA categories match "
+    "other than safe",
+    default="implicit_safe_domains.txt",
+)
+arg_parser.add_argument(
+    "--max-zip-depth",
+    type=int,
+    help="The maximum number of times to recurse into nested ZIP files",
+)
 
 
 def _main():
@@ -96,31 +140,31 @@ def _main():
 
     args.header_rules = os.path.join(args.rules, args.header_rules)
     if not os.path.exists(args.header_rules):
-        logger.warning(f"{args.header_rules} does not exist. Skipping "
-                       f"header-only scans.")
+        logger.warning(
+            f"{args.header_rules} does not exist. Skipping header-only scans."
+        )
         args.header_rules = None
     args.body_rules = os.path.join(args.rules, args.body_rules)
     if not os.path.exists(args.body_rules):
-        logger.warning(f"{args.body_rules} does not exist. Skipping body-only "
-                       f"scans.")
+        logger.warning(f"{args.body_rules} does not exist. Skipping body-only scans.")
         args.body_rules = None
     args.header_body_rules = os.path.join(args.rules, args.header_body_rules)
     if not os.path.exists(args.header_body_rules):
-        logger.warning(f"{args.header_body_rules} does not exist. Skipping "
-                       f"header_body scans.")
+        logger.warning(
+            f"{args.header_body_rules} does not exist. Skipping header_body scans."
+        )
         args.header_body_rules = None
     args.attachment_rules = os.path.join(args.rules, args.attachment_rules)
     if not os.path.exists(args.attachment_rules):
-        logger.warning(f"{args.attachment_rules} does not exist. Skipping "
-                       f"attachment scans.")
+        logger.warning(
+            f"{args.attachment_rules} does not exist. Skipping attachment scans."
+        )
         args.attachment_rules = None
     args.passwords = os.path.join(args.rules, args.passwords)
     if not os.path.exists(args.passwords):
         logger.warning(f"{args.passwords} does not exist.")
         args.passwords = None
-    args.implicit_safe_domains = os.path.join(
-        args.rules,
-        args.implicit_safe_domains)
+    args.implicit_safe_domains = os.path.join(args.rules, args.implicit_safe_domains)
     if not os.path.exists(args.implicit_safe_domains):
         logger.warning(f"{args.implicit_safe_domains} does not exist.")
         args.implicit_safe_domains = None
@@ -130,12 +174,9 @@ def _main():
         try:
             with open(args.implicit_safe_domains) as yara_optional_file:
                 yara_safe_optional_domains = yara_optional_file.read().strip()
-                yara_safe_optional_domains = yara_safe_optional_domains.split(
-                    "\n"
-                )
+                yara_safe_optional_domains = yara_safe_optional_domains.split("\n")
         except Exception as e:
-            logger.error(
-                f"Error reading {args.implicit_safe_domains}: {e}")
+            logger.error(f"Error reading {args.implicit_safe_domains}: {e}")
 
     try:
         scanner = MailScanner(
@@ -147,7 +188,7 @@ def _main():
             passwords=args.passwords,
             allow_multiple_authentication_results=args.multi_auth,
             use_authentication_results_original=args.auth_original,
-            max_zip_depth=args.max_zip_depth
+            max_zip_depth=args.max_zip_depth,
         )
     except Exception as e:
         scanner = MailScanner()
@@ -181,7 +222,8 @@ def _main():
             for directory in dirnames:
                 category = directory
                 for dirname_, dirnames_, filenames_ in os.walk(
-                        os.path.join(samples_dir, directory)):
+                    os.path.join(samples_dir, directory)
+                ):
                     for filename in filenames_:
                         if not str(filename).lower().endswith(".eml"):
                             continue
@@ -194,18 +236,20 @@ def _main():
                             results = scanner.scan_email(
                                 _parsed_email,
                                 use_raw_headers=args.raw_headers,
-                                use_raw_body=args.raw_body)
+                                use_raw_body=args.raw_body,
+                            )
                             verdict = results["verdict"]
                             if verbose:
-                                pruned_email = _prune_parsed_email(
-                                    _parsed_email)
+                                pruned_email = _prune_parsed_email(_parsed_email)
                                 pruned_email["yaramail"] = results
                                 results = pruned_email
                             if verdict != category:
-                                failure = dict(path=msg_path,
-                                               verdict=verdict,
-                                               expected=category,
-                                               results=results)
+                                failure = dict(
+                                    path=msg_path,
+                                    verdict=verdict,
+                                    expected=category,
+                                    results=results,
+                                )
                                 test_failures.append(failure)
                         except Exception as e_:
                             logger.error(f"{msg_path}: {e_}")
@@ -213,10 +257,17 @@ def _main():
         num_failed = len(test_failures)
         passed = total - num_failed
 
-        print(simplejson.dumps(dict(test_failures=test_failures,
-                                    passed=passed,
-                                    failed=num_failed,
-                                    total=total), indent=2))
+        print(
+            simplejson.dumps(
+                dict(
+                    test_failures=test_failures,
+                    passed=passed,
+                    failed=num_failed,
+                    total=total,
+                ),
+                indent=2,
+            )
+        )
         exit(num_failed)
 
     if args.test:
@@ -239,7 +290,8 @@ def _main():
             scan_results = scanner.scan_email(
                 parsed_email,
                 use_raw_headers=args.raw_headers,
-                use_raw_body=args.raw_body)
+                use_raw_body=args.raw_body,
+            )
             parsed_email["yaramail"] = scan_results
         except Exception as e:
             logger.error(f"Failed to scan {file_path}: {e}")
