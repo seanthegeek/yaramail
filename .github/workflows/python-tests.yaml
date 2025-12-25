@@ -34,7 +34,7 @@ jobs:
         make html
     - name: Check code style
       run: |
-        flake8 yaramail
+        ruff check .
     - name: Test building packages
       run: hatch build
     - name: Test rules

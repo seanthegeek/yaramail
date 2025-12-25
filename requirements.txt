@@ -5,7 +5,7 @@ simplejson>=3.17.6
 nose
 docutils<0.19,>=0.7
 pygments
-flake8
+ruff
 doc8
 collective.checkdocs
 jinja2
