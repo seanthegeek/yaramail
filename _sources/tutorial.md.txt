@@ -640,7 +640,6 @@ Here's a complete example of triage code.
 
 ```python
 import logging
-from typing import Dict
 
 from mailsuite.utils import parse_email
 from yaramail import MailScanner
@@ -649,7 +648,7 @@ logger = logging.getLogger("scanner")
 logging.basicConfig(level=logging.INFO)
 
 
-def escalate_to_incident_response(_report_email: Dict,
+def escalate_to_incident_response(_report_email: dict,
                                   priority: str = "normal"):
   m = f"Escalating {priority} priority email"
   logger.debug(m)
