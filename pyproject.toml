@@ -9,7 +9,7 @@ name = "yara-mail"
 description = "A Python package and command line utility for scanning emails with YARA rules"
 readme = "README.md"
 license = "Apache-2.0"
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 authors = [
     { name = "Sean Whalen", email = "whalenster@gmail.com" },
 ]
@@ -21,12 +21,14 @@ keywords = [
     "infosec",
 ]
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent",
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
     "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
     "Topic :: Security",
     "Topic :: Communications :: Email",
-
 ]
 dependencies = [
     "mailsuite>=1.9.20",
@@ -36,6 +38,17 @@ dependencies = [
 ]
 dynamic = [
     "version",
+]
+
+[project.optional-dependencies]
+build = [
+    "hatch>=1.14.0",
+    "myst-parser[linkify]",
+    "pytest",
+    "pytest-cov",
+    "ruff",
+    "sphinx",
+    "sphinx_rtd_theme",
 ]
 
 [project.scripts]
@@ -57,3 +70,20 @@ include = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["yaramail"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-ra --strict-markers"
+
+[tool.coverage.run]
+source = ["yaramail"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+]

@@ -1,0 +1,17 @@
+{
+  "include": ["yaramail", "tests"],
+  "pythonVersion": "3.10",
+  "typeCheckingMode": "strict",
+  "reportMissingTypeStubs": false,
+  "reportUnknownMemberType": false,
+  "reportUnknownVariableType": false,
+  "reportUnknownArgumentType": false,
+  "reportUnknownParameterType": false,
+  "reportUnknownLambdaType": false,
+  "executionEnvironments": [
+    {
+      "root": "tests",
+      "reportPrivateUsage": "none"
+    }
+  ]
+}

@@ -1,14 +1,16 @@
 """A command-line interface to yaramail"""
 
-import logging
 import argparse
+import logging
 import os
 from glob import glob
 from sys import stdin
+from typing import Any
 
 import simplejson
 from mailsuite.utils import parse_email
-from yaramail import __version__, MailScanner
+
+from yaramail import MailScanner, __version__
 
 formatter = logging.Formatter(
     fmt="%(levelname)s|%(message)s", datefmt="%Y-%m-%d:%H:%M:%S"
@@ -195,7 +197,7 @@ def _main():
         logger.error(f"Failed to parse YARA rules: {e}")
         exit(-1)
 
-    def _prune_parsed_email(_parsed_email):
+    def _prune_parsed_email(_parsed_email: dict[str, Any]) -> dict[str, Any]:
         del _parsed_email["text_plain"]
         del _parsed_email["text_html"]
         del _parsed_email["body"]
@@ -211,17 +213,17 @@ def _main():
             del _parsed_email["raw_body"]
         return _parsed_email
 
-    def _test_rules(samples_dir, verbose=False):
+    def _test_rules(samples_dir: str, verbose: bool = False) -> None:
         """Test YARA rules against known email samples"""
         if not os.path.isdir(samples_dir):
             logger.error(f"{samples_dir} is not a directory")
             exit(-1)
-        test_failures = []
+        test_failures: list[dict[str, Any]] = []
         total = 0
-        for dirname, dirnames, filenames in os.walk(samples_dir):
+        for _, dirnames, _ in os.walk(samples_dir):
             for directory in dirnames:
                 category = directory
-                for dirname_, dirnames_, filenames_ in os.walk(
+                for dirname_, _, filenames_ in os.walk(
                     os.path.join(samples_dir, directory)
                 ):
                     for filename in filenames_:
@@ -305,6 +307,13 @@ def _main():
     if use_stdin:
         try:
             parsed_email = parse_email(stdin.read())
+            scan_results = scanner.scan_email(
+                parsed_email,
+                use_raw_headers=args.raw_headers,
+                use_raw_body=args.raw_body,
+            )
+            parsed_email["yaramail"] = scan_results
+            parsed_email = _prune_parsed_email(parsed_email)
             if args.verbose:
                 scanned_emails = parsed_email
             else:

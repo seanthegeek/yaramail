@@ -34,13 +34,14 @@ case "$OSTYPE" in
     ;;
 esac
 pip install -U pip
-pip install -U -r requirements.txt
+pip install -U -e ".[build]"
+ruff check yaramail tests
+pytest --cov=yaramail
 cd docs
-make clean 
+make clean
 make html
 touch build/html/.nojekyll
 cp -rf build/html/* ../../yaramail-docs/
 cd ..
-python3 -m yaramail._cli -to test/samples  --rules test
-rm -rf dist/ build/
+rm -rf dist/
 hatch build

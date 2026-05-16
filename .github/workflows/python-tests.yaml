@@ -5,37 +5,70 @@ permissions:
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
-
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v2
-      with:
-        python-version: "3.9"
-    - name: Install system dependencies
-      run: |
-         sudo apt install -y build-essential libpoppler-cpp-dev pkg-config python3-dev
-                
-    - name: Install Python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Test building documentation
-      run: |
-        cd docs
-        make html
-    - name: Check code style
-      run: |
-        ruff check .
-    - name: Test building packages
-      run: hatch build
-    - name: Test rules
-      run: python3 -m yaramail._cli -to test/samples  --rules test
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install system dependencies
+        run: sudo apt-get install -y build-essential libpoppler-cpp-dev pkg-config python3-dev
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[build]"
+
+      - name: ruff
+        run: ruff check yaramail tests
+
+      - name: Test building documentation
+        run: |
+          cd docs
+          make html
+
+      - name: Test building packages
+        run: hatch build
+
+  test:
+    name: Tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install system dependencies
+        run: sudo apt-get install -y build-essential libpoppler-cpp-dev pkg-config python3-dev
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install pytest pytest-cov
+
+      - name: pytest
+        run: pytest --cov=yaramail --cov-report=xml --cov-report=term

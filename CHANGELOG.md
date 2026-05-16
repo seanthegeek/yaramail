@@ -1,18 +1,43 @@
 # Changelog
 
+## 3.4.0
+
+### Fixes
+
+- `_scan_attachments()` now extracts the nested `matches` list from
+  recursively-scanned `.eml`/`.msg` attachments. Previously it tried to extend
+  its match list with the full result dict, which crashed the caller.
+- The CLI's stdin path now actually scans the email it reads (previously it
+  parsed but never invoked the scanner, returning an empty result).
+- `_scan_zip()` no longer mutates its `passwords` argument when adding `None`
+  and `infected` to the candidate list.
+
+### Improvements
+
+- Tooling brought in line with `mailsuite` / `checkdmarc`: pyright strict mode
+  is now clean, `ruff` is the only style check, and `pytest` (with coverage)
+  replaces the ad-hoc CLI-based test harness.
+- Modern PEP 604/585 type hints across the package.
+- CI runs a Python 3.10/3.11/3.12/3.13/3.14 test matrix on a fresh
+  `actions/setup-python@v5` with pip caching, plus a dedicated lint job.
+- Test suite expanded from a single integration check to 85 tests covering
+  ~94% of the package (95% on `yaramail/__init__.py`, 92% on the CLI).
+- Minimum Python version bumped to 3.10 (3.9 reached EOL in October 2025).
+- Fixed the broken logo URL in the README.
+
 ## 3.3.0
 
-## Breaking changes
+### Breaking changes
 
-`parse_email()` no longer checks the file path for security reasons.will mo longer treat input as a potential file path. Applications must now do this explicitly themselves when needed.
+`parse_email()` no longer checks the file path for security reasons. It will no longer treat input as a potential file path. Applications must now do this explicitly themselves when needed.
 
-## Improvements
+### Improvements
 
-- The password `infected` will now automatically by tried when scanning zip files.
+- The password `infected` will now automatically be tried when scanning zip files.
 - Better typing across the library.
 - Code reformatting with `ruff`.
 
-## Fixes
+### Fixes
 
 - Fixed potential crashes when scanning zip files.
 

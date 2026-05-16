@@ -1,7 +1,8 @@
 {
     "markdownlint.config": {
         "MD033": false,
-        "MD041": false
+        "MD041": false,
+        "MD024": { "siblings_only": true }
     },
     "cSpell.words": [
         "asciicast",
@@ -20,6 +21,7 @@
         "LDFLAGS",
         "Leela",
         "levelname",
+        "libpoppler",
         "mailparser",
         "mailsuite",
         "maxdepth",
