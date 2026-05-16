@@ -20,4 +20,4 @@ myst-parser
 myst-parser[linkify]
 wheel
 hatch
-virtualenv<21
+virtualenv>=20.26.6,<21
