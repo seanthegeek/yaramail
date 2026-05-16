@@ -20,8 +20,10 @@
 - Modern PEP 604/585 type hints across the package.
 - CI runs a Python 3.10/3.11/3.12/3.13/3.14 test matrix on a fresh
   `actions/setup-python@v5` with pip caching, plus a dedicated lint job.
-- Test suite expanded from a single integration check to 85 tests covering
-  ~94% of the package (95% on `yaramail/__init__.py`, 92% on the CLI).
+- Test suite expanded from a single integration check to 93 tests covering
+  ~96% of the package (98% on `yaramail/__init__.py`, 94% on the CLI), with
+  on-disk fixtures for a minimal PDF, a PDF-in-ZIP, and a password-protected
+  (ZipCrypto) archive so the relevant scan paths run on every CI build.
 - Minimum Python version bumped to 3.10 (3.9 reached EOL in October 2025).
 - Fixed the broken logo URL in the README.
 

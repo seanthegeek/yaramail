@@ -13,9 +13,18 @@ from mailsuite.utils import parse_email
 from yaramail import MailScanner
 
 SAMPLES = Path(__file__).parent / "samples"
+FIXTURES = Path(__file__).parent / "fixtures"
 SANS = (SAMPLES / "safe" / "sans.eml").read_text()
 WORKDAY = (SAMPLES / "safe" / "workday.eml").read_text()
 INVOICE = (SAMPLES / "credential-harvesting" / "Invoice.eml").read_text()
+
+PDF_MARKER_RULE = (
+    'rule pdf_marker { strings: $a = "yaramail-pdf-marker" condition: $a }'
+)
+ENCRYPTED_ZIP_RULE = (
+    'rule zip_marker { strings: $a = "evil-marker inside encrypted zip" '
+    'condition: $a }'
+)
 
 
 def test_scan_email_accepts_string_input() -> None:
@@ -354,6 +363,81 @@ def test_scan_email_handles_from_dict_without_domain() -> None:
     }
     result = scanner.scan_email(parsed)
     assert result["msg_from_domain"]["domain"] is None
+
+
+def test_scan_pdf_text_matches_rule() -> None:
+    scanner = MailScanner(attachment_rules=PDF_MARKER_RULE)
+    matches = scanner._scan_pdf_text((FIXTURES / "marker.pdf").read_bytes())
+    assert any(m["rule"] == "pdf_marker" for m in matches)
+    assert "pdf2text" in matches[0]["tags"]
+
+
+def test_scan_pdf_text_accepts_bytesio() -> None:
+    scanner = MailScanner(attachment_rules=PDF_MARKER_RULE)
+    matches = scanner._scan_pdf_text(BytesIO((FIXTURES / "marker.pdf").read_bytes()))
+    assert any(m["rule"] == "pdf_marker" for m in matches)
+
+
+def test_scan_zip_with_pdf_member_runs_pdf_text_extraction() -> None:
+    scanner = MailScanner(attachment_rules=PDF_MARKER_RULE)
+    matches = scanner._scan_zip((FIXTURES / "pdf-in-zip.zip").read_bytes())
+    assert any(m["rule"] == "pdf_marker" for m in matches)
+
+
+def test_scan_zip_encrypted_with_correct_password() -> None:
+    scanner = MailScanner(attachment_rules=ENCRYPTED_ZIP_RULE)
+    matches = scanner._scan_zip(
+        (FIXTURES / "protected.zip").read_bytes(),
+        passwords=["hunter2"],
+    )
+    assert any(m["rule"] == "zip_marker" for m in matches)
+
+
+def test_scan_zip_encrypted_without_password_returns_empty() -> None:
+    scanner = MailScanner(attachment_rules=ENCRYPTED_ZIP_RULE)
+    matches = scanner._scan_zip((FIXTURES / "protected.zip").read_bytes())
+    # No working password → graceful empty result with a logged warning.
+    assert matches == []
+
+
+def test_scan_attachments_handles_malformed_pdf(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A payload with the PDF magic but invalid structure logs and continues."""
+    scanner = MailScanner(attachment_rules=PDF_MARKER_RULE)
+    attachment = {
+        "filename": "broken.pdf",
+        "payload": base64.b64encode(b"%PDF-1.7\nnot really a pdf").decode(),
+        "binary": True,
+    }
+    with caplog.at_level("WARNING", logger="yaramail"):
+        result = scanner._scan_attachments(attachment)
+    assert result == []
+    assert any(
+        "Unable to convert broken.pdf to markdown" in rec.message
+        for rec in caplog.records
+    )
+
+
+def test_scan_email_with_pdf_attachment() -> None:
+    pdf_b64 = base64.b64encode((FIXTURES / "marker.pdf").read_bytes()).decode()
+    eml = (
+        "From: a@example.com\r\nTo: b@c.d\r\n"
+        'Content-Type: multipart/mixed; boundary="b1"\r\n'
+        "Subject: x\r\n\r\n"
+        "--b1\r\nContent-Type: text/plain\r\n\r\nsee attachment\r\n"
+        "--b1\r\n"
+        'Content-Type: application/pdf; name="marker.pdf"\r\n'
+        "Content-Transfer-Encoding: base64\r\n"
+        'Content-Disposition: attachment; filename="marker.pdf"\r\n\r\n'
+        f"{pdf_b64}\r\n"
+        "--b1--\r\n"
+    )
+    scanner = MailScanner(attachment_rules=PDF_MARKER_RULE)
+    result = scanner.scan_email(eml)
+    locations = {m["location"] for m in result["matches"]}
+    # Both raw and pdf2text passes produce an "attachment:marker.pdf" match.
+    assert "attachment:marker.pdf" in locations
 
 
 def test_scan_email_with_eml_attached_to_eml() -> None:

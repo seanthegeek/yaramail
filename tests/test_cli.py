@@ -241,6 +241,33 @@ def test_raw_body_flag_strips_body_markdown(
     assert "raw_body" in payload
 
 
+def test_test_mode_reports_failures(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A sample whose verdict doesn't match its directory name is reported."""
+    corpus = tmp_path / "corpus"
+    misclassified = corpus / "phishing"
+    misclassified.mkdir(parents=True)
+    # Workday sample's natural verdict is "safe" (with the bundled rules);
+    # placing it under phishing/ guarantees a verdict mismatch.
+    (misclassified / "workday.eml").write_bytes(
+        (SAMPLES / "safe" / "workday.eml").read_bytes()
+    )
+    # Non-.eml siblings should be skipped over.
+    (misclassified / "README.txt").write_text("ignored")
+    code, out, _ = _invoke(
+        "-t", "-o",
+        str(corpus),
+        "--rules", str(RULES_DIR),
+        capsys=capsys,
+    )
+    data = json.loads(out)
+    assert data["failed"] == 1
+    assert data["total"] == 1
+    assert data["test_failures"][0]["expected"] == "phishing"
+    assert code == 1
+
+
 def test_unreadable_implicit_safe_domains_logs_error(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
