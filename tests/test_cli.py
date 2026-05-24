@@ -58,8 +58,10 @@ def test_scan_single_file_emits_json(
     output = tmp_path / "result.json"
     code, _, _ = _invoke(
         str(sample),
-        "--rules", str(RULES_DIR),
-        "--output", str(output),
+        "--rules",
+        str(RULES_DIR),
+        "--output",
+        str(output),
         "-o",
         capsys=capsys,
     )
@@ -77,9 +79,11 @@ def test_scan_glob_with_no_matches_exits_nonzero(
 
 def test_test_mode_runs_all_samples(capsys: pytest.CaptureFixture[str]) -> None:
     code, out, _ = _invoke(
-        "-t", "-o",
+        "-t",
+        "-o",
         str(SAMPLES),
-        "--rules", str(RULES_DIR),
+        "--rules",
+        str(RULES_DIR),
         capsys=capsys,
     )
     data = json.loads(out)
@@ -89,20 +93,21 @@ def test_test_mode_runs_all_samples(capsys: pytest.CaptureFixture[str]) -> None:
 
 def test_test_mode_rejects_non_directory(capsys: pytest.CaptureFixture[str]) -> None:
     sample = SAMPLES / "safe" / "workday.eml"
-    code, _, _ = _invoke(
-        "-t", str(sample), "--rules", str(RULES_DIR), capsys=capsys
-    )
+    code, _, _ = _invoke("-t", str(sample), "--rules", str(RULES_DIR), capsys=capsys)
     assert code != 0
 
 
-@pytest.mark.parametrize("missing_arg", [
-    "--header-rules",
-    "--body-rules",
-    "--header-body-rules",
-    "--attachment-rules",
-    "--passwords",
-    "--implicit-safe-domains",
-])
+@pytest.mark.parametrize(
+    "missing_arg",
+    [
+        "--header-rules",
+        "--body-rules",
+        "--header-body-rules",
+        "--attachment-rules",
+        "--passwords",
+        "--implicit-safe-domains",
+    ],
+)
 def test_missing_rule_files_are_skipped_with_warning(
     missing_arg: str,
     tmp_path: Path,
@@ -112,9 +117,12 @@ def test_missing_rule_files_are_skipped_with_warning(
     output = tmp_path / "out.json"
     code, _, err = _invoke(
         str(sample),
-        "--rules", str(RULES_DIR),
-        missing_arg, "definitely-not-a-real-file.txt",
-        "--output", str(output),
+        "--rules",
+        str(RULES_DIR),
+        missing_arg,
+        "definitely-not-a-real-file.txt",
+        "--output",
+        str(output),
         "-o",
         capsys=capsys,
     )
@@ -150,9 +158,12 @@ def test_scan_verbose_with_single_file(
     sample = SAMPLES / "safe" / "workday.eml"
     output = tmp_path / "out.json"
     code, _, _ = _invoke(
-        str(sample), "-v",
-        "--rules", str(RULES_DIR),
-        "--output", str(output),
+        str(sample),
+        "-v",
+        "--rules",
+        str(RULES_DIR),
+        "--output",
+        str(output),
         "-o",
         capsys=capsys,
     )
@@ -164,9 +175,12 @@ def test_scan_verbose_with_single_file(
 
 def test_scan_test_mode_verbose(capsys: pytest.CaptureFixture[str]) -> None:
     code, out, _ = _invoke(
-        "-t", "-v", "-o",
+        "-t",
+        "-v",
+        "-o",
         str(SAMPLES),
-        "--rules", str(RULES_DIR),
+        "--rules",
+        str(RULES_DIR),
         capsys=capsys,
     )
     data = json.loads(out)
@@ -183,7 +197,8 @@ def test_scan_missing_file_logs_error(
     (tmp_path / "ghost.eml").write_text("garbage that is not parsable\n")
     code, _, err = _invoke(
         str(tmp_path / "ghost.eml"),
-        "--rules", str(RULES_DIR),
+        "--rules",
+        str(RULES_DIR),
         "-o",
         capsys=capsys,
     )
@@ -195,7 +210,10 @@ def test_scan_corrupt_stdin_logs_error(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     code, _, err = _invoke(
-        "-", "--rules", str(RULES_DIR), "-o",
+        "-",
+        "--rules",
+        str(RULES_DIR),
+        "-o",
         stdin="\x00\x00not an email\x00",
         capsys=capsys,
     )
@@ -209,9 +227,13 @@ def test_raw_headers_flag_strips_headers_string(
     sample = SAMPLES / "safe" / "workday.eml"
     output = tmp_path / "out.json"
     code, _, _ = _invoke(
-        str(sample), "-v", "-r",
-        "--rules", str(RULES_DIR),
-        "--output", str(output),
+        str(sample),
+        "-v",
+        "-r",
+        "--rules",
+        str(RULES_DIR),
+        "--output",
+        str(output),
         "-o",
         capsys=capsys,
     )
@@ -229,9 +251,13 @@ def test_raw_body_flag_strips_body_markdown(
     sample = SAMPLES / "safe" / "workday.eml"
     output = tmp_path / "out.json"
     code, _, _ = _invoke(
-        str(sample), "-v", "-b",
-        "--rules", str(RULES_DIR),
-        "--output", str(output),
+        str(sample),
+        "-v",
+        "-b",
+        "--rules",
+        str(RULES_DIR),
+        "--output",
+        str(output),
         "-o",
         capsys=capsys,
     )
@@ -256,9 +282,11 @@ def test_test_mode_reports_failures(
     # Non-.eml siblings should be skipped over.
     (misclassified / "README.txt").write_text("ignored")
     code, out, _ = _invoke(
-        "-t", "-o",
+        "-t",
+        "-o",
         str(corpus),
-        "--rules", str(RULES_DIR),
+        "--rules",
+        str(RULES_DIR),
         capsys=capsys,
     )
     data = json.loads(out)
@@ -283,8 +311,10 @@ def test_unreadable_implicit_safe_domains_logs_error(
     output = tmp_path / "out.json"
     code, _, err = _invoke(
         str(sample),
-        "--rules", str(rules),
-        "--output", str(output),
+        "--rules",
+        str(rules),
+        "--output",
+        str(output),
         capsys=capsys,
     )
     assert code == 0
@@ -298,8 +328,6 @@ def test_invalid_rules_exits_nonzero(
     bad_rules.mkdir()
     (bad_rules / "header.yar").write_text("this is not valid YARA")
     sample = SAMPLES / "safe" / "workday.eml"
-    code, _, err = _invoke(
-        str(sample), "--rules", str(bad_rules), capsys=capsys
-    )
+    code, _, err = _invoke(str(sample), "--rules", str(bad_rules), capsys=capsys)
     assert code != 0
     assert "Failed to parse YARA rules" in err

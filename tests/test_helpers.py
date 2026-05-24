@@ -78,7 +78,7 @@ class TestInputToStrList:
 
 class TestCompileRules:
     def test_passes_through_compiled_rules(self) -> None:
-        compiled = yara.compile(source='rule r { condition: true }')
+        compiled = yara.compile(source="rule r { condition: true }")
         assert _compile_rules(compiled) is compiled
 
     def test_from_file_path(self) -> None:
@@ -94,11 +94,11 @@ class TestCompileRules:
         assert isinstance(rules, yara.Rules)
 
     def test_from_source_string(self) -> None:
-        rules = _compile_rules('rule r { condition: true }')
+        rules = _compile_rules("rule r { condition: true }")
         assert isinstance(rules, yara.Rules)
 
     def test_from_io_base(self) -> None:
-        rules = _compile_rules(StringIO('rule r { condition: true }'))
+        rules = _compile_rules(StringIO("rule r { condition: true }"))
         assert isinstance(rules, yara.Rules)
 
     def test_rejects_unsupported_type(self) -> None:
@@ -169,7 +169,7 @@ def test_scan_zip_with_in_memory_archive(tmp_path: Path) -> None:
 def test_scan_zip_rejects_non_zip() -> None:
     from yaramail import MailScanner
 
-    scanner = MailScanner(attachment_rules='rule r { condition: true }')
+    scanner = MailScanner(attachment_rules="rule r { condition: true }")
     with pytest.raises(ValueError, match="not a ZIP"):
         scanner._scan_zip(b"not a zip")
 
@@ -177,7 +177,7 @@ def test_scan_zip_rejects_non_zip() -> None:
 def test_scan_zip_missing_file(tmp_path: Path) -> None:
     from yaramail import MailScanner
 
-    scanner = MailScanner(attachment_rules='rule r { condition: true }')
+    scanner = MailScanner(attachment_rules="rule r { condition: true }")
     with pytest.raises(FileNotFoundError):
         scanner._scan_zip(str(tmp_path / "missing.zip"))
 
@@ -185,7 +185,7 @@ def test_scan_zip_missing_file(tmp_path: Path) -> None:
 def test_scan_pdf_text_rejects_non_pdf() -> None:
     from yaramail import MailScanner
 
-    scanner = MailScanner(attachment_rules='rule r { condition: true }')
+    scanner = MailScanner(attachment_rules="rule r { condition: true }")
     with pytest.raises(ValueError, match="not a PDF"):
         scanner._scan_pdf_text(b"not a pdf")
 

@@ -22,8 +22,7 @@ PDF_MARKER_RULE = (
     'rule pdf_marker { strings: $a = "yaramail-pdf-marker" condition: $a }'
 )
 ENCRYPTED_ZIP_RULE = (
-    'rule zip_marker { strings: $a = "evil-marker inside encrypted zip" '
-    'condition: $a }'
+    'rule zip_marker { strings: $a = "evil-marker inside encrypted zip" condition: $a }'
 )
 
 
@@ -106,14 +105,13 @@ def test_scan_attachments_accepts_single_dict(tmp_path: Path) -> None:
 def test_safe_rule_without_from_domain_emits_warning() -> None:
     rule = (
         "rule loose_safe { "
-        "meta: category = \"safe\" "
+        'meta: category = "safe" '
         'strings: $a = "evil-marker" '
         "condition: $a }"
     )
     scanner = MailScanner(body_rules=rule)
     eml = (
-        "From: noone@example.com\r\nTo: a@b.c\r\n"
-        "Subject: x\r\n\r\nevil-marker here\r\n"
+        "From: noone@example.com\r\nTo: a@b.c\r\nSubject: x\r\n\r\nevil-marker here\r\n"
     )
     result = scanner.scan_email(eml)
     warnings = result["matches"][0]["warnings"]
@@ -123,7 +121,7 @@ def test_safe_rule_without_from_domain_emits_warning() -> None:
 def test_from_domain_mismatch_emits_warning() -> None:
     rule = (
         "rule scoped { "
-        "meta: category = \"phishing\" from_domain = \"trusted.example\" "
+        'meta: category = "phishing" from_domain = "trusted.example" '
         'strings: $a = "evil-marker" '
         "condition: $a }"
     )
@@ -164,10 +162,7 @@ def test_alt_meta_key_spellings_are_supported() -> None:
         'strings: $a = "marker" condition: $a }'
     )
     scanner = MailScanner(body_rules=rule)
-    eml = (
-        "From: x@b.example\r\nTo: y@z.example\r\n"
-        "Subject: x\r\n\r\nmarker here\r\n"
-    )
+    eml = "From: x@b.example\r\nTo: y@z.example\r\nSubject: x\r\n\r\nmarker here\r\n"
     result = scanner.scan_email(eml)
     # b.example is in the allowed list, so no from-domain-mismatch warning.
     warnings = result["matches"][0]["warnings"]
@@ -344,7 +339,7 @@ def test_scan_zip_does_not_mutate_passwords_argument() -> None:
     buf = BytesIO()
     with zipfile.ZipFile(buf, "w") as zf:
         zf.writestr("note.txt", "hello")
-    scanner = MailScanner(attachment_rules='rule r { condition: true }')
+    scanner = MailScanner(attachment_rules="rule r { condition: true }")
     passwords = ["hunter2"]
     scanner._scan_zip(buf.getvalue(), passwords=passwords)
     assert passwords == ["hunter2"]
@@ -373,7 +368,7 @@ def test_scan_zip_with_unreadable_entries_returns_empty(
     monkeypatch.setattr(zipfile.ZipFile, "open", always_fails)
     try:
         scanner = MailScanner(
-            attachment_rules='rule m { condition: true }',
+            attachment_rules="rule m { condition: true }",
         )
         assert scanner._scan_zip(archive.read_bytes()) == []
     finally:
@@ -568,7 +563,7 @@ def test_corrupt_zip_attachment_is_logged_not_raised(
 ) -> None:
     """A payload with the ZIP magic but a malformed body is logged, not raised."""
     bad = b"\x50\x4b\x03\x04" + b"garbage that is not a real zip"
-    scanner = MailScanner(attachment_rules='rule r { condition: true }')
+    scanner = MailScanner(attachment_rules="rule r { condition: true }")
     with caplog.at_level("WARNING", logger="yaramail"):
         result = scanner.scan_email(_zip_attachment_eml("bad.zip", bad))
     # The raw-archive scan still produced a match; the member scan was skipped.
