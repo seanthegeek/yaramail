@@ -4,15 +4,15 @@
 
 ## Best practices
 
-it is **strongly recommended** to create a private Git repository as a place
-to develop, store, and maintain  YARA rules, trusted domain lists, and sample
+It is **strongly recommended** to create a private Git repository as a place
+to develop, store, and maintain YARA rules, trusted domain lists, and sample
 emails, for a number of reasons.
 
 - Version control tracks who made what change when, with easy rollback
 - Automation can (and should) pull a fresh copy of the repository
   before scanning
 - CI/CD workflows can [run tests](#testing-a-collection-of-samples)
-  against a collection of emails samples before allowing the rules into
+  against a collection of email samples before allowing the rules into
   production
 
 When automating phishing inbox triage, it is **vital** to continually [build
@@ -138,8 +138,8 @@ checking content against known malicious and trusted patterns.
 
 The purpose of `yaramail` is to identify known safe, known malicious, and
 likely junk email samples in phishing reporting inboxes. It will not catch
-everything. For proper automation, It is important to implement some form of
-deduplication for emails for reported emails that have been manually triaged.
+everything. For proper automation, it is important to implement some form of
+deduplication for reported emails that have been manually triaged.
 Consider using fuzzy matching approaches such as [ssdeep][ssdeep], or use
 machine learning capabilities included in many Security Orchestration Automation
 and Response (SOAR) platforms.
@@ -216,8 +216,8 @@ not contribute to the `verdict`.
 This key **must** be set for rules with a category of `safe`.
 :::
 
-If this key is set, the rule’s `category` only applies to emails when the
-message `From` domain that matches this value exactly. Multiple domains can be
+If this key is set, the rule’s `category` only applies to emails whose
+message `From` domain matches this value exactly. Multiple domains can be
 specified in this value by separating them with spaces.
 
 Domain authentication must pass, unless that rule has an `auth_optional` meta
@@ -263,7 +263,7 @@ Here are some simple examples.
 | `$magic`                            | The string assigned to the variable `$magic` must exist                                                                                                                                                  |
 | `$magic at 0`                       | The string assigned to the variable `$magic` must exist at offset `0`                                                                                                                                    |
 | `3 of ($foo_*)`                     | At least three instances of any string assigned to a variable starting with `$foo_` must exist                                                                                                           |
-| `(#foo_*) < 4`                      | The total number of instances of any string assigned to a variable starting with `$foo_`must be less than four                                                                                           |
+| `(#foo_*) < 4`                      | The total number of instances of any string assigned to a variable starting with `$foo_` must be less than four                                                                                          |
 | `$url and #url == (#trusted_url_*)` | At least one URL must exist **and** the number of instances of the string assigned to `$url` must equal the total number of instances of any string assigned to a variable starting with `$trusted_url_` |
 
 ## Practical YARA rule examples
@@ -508,7 +508,7 @@ Every Workday notification email
 
 - Has the message `From` domain `myworkday.com`
 - Is DKIM signed by a key at the domain `myworkday.com`
-- The organization's logo as a remote image
+- Includes the organization's logo as a remote image
 - Contains at least one link, and all link URLs start with
   `https://www.myworkday.com/` and the employer's name
 - Contains the string "Powered by Workday: A New Day, A Better Way."
@@ -578,10 +578,10 @@ Use a separate junk/marketing rule for each language spoken by your users.
 
 <script id="asciicast-529801" src="https://asciinema.org/a/529801.js" async></script>
 
-the [`yaramail` CLI](cli) has built-in support for scanning  individual
+The [`yaramail` CLI](cli) has built-in support for scanning individual
 samples, or an entire collection of samples.
 
-Use the `--rules`option to specify a path to a directory where the following
+Use the `--rules` option to specify a path to a directory where the following
 files can be found:
 
 - `header.yar` - Rules that apply to email header content
@@ -603,7 +603,7 @@ the scanner will still run using the data it does have.
 :::
 
 :::{note}
-Starting in version 1.2.0, the contents of the message body will always be
+Starting in version 2.1.0, the contents of the message body will always be
 tried as ZIP passwords, along with `infected` and `malware`.
 :::
 
@@ -699,13 +699,13 @@ for email in emails:
       attached_email = attachment
   if attached_email is None and report_email["valid_report"]:
     report_email["valid_report"] = False
-    # TODO: Tell use user how to properly send a sample as an attachment
+    # TODO: Tell the user how to properly send a sample as an attachment
     escalate_to_incident_response(report_email)
     # TODO: Move report email to the invalid folder or trash
     continue
   try:
     sample = scan_email(attached_email["payload"])
-    #TODO: Do something to deduplicate manually triaged emails
+    # TODO: Do something to deduplicate manually triaged emails
   except Exception as _e:
     logger.warning(f"Invalid email sample: {_e}")
     report_email["valid_report"] = False

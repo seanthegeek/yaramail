@@ -18,7 +18,7 @@
 | `\w`       | Any word character (letter, number, underscore)|
 | `\W`       | Any non-word character                         |
 | `\b`       | Any word boundary                              |
-| `(a\|b)`   |a or b                                          |
+| `(a\|b)`   | a or b                                         |
 | `a?`       | Zero or one of a                               |
 | `a*`       | Zero or more of a                              |
 | `a+`       | One or more of a                               |

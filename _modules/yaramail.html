@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaramail &mdash; yaramail 3.4.0 documentation</title>
+  <title>yaramail &mdash; yaramail 3.4.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=b0e360d0"></script>
+      <script src="../_static/documentation_options.js?v=149be4c9"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -90,7 +90,7 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">NullHandler</span><span class="p">())</span>
 
-<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;3.4.0&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;3.4.1&quot;</span>
 
 <span class="n">_T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_T&quot;</span><span class="p">)</span>
 
@@ -147,20 +147,16 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_carve_passwords</span><span class="p">(</span><span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-    <span class="n">passwords</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">passwords</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">_regex</span> <span class="ow">in</span> <span class="n">password_regex</span><span class="p">:</span>
-        <span class="n">matches</span> <span class="o">=</span> <span class="n">_regex</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
-        <span class="n">passwords</span> <span class="o">+=</span> <span class="n">matches</span>
-    <span class="n">additional_passwords</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">password</span> <span class="ow">in</span> <span class="n">passwords</span><span class="p">:</span>
-        <span class="c1"># Make object type clear to IDEs</span>
-        <span class="n">password</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
-        <span class="c1"># Account for any extra spaces added during markdown conversion</span>
-        <span class="k">if</span> <span class="s2">&quot; &quot;</span> <span class="ow">in</span> <span class="n">password</span><span class="p">:</span>
-            <span class="n">additional_passwords</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">password</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
-            <span class="n">passwords</span> <span class="o">+=</span> <span class="n">additional_passwords</span>
-
-    <span class="k">return</span> <span class="n">passwords</span>
+        <span class="n">passwords</span> <span class="o">+=</span> <span class="n">_regex</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+    <span class="c1"># Account for any extra spaces added during markdown conversion by also</span>
+    <span class="c1"># trying a space-stripped variant of every multi-word candidate.</span>
+    <span class="n">additional_passwords</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">password</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">password</span> <span class="ow">in</span> <span class="n">passwords</span> <span class="k">if</span> <span class="s2">&quot; &quot;</span> <span class="ow">in</span> <span class="n">password</span>
+    <span class="p">]</span>
+    <span class="n">passwords</span> <span class="o">+=</span> <span class="n">additional_passwords</span>
+    <span class="k">return</span> <span class="n">_deduplicate_list</span><span class="p">(</span><span class="n">passwords</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_deduplicate_list</span><span class="p">(</span><span class="n">og_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">_T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">_T</span><span class="p">]:</span>
@@ -217,7 +213,7 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_is_zip</span><span class="p">(</span><span class="n">file_bytes</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">file_bytes</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x50\x4b\03\04</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">file_bytes</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x50\x4b\x03\x04</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
 
@@ -241,11 +237,9 @@
                 <span class="n">_list</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_input</span><span class="p">,</span> <span class="n">StringIO</span><span class="p">):</span>
         <span class="n">_list</span> <span class="o">=</span> <span class="n">_input</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">_list</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-        <span class="k">pass</span>
-    <span class="k">return</span> <span class="n">_list</span>
+    <span class="c1"># Drop every blank line (e.g. trailing newlines) without mutating a</span>
+    <span class="c1"># caller-supplied list in place.</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">_list</span> <span class="k">if</span> <span class="n">item</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_compile_rules</span><span class="p">(</span><span class="n">rules</span><span class="p">:</span> <span class="n">yara</span><span class="o">.</span><span class="n">Rules</span> <span class="o">|</span> <span class="n">IOBase</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">yara</span><span class="o">.</span><span class="n">Rules</span><span class="p">:</span>
@@ -336,8 +330,8 @@
 <span class="sd">          solutions, such as Abnormal Security.</span>
 
 <span class="sd">        .. note::</span>
-<span class="sd">          ``infected`, ``malware``, and the contents of the message body \</span>
-<span class="sd">            are always tried as passwords.</span>
+<span class="sd">          ``infected``, ``malware``, and the contents of the message body \</span>
+<span class="sd">          are always tried as passwords.</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">          Starting in version 2.1.0, the contents of the message body are \</span>
@@ -404,64 +398,67 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Payload is not a ZIP file&quot;</span><span class="p">)</span>
         <span class="n">payload</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
         <span class="n">_current_depth</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">matches</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">tags</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">zip_matches</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">member_content</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">passwords</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">passwords</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Copy the password list so we never mutate the caller&#39;s argument.</span>
+        <span class="n">passwords</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">passwords</span><span class="p">)</span> <span class="k">if</span> <span class="n">passwords</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="s2">&quot;infected&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">passwords</span><span class="p">:</span>
             <span class="n">passwords</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;infected&quot;</span><span class="p">)</span>
+        <span class="c1"># ``None`` means &quot;try without a password&quot; and must be attempted first.</span>
         <span class="n">pwd_candidates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bytes</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
         <span class="n">pwd_candidates</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">passwords</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">tag_match</span><span class="p">(</span><span class="n">match</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">location</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+            <span class="k">match</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">location</span>
+            <span class="k">match</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_deduplicate_list</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;zip&quot;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">match</span>
+
         <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_file</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">zip_file</span><span class="o">.</span><span class="n">namelist</span><span class="p">():</span>
+                <span class="n">member_content</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">matches</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="k">for</span> <span class="n">pwd</span> <span class="ow">in</span> <span class="n">pwd_candidates</span><span class="p">:</span>
-                    <span class="n">matches</span> <span class="o">=</span> <span class="p">[]</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="k">with</span> <span class="n">zip_file</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">pwd</span><span class="o">=</span><span class="n">pwd</span><span class="p">)</span> <span class="k">as</span> <span class="n">member</span><span class="p">:</span>
-                            <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;zip&quot;</span><span class="p">]</span>
-                            <span class="n">location</span> <span class="o">=</span> <span class="n">name</span>
-                            <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
-                                <span class="n">location</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
                             <span class="n">member_content</span> <span class="o">=</span> <span class="n">member</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
                             <span class="n">matches</span> <span class="o">=</span> <span class="n">_match_to_dict</span><span class="p">(</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">_attachment_rules</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">member_content</span><span class="p">)</span>
                             <span class="p">)</span>
                             <span class="k">break</span>
                     <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+                        <span class="c1"># Wrong password for this candidate; try the next one.</span>
                         <span class="k">continue</span>
 
                 <span class="k">if</span> <span class="n">member_content</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Unable to read the contents of the ZIP file&quot;</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="n">zip_matches</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Unable to read </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> from the ZIP file &quot;</span>
+                        <span class="s2">&quot;(no working password found)&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># The member&#39;s location is relative to this archive. When this</span>
+                <span class="c1"># archive is itself nested, ``filename`` carries the path to it</span>
+                <span class="c1"># so locations read e.g. ``nested.zip:evil.js``.</span>
+                <span class="n">location</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">filename</span> <span class="k">else</span> <span class="n">name</span>
                 <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
-                    <span class="n">location</span> <span class="o">=</span> <span class="kc">None</span>
-                    <span class="k">if</span> <span class="s2">&quot;location&quot;</span> <span class="ow">in</span> <span class="n">match</span><span class="p">:</span>
-                        <span class="n">existing_location</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span>
-                        <span class="n">location</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">existing_location</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s2">&quot;</span>
-                    <span class="k">match</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">location</span>
-                <span class="n">zip_matches</span> <span class="o">+=</span> <span class="n">matches</span>
+                    <span class="n">zip_matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tag_match</span><span class="p">(</span><span class="n">match</span><span class="p">,</span> <span class="n">location</span><span class="p">))</span>
                 <span class="k">if</span> <span class="n">_is_pdf</span><span class="p">(</span><span class="n">member_content</span><span class="p">):</span>
                     <span class="k">try</span><span class="p">:</span>
-                        <span class="n">zip_matches</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_pdf_text</span><span class="p">(</span><span class="n">member_content</span><span class="p">)</span>
-                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_pdf_text</span><span class="p">(</span><span class="n">member_content</span><span class="p">):</span>
+                            <span class="n">zip_matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tag_match</span><span class="p">(</span><span class="n">match</span><span class="p">,</span> <span class="n">location</span><span class="p">))</span>
+                    <span class="k">except</span> <span class="n">pdftotext</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                            <span class="s2">&quot;Unable to convert PDF to markdown. &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> Scanning raw file content only&quot;</span>
-                            <span class="s2">&quot;.&quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;Unable to convert </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> to markdown. </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">. &quot;</span>
+                            <span class="s2">&quot;Scanning raw file content only.&quot;</span>
                         <span class="p">)</span>
                 <span class="k">elif</span> <span class="n">_is_zip</span><span class="p">(</span><span class="n">member_content</span><span class="p">):</span>
                     <span class="n">max_depth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_zip_depth</span>
-                    <span class="k">if</span> <span class="n">max_depth</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">_current_depth</span> <span class="o">&gt;</span> <span class="n">max_depth</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">max_depth</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">_current_depth</span> <span class="o">&lt;=</span> <span class="n">max_depth</span><span class="p">:</span>
                         <span class="n">zip_matches</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_zip</span><span class="p">(</span>
                             <span class="n">member_content</span><span class="p">,</span>
-                            <span class="n">filename</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                            <span class="n">filename</span><span class="o">=</span><span class="n">location</span><span class="p">,</span>
                             <span class="n">passwords</span><span class="o">=</span><span class="n">passwords</span><span class="p">,</span>
                             <span class="n">_current_depth</span><span class="o">=</span><span class="n">_current_depth</span><span class="p">,</span>
                         <span class="p">)</span>
-                <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">zip_matches</span><span class="p">:</span>
-                    <span class="k">match</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_deduplicate_list</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="s2">&quot;tags&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">tags</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">zip_matches</span>
 
@@ -507,29 +504,32 @@
             <span class="n">combined_attachment_matches</span> <span class="o">+=</span> <span class="n">attachment_matches</span>
             <span class="k">if</span> <span class="n">is_binary</span> <span class="ow">and</span> <span class="n">_is_pdf</span><span class="p">(</span><span class="n">payload</span><span class="p">):</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">attachment_matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_pdf_text</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
-                    <span class="n">attachment_matches</span> <span class="o">=</span> <span class="n">add_location</span><span class="p">(</span><span class="n">attachment_matches</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-                    <span class="n">combined_attachment_matches</span> <span class="o">+=</span> <span class="n">attachment_matches</span>
-                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">pdf_matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_pdf_text</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+                    <span class="n">pdf_matches</span> <span class="o">=</span> <span class="n">add_location</span><span class="p">(</span><span class="n">pdf_matches</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+                    <span class="n">combined_attachment_matches</span> <span class="o">+=</span> <span class="n">pdf_matches</span>
+                <span class="k">except</span> <span class="n">pdftotext</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;Unable to convert </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> to markdown. </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">. &quot;</span>
                         <span class="sa">f</span><span class="s2">&quot;Scanning raw file content only.&quot;</span>
                     <span class="p">)</span>
             <span class="k">elif</span> <span class="n">is_binary</span> <span class="ow">and</span> <span class="n">_is_zip</span><span class="p">(</span><span class="n">payload</span><span class="p">):</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">attachment_matches</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_zip</span><span class="p">(</span>
-                        <span class="n">payload</span><span class="p">,</span> <span class="n">passwords</span><span class="o">=</span><span class="n">passwords</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filename</span>
-                    <span class="p">)</span>
-                    <span class="n">attachment_matches</span> <span class="o">=</span> <span class="n">add_location</span><span class="p">(</span><span class="n">attachment_matches</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-                    <span class="n">combined_attachment_matches</span> <span class="o">+=</span> <span class="n">attachment_matches</span>
-                <span class="k">except</span> <span class="ne">UserWarning</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="c1"># ``_scan_zip`` returns locations relative to the archive</span>
+                    <span class="c1"># (e.g. ``evil.js``); ``add_location`` prepends the single</span>
+                    <span class="c1"># ``attachment:&lt;filename&gt;`` segment.</span>
+                    <span class="n">zip_matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_zip</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">passwords</span><span class="o">=</span><span class="n">passwords</span><span class="p">)</span>
+                    <span class="n">zip_matches</span> <span class="o">=</span> <span class="n">add_location</span><span class="p">(</span><span class="n">zip_matches</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+                    <span class="n">combined_attachment_matches</span> <span class="o">+=</span> <span class="n">zip_matches</span>
+                <span class="k">except</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">BadZipFile</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to scan </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">file_extension</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;eml&quot;</span><span class="p">,</span> <span class="s2">&quot;msg&quot;</span><span class="p">]:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">nested</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_email</span><span class="p">(</span><span class="n">parse_email</span><span class="p">(</span><span class="n">payload</span><span class="p">))</span>
                     <span class="n">nested_matches</span> <span class="o">=</span> <span class="n">add_location</span><span class="p">(</span><span class="n">nested</span><span class="p">[</span><span class="s2">&quot;matches&quot;</span><span class="p">],</span> <span class="n">filename</span><span class="p">)</span>
                     <span class="n">combined_attachment_matches</span> <span class="o">+=</span> <span class="n">nested_matches</span>
-                <span class="k">except</span> <span class="ne">UserWarning</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="c1"># ``parse_email`` raises ValueError when the attachment is</span>
+                    <span class="c1"># not a parseable email.</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to scan </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">combined_attachment_matches</span>
@@ -588,8 +588,8 @@
 <span class="sd">          - ``safe-rule-missing-from-domain`` - The rule is missing a</span>
 <span class="sd">            ``from_domain`` ``meta`` key that is required for rules with the</span>
 <span class="sd">            ``category`` meta key set to ``safe``</span>
-<span class="sd">          - ``unexpected-attachment`` - An email win an attachment matched a</span>
-<span class="sd">            rule with the ``meta`` key ``no attachment`` or ``no_attachments``</span>
+<span class="sd">          - ``unexpected-attachment`` - An email with an attachment matched a</span>
+<span class="sd">            rule with the ``meta`` key ``no_attachment`` or ``no_attachments``</span>
 <span class="sd">            set to ``true``</span>
 
 <span class="sd">        - ``location`` - The part of the email where the match was</span>
@@ -625,10 +625,14 @@
             <span class="n">headers</span> <span class="o">=</span> <span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;headers_string&quot;</span><span class="p">]</span>
         <span class="n">body</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="n">use_raw_body</span><span class="p">:</span>
+            <span class="c1"># Scan both the plain-text and HTML parts so neither is dropped</span>
+            <span class="c1"># when a message provides both.</span>
+            <span class="n">body_parts</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;text_plain&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">body</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;text_plain&quot;</span><span class="p">])</span>
+                <span class="n">body_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;text_plain&quot;</span><span class="p">]))</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;text_html&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">body</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;text_html&quot;</span><span class="p">])</span>
+                <span class="n">body_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;text_html&quot;</span><span class="p">]))</span>
+            <span class="n">body</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">body_parts</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">body</span> <span class="o">=</span> <span class="n">parsed_email</span><span class="p">[</span><span class="s2">&quot;body_markdown&quot;</span><span class="p">]</span>
         <span class="n">attachments</span> <span class="o">=</span> <span class="p">[]</span>

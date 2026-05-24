@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorial &mdash; yaramail 3.4.0 documentation</title>
+  <title>Tutorial &mdash; yaramail 3.4.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=b0e360d0"></script>
+      <script src="_static/documentation_options.js?v=149be4c9"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -124,15 +124,15 @@
 <p><code class="docutils literal notranslate"><span class="pre">yaramail</span></code> provides a workflow for automated triage of phishing reports.</p>
 <section id="best-practices">
 <h2>Best practices<a class="headerlink" href="#best-practices" title="Link to this heading"></a></h2>
-<p>it is <strong>strongly recommended</strong> to create a private Git repository as a place
-to develop, store, and maintain  YARA rules, trusted domain lists, and sample
+<p>It is <strong>strongly recommended</strong> to create a private Git repository as a place
+to develop, store, and maintain YARA rules, trusted domain lists, and sample
 emails, for a number of reasons.</p>
 <ul class="simple">
 <li><p>Version control tracks who made what change when, with easy rollback</p></li>
 <li><p>Automation can (and should) pull a fresh copy of the repository
 before scanning</p></li>
 <li><p>CI/CD workflows can <a class="reference internal" href="#testing-a-collection-of-samples">run tests</a>
-against a collection of emails samples before allowing the rules into
+against a collection of email samples before allowing the rules into
 production</p></li>
 </ul>
 <p>When automating phishing inbox triage, it is <strong>vital</strong> to continually <a class="reference internal" href="collecting_samples.html"><span class="doc std std-doc">build
@@ -250,8 +250,8 @@ checking content against known malicious and trusted patterns.</p>
 <h3>Deduplication<a class="headerlink" href="#deduplication" title="Link to this heading"></a></h3>
 <p>The purpose of <code class="docutils literal notranslate"><span class="pre">yaramail</span></code> is to identify known safe, known malicious, and
 likely junk email samples in phishing reporting inboxes. It will not catch
-everything. For proper automation, It is important to implement some form of
-deduplication for emails for reported emails that have been manually triaged.
+everything. For proper automation, it is important to implement some form of
+deduplication for reported emails that have been manually triaged.
 Consider using fuzzy matching approaches such as <a class="reference external" href="https://pypi.org/project/ssdeep/">ssdeep</a>, or use
 machine learning capabilities included in many Security Orchestration Automation
 and Response (SOAR) platforms.</p>
@@ -324,8 +324,8 @@ not contribute to the <code class="docutils literal notranslate"><span class="pr
 <p class="admonition-title">Important</p>
 <p>This key <strong>must</strong> be set for rules with a category of <code class="docutils literal notranslate"><span class="pre">safe</span></code>.</p>
 </div>
-<p>If this key is set, the rule’s <code class="docutils literal notranslate"><span class="pre">category</span></code> only applies to emails when the
-message <code class="docutils literal notranslate"><span class="pre">From</span></code> domain that matches this value exactly. Multiple domains can be
+<p>If this key is set, the rule’s <code class="docutils literal notranslate"><span class="pre">category</span></code> only applies to emails whose
+message <code class="docutils literal notranslate"><span class="pre">From</span></code> domain matches this value exactly. Multiple domains can be
 specified in this value by separating them with spaces.</p>
 <p>Domain authentication must pass, unless that rule has an <code class="docutils literal notranslate"><span class="pre">auth_optional</span></code> meta
 key with the value set to <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
@@ -387,7 +387,7 @@ Condition statements can be combined using <code class="docutils literal notrans
 <td><p>At least three instances of any string assigned to a variable starting with <code class="docutils literal notranslate"><span class="pre">$foo_</span></code> must exist</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">(#foo_*)</span> <span class="pre">&lt;</span> <span class="pre">4</span></code></p></td>
-<td><p>The total number of instances of any string assigned to a variable starting with <code class="docutils literal notranslate"><span class="pre">$foo_</span></code>must be less than four</p></td>
+<td><p>The total number of instances of any string assigned to a variable starting with <code class="docutils literal notranslate"><span class="pre">$foo_</span></code> must be less than four</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">$url</span> <span class="pre">and</span> <span class="pre">#url</span> <span class="pre">==</span> <span class="pre">(#trusted_url_*)</span></code></p></td>
 <td><p>At least one URL must exist <strong>and</strong> the number of instances of the string assigned to <code class="docutils literal notranslate"><span class="pre">$url</span></code> must equal the total number of instances of any string assigned to a variable starting with <code class="docutils literal notranslate"><span class="pre">$trusted_url_</span></code></p></td>
@@ -624,7 +624,7 @@ enterprises. Emails from Workday are very consistent.</p>
 <ul class="simple">
 <li><p>Has the message <code class="docutils literal notranslate"><span class="pre">From</span></code> domain <code class="docutils literal notranslate"><span class="pre">myworkday.com</span></code></p></li>
 <li><p>Is DKIM signed by a key at the domain <code class="docutils literal notranslate"><span class="pre">myworkday.com</span></code></p></li>
-<li><p>The organization’s logo as a remote image</p></li>
+<li><p>Includes the organization’s logo as a remote image</p></li>
 <li><p>Contains at least one link, and all link URLs start with
 <code class="docutils literal notranslate"><span class="pre">https://www.myworkday.com/</span></code> and the employer’s name</p></li>
 <li><p>Contains the string “Powered by Workday: A New Day, A Better Way.”</p></li>
@@ -690,9 +690,9 @@ time, but the reduction in alert fatigue is well worth the effort.</p>
 <section id="using-the-cli">
 <h2>Using the CLI<a class="headerlink" href="#using-the-cli" title="Link to this heading"></a></h2>
 <script id="asciicast-529801" src="https://asciinema.org/a/529801.js" async></script>
-<p>the <a class="reference internal" href="cli.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">yaramail</span></code> CLI</span></a> has built-in support for scanning  individual
+<p>The <a class="reference internal" href="cli.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">yaramail</span></code> CLI</span></a> has built-in support for scanning individual
 samples, or an entire collection of samples.</p>
-<p>Use the <code class="docutils literal notranslate"><span class="pre">--rules</span></code>option to specify a path to a directory where the following
+<p>Use the <code class="docutils literal notranslate"><span class="pre">--rules</span></code> option to specify a path to a directory where the following
 files can be found:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">header.yar</span></code> - Rules that apply to email header content</p></li>
@@ -715,7 +715,7 @@ the scanner will still run using the data it does have.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Starting in version 1.2.0, the contents of the message body will always be
+<p>Starting in version 2.1.0, the contents of the message body will always be
 tried as ZIP passwords, along with <code class="docutils literal notranslate"><span class="pre">infected</span></code> and <code class="docutils literal notranslate"><span class="pre">malware</span></code>.</p>
 </div>
 <section id="scanning-an-individual-sample">
@@ -807,13 +807,13 @@ content, URLs, and attachment names, add the <code class="docutils literal notra
       <span class="n">attached_email</span> <span class="o">=</span> <span class="n">attachment</span>
   <span class="k">if</span> <span class="n">attached_email</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">report_email</span><span class="p">[</span><span class="s2">&quot;valid_report&quot;</span><span class="p">]:</span>
     <span class="n">report_email</span><span class="p">[</span><span class="s2">&quot;valid_report&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="c1"># TODO: Tell use user how to properly send a sample as an attachment</span>
+    <span class="c1"># TODO: Tell the user how to properly send a sample as an attachment</span>
     <span class="n">escalate_to_incident_response</span><span class="p">(</span><span class="n">report_email</span><span class="p">)</span>
     <span class="c1"># TODO: Move report email to the invalid folder or trash</span>
     <span class="k">continue</span>
   <span class="k">try</span><span class="p">:</span>
     <span class="n">sample</span> <span class="o">=</span> <span class="n">scan_email</span><span class="p">(</span><span class="n">attached_email</span><span class="p">[</span><span class="s2">&quot;payload&quot;</span><span class="p">])</span>
-    <span class="c1">#TODO: Do something to deduplicate manually triaged emails</span>
+    <span class="c1"># TODO: Do something to deduplicate manually triaged emails</span>
   <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">_e</span><span class="p">:</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid email sample: </span><span class="si">{</span><span class="n">_e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">report_email</span><span class="p">[</span><span class="s2">&quot;valid_report&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
