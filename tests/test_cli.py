@@ -296,6 +296,26 @@ def test_test_mode_reports_failures(
     assert code == 1
 
 
+def test_test_mode_aborts_on_unparseable_sample(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """In test mode, a sample that can't be parsed is logged and aborts with 1."""
+    corpus = tmp_path / "corpus"
+    category = corpus / "safe"
+    category.mkdir(parents=True)
+    (category / "broken.eml").write_text("\x00\x00 not a parseable email\x00")
+    code, _, err = _invoke(
+        "-t",
+        "-o",
+        str(corpus),
+        "--rules",
+        str(RULES_DIR),
+        capsys=capsys,
+    )
+    assert code == 1
+    assert "broken.eml" in err
+
+
 def test_unreadable_implicit_safe_domains_logs_error(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -319,6 +339,26 @@ def test_unreadable_implicit_safe_domains_logs_error(
     )
     assert code == 0
     assert "Error reading" in err
+
+
+def test_output_to_unwritable_path_logs_error(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A --output path that can't be opened for writing is logged, not raised."""
+    sample = SAMPLES / "safe" / "workday.eml"
+    # A directory can't be opened with open(..., "w").
+    output_dir = tmp_path / "out-is-a-dir"
+    output_dir.mkdir()
+    code, _, err = _invoke(
+        str(sample),
+        "--rules",
+        str(RULES_DIR),
+        "--output",
+        str(output_dir),
+        "-o",
+        capsys=capsys,
+    )
+    assert "Error writing" in err
 
 
 def test_invalid_rules_exits_nonzero(

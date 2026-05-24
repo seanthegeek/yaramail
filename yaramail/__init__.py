@@ -449,7 +449,9 @@ class MailScanner(object):
                     nested = self.scan_email(parse_email(payload))
                     nested_matches = add_location(nested["matches"], filename)
                     combined_attachment_matches += nested_matches
-                except UserWarning as e:
+                except ValueError as e:
+                    # ``parse_email`` raises ValueError when the attachment is
+                    # not a parseable email.
                     logger.warning(f"Unable to scan {filename}. {e}.")
 
         return combined_attachment_matches

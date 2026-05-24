@@ -17,6 +17,9 @@
   (`attachment:archive.zip:attachment:archive.zip`).
 - A ZIP attachment with the ZIP magic bytes but a malformed body is now logged
   and skipped instead of raising `zipfile.BadZipFile`.
+- A malformed `.eml`/`.msg` attachment is now logged and skipped instead of
+  raising `ValueError`. The previous `except UserWarning` never matched the
+  exception `parse_email()` actually raises, so the error reached the caller.
 - `_scan_zip()` no longer reuses a previous member's contents when a later
   member cannot be decrypted, and it now continues scanning the remaining
   members instead of stopping at the first unreadable one.

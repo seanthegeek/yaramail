@@ -512,6 +512,44 @@ def test_scan_email_with_eml_attached_to_eml() -> None:
     assert any(match["rule"] == "m" for match in result["matches"])
 
 
+def test_malformed_eml_attachment_is_logged_not_raised(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A .eml attachment that isn't a parseable email is logged, not raised."""
+    garbage = base64.b64encode(b"\x00\x01 not an email").decode()
+    outer = (
+        "From: a@example.com\r\nTo: b@c.d\r\n"
+        'Content-Type: multipart/mixed; boundary="b1"\r\nSubject: x\r\n\r\n'
+        "--b1\r\nContent-Type: text/plain\r\n\r\nsee attachment\r\n--b1\r\n"
+        'Content-Type: application/octet-stream; name="nested.eml"\r\n'
+        "Content-Transfer-Encoding: base64\r\n"
+        'Content-Disposition: attachment; filename="nested.eml"\r\n\r\n'
+        f"{garbage}\r\n--b1--\r\n"
+    )
+    scanner = MailScanner(attachment_rules="rule r { condition: true }")
+    with caplog.at_level("WARNING", logger="yaramail"):
+        result = scanner.scan_email(outer)  # must not raise
+    assert "matches" in result
+    assert any("Unable to scan nested.eml" in rec.message for rec in caplog.records)
+
+
+def test_scan_zip_with_malformed_pdf_member_is_logged_not_raised(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A ZIP member with the PDF magic but a broken body is logged, not raised."""
+    buf = BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("broken.pdf", b"%PDF-1.7\nnot really a pdf")
+    scanner = MailScanner(attachment_rules=PDF_MARKER_RULE)
+    with caplog.at_level("WARNING", logger="yaramail"):
+        matches = scanner._scan_zip(buf.getvalue())  # must not raise
+    assert matches == []
+    assert any(
+        "Unable to convert 'broken.pdf' to markdown" in rec.message
+        for rec in caplog.records
+    )
+
+
 def _zip_attachment_eml(filename: str, archive: bytes) -> str:
     zip_b64 = base64.b64encode(archive).decode()
     return (
