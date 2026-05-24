@@ -1,12 +1,12 @@
 # Collecting email samples
 
 In order to be properly analyzed, email samples must be stored or sent with
-the full content intact, including any headers. The process of obtaining
-raw/original depends on the email service or client being used.
+the full content intact, including any headers. The process of obtaining the
+raw/original message depends on the email service or client being used.
 
 ## AOL webmail
 
-1. In the list of emails in your in inbox or folder, right-click on the message (not in the message itself)
+1. In the list of emails in your inbox or folder, right-click on the message (not in the message itself)
 2. Click View Message Source
 3. Select the entire raw message content, copy it, paste it into an empty text editor, and save the file with a `.eml` file extension
 
@@ -38,7 +38,7 @@ raw/original depends on the email service or client being used.
 3. From the Action Menu, select the “Forward As Attachment” Item
 4. Save the attachment(s) and/or send the email
 
-## Notes
+## HCL Notes (formerly Lotus Notes)
 
 1. Open the email
 2. Save it to a file by going to the File > Save As menu item
@@ -70,7 +70,7 @@ Attached emails can be saved to a file like any other attachment.
 
 ### Outlook Web Access (OWA)/Outlook.com
 
-1. Create a new email and leave it open a separate window.
+1. Create a new email and leave it open in a separate window.
 2. Drag the email from the inbox or other folder and drop it in the message of the draft.
 3. Download the attachment that was created in step 2
 

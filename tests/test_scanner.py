@@ -284,23 +284,70 @@ def test_scan_zip_accepts_bytesio(tmp_path: Path) -> None:
     assert any(m["rule"] == "m" for m in matches)
 
 
-def test_scan_zip_recurses_into_nested_archive_when_depth_exceeded(
-    tmp_path: Path,
-) -> None:
-    """With ``max_zip_depth=1``, the recursion guard allows one level deep."""
-    inner = tmp_path / "inner.zip"
-    with zipfile.ZipFile(inner, "w") as zf:
-        zf.writestr("deep.txt", "deep-marker")
-    outer = tmp_path / "outer.zip"
-    with zipfile.ZipFile(outer, "w") as zf:
-        zf.write(inner, arcname="inner.zip")
+def _nested_zip(levels: int, marker: bytes = b"deep-marker") -> bytes:
+    """Build ``levels`` of DEFLATE-compressed nested ZIPs around ``marker``.
 
+    Compression matters: with ZIP_STORED the marker would survive as plaintext
+    in every enclosing archive, so a scan would "find" it without recursing and
+    the depth guard would never actually be exercised.
+    """
+    buf = BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("payload.txt", marker)
+    data = buf.getvalue()
+    for level in range(levels - 1):
+        buf = BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            zf.writestr(f"inner{level}.zip", data)
+        data = buf.getvalue()
+    return data
+
+
+def test_scan_zip_max_zip_depth_limits_recursion() -> None:
+    """``max_zip_depth`` is the number of times to recurse into nested ZIPs.
+
+    ``0`` scans only the top-level archive, ``1`` allows one nested level,
+    ``None`` is unlimited.
+    """
+    rule = 'rule m { strings: $a = "deep-marker" condition: $a }'
+    # outer.zip -> inner.zip -> payload.txt: one recursion is needed.
+    one_level = _nested_zip(2)
+
+    def found(depth: int | None, data: bytes) -> bool:
+        scanner = MailScanner(attachment_rules=rule, max_zip_depth=depth)
+        return any(m["rule"] == "m" for m in scanner._scan_zip(data))
+
+    assert found(None, one_level) is True
+    assert found(1, one_level) is True
+    assert found(0, one_level) is False  # no recursion at all
+
+    # Three levels deep needs two recursions.
+    two_levels = _nested_zip(3)
+    assert found(2, two_levels) is True
+    assert found(1, two_levels) is False
+
+
+def test_scan_zip_member_location_is_relative_to_archive() -> None:
+    """A ZIP-member match reports the member name, not ``None``."""
+    buf = BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("evil.js", "evil-marker here")
     scanner = MailScanner(
-        attachment_rules='rule m { strings: $a = "deep-marker" condition: $a }',
-        max_zip_depth=1,
+        attachment_rules='rule m { strings: $a = "evil-marker" condition: $a }',
     )
-    matches = scanner._scan_zip(outer.read_bytes())
-    assert any(m["rule"] == "m" for m in matches)
+    matches = scanner._scan_zip(buf.getvalue())
+    assert [m["location"] for m in matches] == ["evil.js"]
+    assert "zip" in matches[0]["tags"]
+
+
+def test_scan_zip_does_not_mutate_passwords_argument() -> None:
+    buf = BytesIO()
+    with zipfile.ZipFile(buf, "w") as zf:
+        zf.writestr("note.txt", "hello")
+    scanner = MailScanner(attachment_rules='rule r { condition: true }')
+    passwords = ["hunter2"]
+    scanner._scan_zip(buf.getvalue(), passwords=passwords)
+    assert passwords == ["hunter2"]
 
 
 def test_scan_zip_with_unreadable_entries_returns_empty(
@@ -468,3 +515,78 @@ def test_scan_email_with_eml_attached_to_eml() -> None:
     )
     result = scanner.scan_email(outer)
     assert any(match["rule"] == "m" for match in result["matches"])
+
+
+def _zip_attachment_eml(filename: str, archive: bytes) -> str:
+    zip_b64 = base64.b64encode(archive).decode()
+    return (
+        "From: a@example.com\r\nTo: b@c.d\r\n"
+        'Content-Type: multipart/mixed; boundary="b1"\r\nSubject: x\r\n\r\n'
+        "--b1\r\nContent-Type: text/plain\r\n\r\nsee attachment\r\n--b1\r\n"
+        f'Content-Type: application/zip; name="{filename}"\r\n'
+        "Content-Transfer-Encoding: base64\r\n"
+        f'Content-Disposition: attachment; filename="{filename}"\r\n\r\n'
+        f"{zip_b64}\r\n--b1--\r\n"
+    )
+
+
+def test_zip_attachment_location_has_no_duplicates() -> None:
+    """A stored ZIP member matches both the raw archive scan and the member
+    scan, but each must appear once with a correct location."""
+    buf = BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_STORED) as zf:
+        zf.writestr("evil.js", "evil-marker here")
+    scanner = MailScanner(
+        attachment_rules='rule m { strings: $a = "evil-marker" condition: $a }',
+    )
+    result = scanner.scan_email(_zip_attachment_eml("archive.zip", buf.getvalue()))
+    locations = sorted(m["location"] for m in result["matches"])
+    # Exactly two distinct matches: the raw archive scan and the member scan.
+    assert locations == [
+        "attachment:archive.zip",
+        "attachment:archive.zip:evil.js",
+    ]
+
+
+def test_zip_attachment_nested_member_location_path() -> None:
+    inner = BytesIO()
+    with zipfile.ZipFile(inner, "w", zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("evil.js", "evil-marker here")
+    outer = BytesIO()
+    with zipfile.ZipFile(outer, "w", zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("nested.zip", inner.getvalue())
+    scanner = MailScanner(
+        attachment_rules='rule m { strings: $a = "evil-marker" condition: $a }',
+    )
+    result = scanner.scan_email(_zip_attachment_eml("first.zip", outer.getvalue()))
+    locations = {m["location"] for m in result["matches"]}
+    assert "attachment:first.zip:nested.zip:evil.js" in locations
+
+
+def test_corrupt_zip_attachment_is_logged_not_raised(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A payload with the ZIP magic but a malformed body is logged, not raised."""
+    bad = b"\x50\x4b\x03\x04" + b"garbage that is not a real zip"
+    scanner = MailScanner(attachment_rules='rule r { condition: true }')
+    with caplog.at_level("WARNING", logger="yaramail"):
+        result = scanner.scan_email(_zip_attachment_eml("bad.zip", bad))
+    # The raw-archive scan still produced a match; the member scan was skipped.
+    assert any(m["location"] == "attachment:bad.zip" for m in result["matches"])
+    assert any("Unable to scan bad.zip" in rec.message for rec in caplog.records)
+
+
+def test_use_raw_body_scans_both_plain_and_html() -> None:
+    rule = (
+        'rule both { strings: $a = "plain-token" $b = "html-token" '
+        "condition: all of them }"
+    )
+    scanner = MailScanner(body_rules=rule)
+    eml = (
+        "From: a@example.com\r\nTo: b@c.d\r\n"
+        'Content-Type: multipart/alternative; boundary="b1"\r\nSubject: x\r\n\r\n'
+        "--b1\r\nContent-Type: text/plain\r\n\r\nplain-token here\r\n--b1\r\n"
+        "--b1\r\nContent-Type: text/html\r\n\r\n<p>html-token</p>\r\n--b1--\r\n"
+    )
+    result = scanner.scan_email(eml, use_raw_body=True)
+    assert any(m["rule"] == "both" for m in result["matches"])

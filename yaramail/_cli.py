@@ -63,14 +63,6 @@ arg_parser.add_argument(
     help="Scan the raw email body instead of converting it to Markdown first",
 )
 arg_parser.add_argument(
-    "-s",
-    "--sld",
-    action="store_true",
-    help="Use From domain the Second-Level Domain (SLD) "
-    "for authentication in addition to the "
-    "Fully-Qualified Domain Name (FQDN)",
-)
-arg_parser.add_argument(
     "-t",
     "--test",
     action="store_true",
@@ -193,7 +185,6 @@ def _main():
             max_zip_depth=args.max_zip_depth,
         )
     except Exception as e:
-        scanner = MailScanner()
         logger.error(f"Failed to parse YARA rules: {e}")
         exit(-1)
 
