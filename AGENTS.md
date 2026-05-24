@@ -40,11 +40,12 @@ These rules apply to anyone — human or agent — making changes to this repo. 
 
 ## Python Code Style
 
-- Formatter/linter: **Ruff**
+- Formatter/linter: **Ruff** — CI runs `ruff check` and `ruff format --check` on the latest Ruff
+- Type checker: **pyright** — CI type-checks with the latest pyright (`PYRIGHT_PYTHON_FORCE_VERSION: latest`); keep the working tree pyright-clean, and run pyright over `tests/` too, not just the package
 - Type annotations use `TypedDict` for structured results
 - Supports all currently supported Python versions
 - Modern type annotations across the entire project
--Testing framework: **pytest**
+- Testing framework: **pytest** — CI uploads coverage and test results to **Codecov** (requires the `CODECOV_TOKEN` repository secret)
 - Every bit of code should have a test
 - Build backend: **hatchling**
 - Module-level loggers: `logger = logging.getLogger(__name__)` — one logger per module, named for the module

@@ -347,7 +347,7 @@ def test_output_to_unwritable_path_logs_error(
     # A directory can't be opened with open(..., "w").
     output_dir = tmp_path / "out-is-a-dir"
     output_dir.mkdir()
-    code, _, err = _invoke(
+    _, _, err = _invoke(
         str(sample),
         "--rules",
         str(RULES_DIR),

@@ -44,6 +44,7 @@ dynamic = [
 build = [
     "hatch>=1.14.0",
     "myst-parser[linkify]",
+    "pyright",
     "pytest",
     "pytest-cov",
     "ruff",
