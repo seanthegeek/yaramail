@@ -15,7 +15,6 @@ from yaramail import MailScanner
 SAMPLES = Path(__file__).parent / "samples"
 FIXTURES = Path(__file__).parent / "fixtures"
 SANS = (SAMPLES / "safe" / "sans.eml").read_text()
-WORKDAY = (SAMPLES / "safe" / "workday.eml").read_text()
 INVOICE = (SAMPLES / "credential-harvesting" / "Invoice.eml").read_text()
 
 PDF_MARKER_RULE = (
@@ -45,11 +44,24 @@ def test_scan_email_accepts_bytes_input() -> None:
     assert result["msg_from_domain"]["domain"] == "email.sans.org"
 
 
-def test_scan_email_use_raw_headers_and_body() -> None:
-    scanner = MailScanner(use_authentication_results_original=True)
-    parsed = parse_email(WORKDAY)
-    result = scanner.scan_email(parsed, use_raw_headers=True, use_raw_body=True)
-    assert "matches" in result
+def test_use_raw_headers_scans_folded_headers_verbatim() -> None:
+    """``use_raw_headers`` keeps header folding; the default unfolds it.
+
+    mailsuite unfolds continuation lines in ``headers_string`` (the default
+    scan target) but leaves ``raw_headers`` intact, so a rule matching the
+    indented continuation only fires when ``use_raw_headers=True``.
+    """
+    rule = 'rule folded { strings: $a = "first\\r\\n\\tsecond" condition: $a }'
+    eml = (
+        "From: a@example.com\r\nTo: b@c.d\r\n"
+        "X-Folded: first\r\n\tsecond\r\nSubject: x\r\n\r\nbody\r\n"
+    )
+    scanner = MailScanner(header_rules=rule)
+    # Default unfolds the header ("first second"), so the rule does not match.
+    assert scanner.scan_email(eml)["matches"] == []
+    raw = scanner.scan_email(eml, use_raw_headers=True)
+    assert [m["rule"] for m in raw["matches"]] == ["folded"]
+    assert raw["matches"][0]["location"] == "header"
 
 
 def test_credential_harvesting_zip_attachment_classification() -> None:

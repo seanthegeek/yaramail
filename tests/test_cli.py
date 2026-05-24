@@ -195,21 +195,20 @@ def test_scan_missing_file_logs_error(
     # the glob match, so we need a path that exists at glob time but fails to
     # open. Easier: create a directory matched by the glob.
     (tmp_path / "ghost.eml").write_text("garbage that is not parsable\n")
-    code, _, err = _invoke(
+    _, _, err = _invoke(
         str(tmp_path / "ghost.eml"),
         "--rules",
         str(RULES_DIR),
         "-o",
         capsys=capsys,
     )
-    # Output may be empty (exits -1) — we just want the error path exercised.
-    assert "Failed to" in err or code != 0
+    assert "Failed to parse email at" in err
 
 
 def test_scan_corrupt_stdin_logs_error(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    code, _, err = _invoke(
+    _, _, err = _invoke(
         "-",
         "--rules",
         str(RULES_DIR),
@@ -217,8 +216,7 @@ def test_scan_corrupt_stdin_logs_error(
         stdin="\x00\x00not an email\x00",
         capsys=capsys,
     )
-    # The CLI logs and continues, returning -1 if no output was produced.
-    assert "Failed to" in err or code != 0
+    assert "Failed to scan email provided via stdin" in err
 
 
 def test_raw_headers_flag_strips_headers_string(
