@@ -1,7 +1,7 @@
 # CLI
 
 ```text
-usage: A YARA scanner for emails [-h] [-V] [-v] [-m] [-o] [-r] [-b] [-s] [-t]
+usage: A YARA scanner for emails [-h] [-V] [-v] [-m] [-o] [-r] [-b] [-t]
                                  [--output OUTPUT] [--rules RULES]
                                  [--header-rules HEADER_RULES]
                                  [--body-rules BODY_RULES]
@@ -21,9 +21,7 @@ positional arguments:
 options:
   -h, --help            show this help message and exit
   -V, --version         show program's version number and exit
-  -v, --verbose         Output the entire parsed email. When used with
-                        -t/--test, this option outputs passing results along
-                        with failing results. (default: False)
+  -v, --verbose         Output the entire parsed email. (default: False)
   -m, --multi-auth      Allow multiple Authentication-Results headers
                         (default: False)
   -o, --auth-original   Use Authentication-Results-Original instead of
@@ -32,9 +30,6 @@ options:
                         False)
   -b, --raw-body        Scan the raw email body instead of converting it to
                         Markdown first (default: False)
-  -s, --sld             Use From domain the Second-Level Domain (SLD) for
-                        authentication in addition to the Fully-Qualified
-                        Domain Name (FQDN) (default: False)
   -t, --test            Test rules based on verdicts matching the name of the
                         subdirectory a sample is in (default: False)
   --output OUTPUT       Redirect output to a file (default: None)

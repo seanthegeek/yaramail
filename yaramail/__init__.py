@@ -14,7 +14,7 @@ from mailsuite.utils import parse_email, from_trusted_domain, decode_base64
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
-__version__ = "3.4.0"
+__version__ = "3.4.1"
 
 _T = TypeVar("_T")
 
@@ -71,20 +71,16 @@ for delimiter in delimiters:
 
 
 def _carve_passwords(content: str) -> list[str]:
-    passwords = []
+    passwords: list[str] = []
     for _regex in password_regex:
-        matches = _regex.findall(content)
-        passwords += matches
-    additional_passwords = []
-    for password in passwords:
-        # Make object type clear to IDEs
-        password = str(password)
-        # Account for any extra spaces added during markdown conversion
-        if " " in password:
-            additional_passwords.append(password.replace(" ", ""))
-            passwords += additional_passwords
-
-    return passwords
+        passwords += _regex.findall(content)
+    # Account for any extra spaces added during markdown conversion by also
+    # trying a space-stripped variant of every multi-word candidate.
+    additional_passwords = [
+        password.replace(" ", "") for password in passwords if " " in password
+    ]
+    passwords += additional_passwords
+    return _deduplicate_list(passwords)
 
 
 def _deduplicate_list(og_list: list[_T]) -> list[_T]:
@@ -141,7 +137,7 @@ def _is_pdf(file_bytes: bytes) -> bool:
 
 def _is_zip(file_bytes: bytes) -> bool:
     try:
-        return file_bytes.startswith(b"\x50\x4b\03\04")
+        return file_bytes.startswith(b"\x50\x4b\x03\x04")
     except TypeError:
         return False
 
@@ -165,11 +161,9 @@ def _input_to_str_list(_input: list[str] | str | IOBase | None) -> list[str]:
                 _list = f.read().split("\n")
     if isinstance(_input, StringIO):
         _list = _input.read().split("\n")
-    try:
-        _list.remove("")
-    except ValueError:
-        pass
-    return _list
+    # Drop every blank line (e.g. trailing newlines) without mutating a
+    # caller-supplied list in place.
+    return [item for item in _list if item != ""]
 
 
 def _compile_rules(rules: yara.Rules | IOBase | str) -> yara.Rules:
@@ -258,8 +252,8 @@ class MailScanner(object):
           solutions, such as Abnormal Security.
 
         .. note::
-          ``infected`, ``malware``, and the contents of the message body \
-            are always tried as passwords.
+          ``infected``, ``malware``, and the contents of the message body \
+          are always tried as passwords.
 
         .. note::
           Starting in version 2.1.0, the contents of the message body are \
@@ -326,64 +320,67 @@ class MailScanner(object):
             raise ValueError("Payload is not a ZIP file")
         payload = BytesIO(payload)
         _current_depth += 1
-        matches: list[dict[str, Any]] = []
-        tags: list[str] = []
         zip_matches: list[dict[str, Any]] = []
-        member_content: bytes | None = None
-        if passwords is None:
-            passwords = []
+        # Copy the password list so we never mutate the caller's argument.
+        passwords = list(passwords) if passwords else []
         if "infected" not in passwords:
             passwords.append("infected")
+        # ``None`` means "try without a password" and must be attempted first.
         pwd_candidates: list[bytes | None] = [None]
         pwd_candidates.extend(p.encode("utf-8") for p in passwords)
+
+        def tag_match(match: dict[str, Any], location: str) -> dict[str, Any]:
+            match["location"] = location
+            match["tags"] = _deduplicate_list(match["tags"] + ["zip"])
+            return match
+
         with zipfile.ZipFile(payload) as zip_file:
             for name in zip_file.namelist():
+                member_content: bytes | None = None
+                matches: list[dict[str, Any]] = []
                 for pwd in pwd_candidates:
-                    matches = []
                     try:
                         with zip_file.open(name, pwd=pwd) as member:
-                            tags = ["zip"]
-                            location = name
-                            if filename:
-                                location = "{}:{}".format(filename, name)
                             member_content = member.read()
                             matches = _match_to_dict(
                                 self._attachment_rules.match(data=member_content)
                             )
                             break
                     except RuntimeError:
+                        # Wrong password for this candidate; try the next one.
                         continue
 
                 if member_content is None:
-                    logger.warning("Unable to read the contents of the ZIP file")
-                    return zip_matches
+                    logger.warning(
+                        f"Unable to read {name!r} from the ZIP file "
+                        "(no working password found)"
+                    )
+                    continue
+
+                # The member's location is relative to this archive. When this
+                # archive is itself nested, ``filename`` carries the path to it
+                # so locations read e.g. ``nested.zip:evil.js``.
+                location = f"{filename}:{name}" if filename else name
                 for match in matches:
-                    location = None
-                    if "location" in match:
-                        existing_location = match["location"]
-                        location = f"{existing_location}:{location}"
-                    match["location"] = location
-                zip_matches += matches
+                    zip_matches.append(tag_match(match, location))
                 if _is_pdf(member_content):
                     try:
-                        zip_matches += self._scan_pdf_text(member_content)
-                    except Exception as e:
+                        for match in self._scan_pdf_text(member_content):
+                            zip_matches.append(tag_match(match, location))
+                    except pdftotext.Error as e:
                         logger.warning(
-                            "Unable to convert PDF to markdown. "
-                            f"{e} Scanning raw file content only"
-                            "."
+                            f"Unable to convert {name!r} to markdown. {e}. "
+                            "Scanning raw file content only."
                         )
                 elif _is_zip(member_content):
                     max_depth = self.max_zip_depth
-                    if max_depth is None or _current_depth > max_depth:
+                    if max_depth is None or _current_depth <= max_depth:
                         zip_matches += self._scan_zip(
                             member_content,
-                            filename=name,
+                            filename=location,
                             passwords=passwords,
                             _current_depth=_current_depth,
                         )
-                for match in zip_matches:
-                    match["tags"] = _deduplicate_list(match["tags"] + tags)
 
         return zip_matches
 
@@ -429,29 +426,32 @@ class MailScanner(object):
             combined_attachment_matches += attachment_matches
             if is_binary and _is_pdf(payload):
                 try:
-                    attachment_matches = self._scan_pdf_text(payload)
-                    attachment_matches = add_location(attachment_matches, filename)
-                    combined_attachment_matches += attachment_matches
-                except Exception as e:
+                    pdf_matches = self._scan_pdf_text(payload)
+                    pdf_matches = add_location(pdf_matches, filename)
+                    combined_attachment_matches += pdf_matches
+                except pdftotext.Error as e:
                     logger.warning(
                         f"Unable to convert {filename} to markdown. {e}. "
                         f"Scanning raw file content only."
                     )
             elif is_binary and _is_zip(payload):
                 try:
-                    attachment_matches += self._scan_zip(
-                        payload, passwords=passwords, filename=filename
-                    )
-                    attachment_matches = add_location(attachment_matches, filename)
-                    combined_attachment_matches += attachment_matches
-                except UserWarning as e:
+                    # ``_scan_zip`` returns locations relative to the archive
+                    # (e.g. ``evil.js``); ``add_location`` prepends the single
+                    # ``attachment:<filename>`` segment.
+                    zip_matches = self._scan_zip(payload, passwords=passwords)
+                    zip_matches = add_location(zip_matches, filename)
+                    combined_attachment_matches += zip_matches
+                except zipfile.BadZipFile as e:
                     logger.warning(f"Unable to scan {filename}. {e}.")
             elif file_extension in ["eml", "msg"]:
                 try:
                     nested = self.scan_email(parse_email(payload))
                     nested_matches = add_location(nested["matches"], filename)
                     combined_attachment_matches += nested_matches
-                except UserWarning as e:
+                except ValueError as e:
+                    # ``parse_email`` raises ValueError when the attachment is
+                    # not a parseable email.
                     logger.warning(f"Unable to scan {filename}. {e}.")
 
         return combined_attachment_matches
@@ -508,8 +508,8 @@ class MailScanner(object):
           - ``safe-rule-missing-from-domain`` - The rule is missing a
             ``from_domain`` ``meta`` key that is required for rules with the
             ``category`` meta key set to ``safe``
-          - ``unexpected-attachment`` - An email win an attachment matched a
-            rule with the ``meta`` key ``no attachment`` or ``no_attachments``
+          - ``unexpected-attachment`` - An email with an attachment matched a
+            rule with the ``meta`` key ``no_attachment`` or ``no_attachments``
             set to ``true``
 
         - ``location`` - The part of the email where the match was
@@ -545,10 +545,14 @@ class MailScanner(object):
             headers = parsed_email["headers_string"]
         body = ""
         if use_raw_body:
+            # Scan both the plain-text and HTML parts so neither is dropped
+            # when a message provides both.
+            body_parts = []
             if len(parsed_email["text_plain"]) > 0:
-                body = "\n\n".join(parsed_email["text_plain"])
+                body_parts.append("\n\n".join(parsed_email["text_plain"]))
             if len(parsed_email["text_html"]) > 0:
-                body = "\n\n".join(parsed_email["text_html"])
+                body_parts.append("\n\n".join(parsed_email["text_html"]))
+            body = "\n\n".join(body_parts)
         else:
             body = parsed_email["body_markdown"]
         attachments = []

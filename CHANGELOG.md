@@ -1,5 +1,49 @@
 # Changelog
 
+## 3.4.1
+
+### Fixes
+
+- ZIP attachment scanning now reports the correct match `location`. The member
+  name was dropped before (`attachment:archive.zip:None`); it is now included
+  (`attachment:archive.zip:evil.js`), including for nested archives
+  (`attachment:first.zip:nested.zip:evil.js`).
+- `max_zip_depth` now limits nested-ZIP recursion as documented: `0` scans only
+  the top-level archive, `1` allows one nested level, and `None` is unlimited.
+  The comparison was inverted, so any positive value disabled recursion while
+  `0` recursed without limit.
+- ZIP attachment matches are no longer duplicated. A match was added once and
+  then re-added with a doubled location prefix
+  (`attachment:archive.zip:attachment:archive.zip`).
+- A ZIP attachment with the ZIP magic bytes but a malformed body is now logged
+  and skipped instead of raising `zipfile.BadZipFile`.
+- A malformed `.eml`/`.msg` attachment is now logged and skipped instead of
+  raising `ValueError`. The previous `except UserWarning` never matched the
+  exception `parse_email()` actually raises, so the error reached the caller.
+- `_scan_zip()` no longer reuses a previous member's contents when a later
+  member cannot be decrypted, and it now continues scanning the remaining
+  members instead of stopping at the first unreadable one.
+- `_scan_zip()` no longer appends `infected` to the caller's password list.
+- `_carve_passwords()` no longer emits duplicate candidates (it modified the
+  list while iterating over it).
+- `use_raw_body=True` now scans both the plain-text and HTML parts when a
+  message has both, instead of dropping the plain-text part.
+- `_input_to_str_list()` drops every blank line, not just the first, and no
+  longer mutates a caller-supplied list.
+- Removed the `-s`/`--sld` CLI flag. It had no effect (the underlying
+  `include_sld_in_auth_check` option was removed in 3.0.0).
+- Fixed the `Changelog` project URL, which pointed at a `master` branch that
+  does not exist (the default branch is `main`).
+- Documentation typo, grammar, and stale-content fixes, including the CLI
+  reference, which still advertised the removed `-s`/`--sld` flag and
+  out-of-date `-v`/`--verbose` behavior.
+
+### Improvements
+
+- Minimum `mailsuite` version raised to `>=2.2.0` to pick up upstream fixes.
+- Narrowed broad `except Exception` handlers in the package to the specific
+  errors they recover from (`pdftotext.Error`, `zipfile.BadZipFile`).
+
 ## 3.4.0
 
 ### Fixes
@@ -100,7 +144,7 @@
 
 ## 3.1.2
 
-- Update minium `mailsuite` version to `>=1.9.12`
+- Update minimum `mailsuite` version to `>=1.9.12`
   - Fix parsing of `Authentication-Results` and `DKIM-Signature` headers when Windows line breaks (`\r\n`) are used
   - Strip leading and trailing spaces from `DKIM-Signature` header `h=` list item
 
@@ -110,7 +154,7 @@
 
 ## 3.1.0
 
-- Update minium `mailsuite` version to `>=1.9.9`
+- Update minimum `mailsuite` version to `>=1.9.9`
   - Fix header and body separation when Windows line breaks (`\r\n`) are used
 - CLI changes
   - Remove unused formats in verbose output
@@ -152,8 +196,8 @@ This release is a major rewrite that includes changes breaking existing use
           - `safe-rule-missing-from-domain` - The rule is missing a
             `from_domain` `meta` key that is required for rules with the
             `category` meta key set to `safe`
-          - `unexpected-attachment` - An email win an attachment matched a
-            rule with the `meta` key `no attachment` or `no_attachments`
+          - `unexpected-attachment` - An email with an attachment matched a
+            rule with the `meta` key `no_attachment` or `no_attachments`
             set to `true`
   - Trusted domains are now called implicit safe domains
 - API changes
@@ -193,7 +237,7 @@ This release is a major rewrite that includes changes breaking existing use
 
 ## 2.0.12
 
-- Output passing results along with failing results when `/t`/`--test` and `-v/--verbose` options are passed to the CLI
+- Output passing results along with failing results when `-t`/`--test` and `-v/--verbose` options are passed to the CLI
 
 ## 2.0.11
 
@@ -299,7 +343,7 @@ This release is a major rewrite that includes changes breaking existing use
 
 - Remove some documentation from `README.md`, so the PyPI listing won't have outdated info
 - Add `Issues` and `Changelog` URLs to the PyPI listing
-- Rename the `yaramail.cli` module to `yaramail.cli`
+- Rename the `yaramail.cli` module to `yaramail._cli`
 - Bump `mailsuite` dependency version to `>=1.9.2`
 
 ## 1.0.1

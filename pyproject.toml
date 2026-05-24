@@ -31,7 +31,7 @@ classifiers = [
     "Topic :: Communications :: Email",
 ]
 dependencies = [
-    "mailsuite>=1.9.20",
+    "mailsuite>=2.2.0",
     "pdftotext==2.2.2",
     "simplejson>=3.17.6",
     "yara-python>=4.2.3",
@@ -58,7 +58,7 @@ yaramail = "yaramail._cli:_main"
 Homepage = "https://github.com/seanthegeek/yaramail"
 Documentation = "https://seanthegeek.github.io/yaramail/"
 Issues = "https://github.com/seanthegeek/yaramail/issues"
-Changelog = "https://github.com/seanthegeek/yaramail/blob/master/CHANGELOG.md"
+Changelog = "https://github.com/seanthegeek/yaramail/blob/main/CHANGELOG.md"
 
 [tool.hatch.version]
 path = "yaramail/__init__.py"
