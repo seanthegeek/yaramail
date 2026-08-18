@@ -1,4 +1,4 @@
-name: Python tests
+name: CI
 
 permissions:
   contents: read
@@ -7,10 +7,13 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
+  workflow_call:
 
+# The ci- prefix keeps this group distinct from the Release workflow's
+# when this workflow is called via workflow_call (github.workflow resolves
+# to the caller's name there, which would collide and self-cancel).
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

@@ -1,0 +1,126 @@
+name: Release
+
+# Fires when a version tag (e.g. v3.4.2) is pushed. Publishing is gated on
+# the full CI suite passing, and PyPI upload uses Trusted Publishing (OIDC),
+# so no API token secret is needed.
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+
+  build:
+    name: Build distributions
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify tag matches package version
+        # hatch reads the version from yaramail/__init__.py without
+        # importing the package, so no system dependencies are needed.
+        # Tags carry a v prefix (e.g. v3.4.2); the version does not.
+        run: |
+          python -m pip install --upgrade pip hatch
+          version="$(hatch version)"
+          if [ "$version" != "${GITHUB_REF_NAME#v}" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match yaramail.__version__ ($version)" >&2
+            exit 1
+          fi
+
+      - name: Build sdist and wheel
+        run: hatch build
+
+      - name: Upload distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish-pypi:
+    name: Publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/yara-mail/
+    permissions:
+      id-token: write
+    steps:
+      - name: Download distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  github-release:
+    name: Create GitHub release
+    needs: publish-pypi
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Extract changelog notes
+        # CHANGELOG.md headings carry no v prefix (## 3.4.2), so strip it
+        # from the tag before matching.
+        run: |
+          awk -v ver="${GITHUB_REF_NAME#v}" '
+            $0 == "## " ver {found=1; next}
+            /^## / && found {exit}
+            found {print}
+          ' CHANGELOG.md > release-notes.md
+          if ! [ -s release-notes.md ]; then
+            echo "No CHANGELOG.md section found for ${GITHUB_REF_NAME#v}" >&2
+            exit 1
+          fi
+
+      - name: Create release
+        # Release titles exclude the v prefix (see AGENTS.md).
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/* \
+            --title "${GITHUB_REF_NAME#v}" \
+            --notes-file release-notes.md
+
+  docs:
+    name: Publish documentation
+    # Gated on the publish so docs for a version that never shipped (tag
+    # mismatch, failed upload) don't deploy.
+    needs: publish-pypi
+    # Must cover everything docs.yml requests (contents: read at its
+    # workflow level) — a called workflow can't exceed the caller's grant,
+    # and the mismatch fails the whole run at startup.
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/docs.yml
