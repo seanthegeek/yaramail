@@ -64,6 +64,29 @@ These rules apply to anyone — human or agent — making changes to this repo. 
 - For Python projects, wheels and srcbuilds should always be attached
   - Use existing build files **if** they match the release version
 
+## Releases and deployment
+
+- **CRITICAL: Never make a release without the explicit permission of the
+  maintainer.** That includes every action that starts or advances a release:
+  pushing a version tag, creating a GitHub Release, publishing to PyPI, or
+  merging a release branch. Preparing release changes on a branch is fine;
+  triggering the release itself requires the maintainer to say so, each time.
+- The version lives in `yaramail/__init__.py` as `__version__`. Hatch reads
+  it from there.
+- Releases are automated by `.github/workflows/release.yml`: pushing a tag
+  matching the version with a `v` prefix (e.g. `v3.4.2`) runs the full CI
+  suite (lint + type-check + test matrix, reused from `ci.yml` via
+  `workflow_call`), and only if it passes builds the package, publishes it to
+  PyPI via Trusted Publishing, creates the GitHub Release (titled without the
+  `v` prefix) with the tag's `CHANGELOG.md` section as its notes, and deploys
+  the Sphinx docs to GitHub Pages. The build job fails if the tag doesn't
+  match `__version__`; `CHANGELOG.md` headings carry no `v` prefix.
+- Docs deployment lives in `.github/workflows/docs.yml`, which release.yml
+  calls. For documentation-only updates between releases, the maintainer can
+  run it on demand (Actions → Docs → Run workflow); it deploys straight to
+  GitHub Pages. Like releases, on-demand docs deployment is a
+  maintainer-permission action — see the CRITICAL rule above.
+
 ## Documentation
 
 The project must be well documented. If existing documentation exists, hollow that convention.

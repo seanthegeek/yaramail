@@ -31,10 +31,10 @@ classifiers = [
     "Topic :: Communications :: Email",
 ]
 dependencies = [
-    "mailsuite>=2.2.0",
-    "pdftotext==2.2.2",
-    "simplejson>=3.17.6",
-    "yara-python>=4.2.3",
+    "mailsuite>=2.3.1",
+    "pdftotext>=3.0.0",
+    "simplejson>=4.1.0",
+    "yara-python>=4.5.4",
 ]
 dynamic = [
     "version",
@@ -87,4 +87,10 @@ exclude_lines = [
     "raise NotImplementedError",
     "if TYPE_CHECKING:",
     "if __name__ == .__main__.:",
+    # Typing overload stubs are declarations, never executed at runtime.
+    "@overload",
 ]
+# Full statement and branch coverage is required. Code that cannot
+# meaningfully execute under the supported dependency floors should be
+# removed or excluded above, not left untested.
+fail_under = 100

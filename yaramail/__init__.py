@@ -6,15 +6,14 @@ from io import BytesIO, IOBase, StringIO
 from os import listdir, path
 from typing import Any, TypeVar, overload
 
-import yara
 import pdftotext
-
-from mailsuite.utils import parse_email, from_trusted_domain, decode_base64
+import yara
+from mailsuite.utils import decode_base64, from_trusted_domain, parse_email
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
-__version__ = "3.4.1"
+__version__ = "3.4.2"
 
 _T = TypeVar("_T")
 
@@ -103,20 +102,17 @@ def _match_to_dict(
     def match_to_dict_(_match: yara.Match) -> dict[str, Any]:
         strings: list[Any] = []
         for s in _match.strings:
-            if isinstance(s, tuple):
-                strings.append(s)
-            else:
-                for i in s.instances:
-                    strings.append((i.offset, s.identifier, i.matched_data))
+            for i in s.instances:
+                strings.append((i.offset, s.identifier, i.matched_data))
         strings = sorted(strings, key=lambda x: x[0])
-        return dict(
-            rule=_match.rule,
-            namespace=_match.namespace,
-            tags=_match.tags,
-            meta=_match.meta,
-            strings=strings,
-            warnings=[],
-        )
+        return {
+            "rule": _match.rule,
+            "namespace": _match.namespace,
+            "tags": _match.tags,
+            "meta": _match.meta,
+            "strings": strings,
+            "warnings": [],
+        }
 
     if isinstance(match, list):
         matches = match.copy()
@@ -155,10 +151,9 @@ def _input_to_str_list(_input: list[str] | str | IOBase | None) -> list[str]:
         return _list
     if isinstance(_input, list):
         _list = _input
-    if isinstance(_input, str):
-        if path.exists(_input):
-            with open(_input) as f:
-                _list = f.read().split("\n")
+    if isinstance(_input, str) and path.exists(_input):
+        with open(_input) as f:
+            _list = f.read().split("\n")
     if isinstance(_input, StringIO):
         _list = _input.read().split("\n")
     # Drop every blank line (e.g. trailing newlines) without mutating a
@@ -186,7 +181,7 @@ def _compile_rules(rules: yara.Rules | IOBase | str) -> yara.Rules:
     raise TypeError(f"Unsupported rules type: {type(rules)!r}")
 
 
-class MailScanner(object):
+class MailScanner:
     def __init__(
         self,
         header_rules: str | IOBase | yara.Rules | None = None,
@@ -536,9 +531,12 @@ class MailScanner(object):
         else:
             parsed_email = parse_email(email)
         msg_from_domain = None
-        if "from" in parsed_email and parsed_email["from"] is not None:
-            if "domain" in parsed_email["from"]:
-                msg_from_domain = parsed_email["from"]["domain"]
+        if (
+            "from" in parsed_email
+            and parsed_email["from"] is not None
+            and "domain" in parsed_email["from"]
+        ):
+            msg_from_domain = parsed_email["from"]["domain"]
         if use_raw_headers:
             headers = parsed_email["raw_headers"]
         else:
@@ -624,9 +622,8 @@ class MailScanner(object):
                 if not passed_authentication:
                     match["warnings"].append("domain-authentication-failed")
             if "category" in match["meta"]:
-                if match["meta"]["category"] == "safe":
-                    if rule_from_domains is None:
-                        match["warnings"].append("safe-rule-missing-from-domain")
+                if match["meta"]["category"] == "safe" and rule_from_domains is None:
+                    match["warnings"].append("safe-rule-missing-from-domain")
                 if len(match["warnings"]) == 0:
                     categories.append(match["meta"]["category"].lower())
 
@@ -638,16 +635,16 @@ class MailScanner(object):
         elif len(categories) > 1:
             verdict = "ambiguous"
 
-        msg_from_domain_results = dict(
-            domain=msg_from_domain,
-            authenticated=authenticated_domain,
-            implicit_safe=implicit_safe_domain,
-        )
+        msg_from_domain_results = {
+            "domain": msg_from_domain,
+            "authenticated": authenticated_domain,
+            "implicit_safe": implicit_safe_domain,
+        }
 
-        return dict(
-            matches=matches,
-            categories=categories,
-            msg_from_domain=msg_from_domain_results,
-            has_attachment=has_attachment,
-            verdict=verdict,
-        )
+        return {
+            "matches": matches,
+            "categories": categories,
+            "msg_from_domain": msg_from_domain_results,
+            "has_attachment": has_attachment,
+            "verdict": verdict,
+        }

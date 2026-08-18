@@ -1,5 +1,34 @@
 # Changelog
 
+## 3.4.2
+
+### Fixes
+
+- The CLI now exits non-zero without printing `{}` when scanning produces no
+  results (for example, when the email provided via stdin cannot be scanned).
+  The empty-results check ran after the results were serialized to JSON, so it
+  never triggered — an empty result set serializes to the non-empty string
+  `{}`, making the CLI report silent success on a failed scan.
+
+### Improvements
+
+- Automate releases and docs deployment: pushing a `v`-prefixed version tag
+  (e.g. `v3.4.2`) now runs the full CI suite (lint, type check, and a
+  Python 3.10–3.14 test matrix), builds the package, publishes it to PyPI via
+  Trusted Publishing, creates the GitHub Release with the tag's changelog
+  section as its notes, and deploys the Sphinx docs to GitHub Pages. This
+  replaces the manual `build.sh` and `publish-docs.sh` scripts.
+- Relax the `pdftotext` pin from `==2.2.2` to `>=3.0.0`. The exact pin was
+  just the latest version at the time (2022); newer releases only drop
+  long-unsupported Python and Poppler versions.
+- Raise dependency floors: `mailsuite>=2.3.1` (fixes a crash when scanning
+  malformed `.eml` attachments under mail-parser 4.6.2), `yara-python>=4.5.4`
+  (bundles YARA 4.5.4 parser robustness fixes), and `simplejson>=4.1.0`.
+- Test coverage is now 100% (statements and branches) and enforced. A dead
+  compatibility branch for tuple-style match strings in yara-python < 4.3 —
+  unreachable under the new `yara-python>=4.5.4` floor — was removed along the
+  way.
+
 ## 3.4.1
 
 ### Fixes

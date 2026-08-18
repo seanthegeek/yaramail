@@ -4,11 +4,12 @@ import argparse
 import logging
 import os
 from glob import glob
-from sys import stdin
+from sys import exit, stdin
 from typing import Any
 
 import simplejson
-from mailsuite.utils import parse_email
+import yara
+from mailsuite.utils import EmailParserError, parse_email
 
 from yaramail import MailScanner, __version__
 
@@ -169,7 +170,7 @@ def _main():
             with open(args.implicit_safe_domains) as yara_optional_file:
                 yara_safe_optional_domains = yara_optional_file.read().strip()
                 yara_safe_optional_domains = yara_safe_optional_domains.split("\n")
-        except Exception as e:
+        except (OSError, UnicodeDecodeError) as e:
             logger.error(f"Error reading {args.implicit_safe_domains}: {e}")
 
     try:
@@ -184,7 +185,7 @@ def _main():
             use_authentication_results_original=args.auth_original,
             max_zip_depth=args.max_zip_depth,
         )
-    except Exception as e:
+    except (yara.Error, OSError) as e:
         logger.error(f"Failed to parse YARA rules: {e}")
         exit(-1)
 
@@ -237,14 +238,20 @@ def _main():
                                 pruned_email["yaramail"] = results
                                 results = pruned_email
                             if verdict != category:
-                                failure = dict(
-                                    path=msg_path,
-                                    verdict=verdict,
-                                    expected=category,
-                                    results=results,
-                                )
+                                failure = {
+                                    "path": msg_path,
+                                    "verdict": verdict,
+                                    "expected": category,
+                                    "results": results,
+                                }
                                 test_failures.append(failure)
-                        except Exception as e_:
+                        except (
+                            OSError,
+                            UnicodeDecodeError,
+                            ValueError,
+                            EmailParserError,
+                            yara.Error,
+                        ) as e_:
                             logger.error(f"{msg_path}: {e_}")
                             exit(1)
         num_failed = len(test_failures)
@@ -252,12 +259,12 @@ def _main():
 
         print(
             simplejson.dumps(
-                dict(
-                    test_failures=test_failures,
-                    passed=passed,
-                    failed=num_failed,
-                    total=total,
-                ),
+                {
+                    "test_failures": test_failures,
+                    "passed": passed,
+                    "failed": num_failed,
+                    "total": total,
+                },
                 indent=2,
             )
         )
@@ -276,7 +283,7 @@ def _main():
         try:
             with open(file_path, "rb") as email_file:
                 parsed_email = parse_email(email_file.read())
-        except Exception as e:
+        except (OSError, ValueError, EmailParserError) as e:
             logger.error(f"Failed to parse email at {file_path}: {e}")
             continue
         try:
@@ -286,7 +293,7 @@ def _main():
                 use_raw_body=args.raw_body,
             )
             parsed_email["yaramail"] = scan_results
-        except Exception as e:
+        except (ValueError, yara.Error) as e:
             logger.error(f"Failed to scan {file_path}: {e}")
             continue
         parsed_email = _prune_parsed_email(parsed_email)
@@ -310,24 +317,28 @@ def _main():
             else:
                 scanned_emails = parsed_email["yaramail"]
 
-        except Exception as e:
+        except (
+            OSError,
+            UnicodeDecodeError,
+            ValueError,
+            EmailParserError,
+            yara.Error,
+        ) as e:
             logger.error(f"Failed to scan email provided via stdin: {e}")
 
+    # Check for emptiness before serializing: an empty dict still serializes
+    # to the non-empty string "{}", which would defeat this check.
+    if len(scanned_emails) == 0:
+        exit(-1)
     scanned_emails = simplejson.dumps(scanned_emails, indent=2)
     if args.output is not None:
         try:
-            if len(scanned_emails) > 0:
-                with open(args.output, "w") as output_file:
-                    output_file.write(scanned_emails)
-            else:
-                exit(-1)
-        except Exception as e:
+            with open(args.output, "w") as output_file:
+                output_file.write(scanned_emails)
+        except OSError as e:
             logger.error(f"Error writing {args.output}: {e}")
     else:
-        if len(scanned_emails) > 0:
-            print(scanned_emails)
-        else:
-            exit(-1)
+        print(scanned_emails)
 
 
 if __name__ == "__main__":
