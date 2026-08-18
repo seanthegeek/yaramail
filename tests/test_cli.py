@@ -208,7 +208,7 @@ def test_scan_missing_file_logs_error(
 def test_scan_corrupt_stdin_logs_error(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    _, _, err = _invoke(
+    code, out, err = _invoke(
         "-",
         "--rules",
         str(RULES_DIR),
@@ -217,6 +217,51 @@ def test_scan_corrupt_stdin_logs_error(
         capsys=capsys,
     )
     assert "Failed to scan email provided via stdin" in err
+    # A failed scan produces no results and must not exit 0 or emit "{}".
+    assert code != 0
+    assert out.strip() == ""
+
+
+def test_scan_failure_logs_error_and_continues(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A file that parses but fails to scan is logged and skipped."""
+    import yara
+
+    from yaramail import MailScanner
+
+    sample = SAMPLES / "safe" / "workday.eml"
+    with patch.object(
+        MailScanner, "scan_email", side_effect=yara.Error("simulated scan failure")
+    ):
+        code, _, err = _invoke(
+            str(sample),
+            "--rules",
+            str(RULES_DIR),
+            "-o",
+            capsys=capsys,
+        )
+    assert f"Failed to scan {sample}" in err
+    # Every file failed, so there are no results to report.
+    assert code != 0
+
+
+def test_scan_unreadable_file_logs_error(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A path that matches the glob but no longer exists is logged and skipped."""
+    # A broken symlink is matched by glob() but fails os.path.exists().
+    ghost = tmp_path / "ghost.eml"
+    ghost.symlink_to(tmp_path / "missing-target.eml")
+    code, _, err = _invoke(
+        str(ghost),
+        "--rules",
+        str(RULES_DIR),
+        "-o",
+        capsys=capsys,
+    )
+    assert "does not exist" in err
+    assert code != 0
 
 
 def test_raw_headers_flag_strips_headers_string(

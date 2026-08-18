@@ -326,21 +326,19 @@ def _main():
         ) as e:
             logger.error(f"Failed to scan email provided via stdin: {e}")
 
+    # Check for emptiness before serializing: an empty dict still serializes
+    # to the non-empty string "{}", which would defeat this check.
+    if len(scanned_emails) == 0:
+        exit(-1)
     scanned_emails = simplejson.dumps(scanned_emails, indent=2)
     if args.output is not None:
         try:
-            if len(scanned_emails) > 0:
-                with open(args.output, "w") as output_file:
-                    output_file.write(scanned_emails)
-            else:
-                exit(-1)
+            with open(args.output, "w") as output_file:
+                output_file.write(scanned_emails)
         except OSError as e:
             logger.error(f"Error writing {args.output}: {e}")
     else:
-        if len(scanned_emails) > 0:
-            print(scanned_emails)
-        else:
-            exit(-1)
+        print(scanned_emails)
 
 
 if __name__ == "__main__":

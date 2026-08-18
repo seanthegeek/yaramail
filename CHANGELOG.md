@@ -2,6 +2,14 @@
 
 ## 3.4.2
 
+### Fixes
+
+- The CLI now exits non-zero without printing `{}` when scanning produces no
+  results (for example, when the email provided via stdin cannot be scanned).
+  The empty-results check ran after the results were serialized to JSON, so it
+  never triggered — an empty result set serializes to the non-empty string
+  `{}`, making the CLI report silent success on a failed scan.
+
 ### Improvements
 
 - Automate releases and docs deployment: pushing a `v`-prefixed version tag
