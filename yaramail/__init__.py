@@ -102,11 +102,8 @@ def _match_to_dict(
     def match_to_dict_(_match: yara.Match) -> dict[str, Any]:
         strings: list[Any] = []
         for s in _match.strings:
-            if isinstance(s, tuple):
-                strings.append(s)
-            else:
-                for i in s.instances:
-                    strings.append((i.offset, s.identifier, i.matched_data))
+            for i in s.instances:
+                strings.append((i.offset, s.identifier, i.matched_data))
         strings = sorted(strings, key=lambda x: x[0])
         return {
             "rule": _match.rule,

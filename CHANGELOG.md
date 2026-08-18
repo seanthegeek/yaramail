@@ -24,6 +24,10 @@
 - Raise dependency floors: `mailsuite>=2.3.1` (fixes a crash when scanning
   malformed `.eml` attachments under mail-parser 4.6.2), `yara-python>=4.5.4`
   (bundles YARA 4.5.4 parser robustness fixes), and `simplejson>=4.1.0`.
+- Test coverage is now 100% (statements and branches) and enforced. A dead
+  compatibility branch for tuple-style match strings in yara-python < 4.3 —
+  unreachable under the new `yara-python>=4.5.4` floor — was removed along the
+  way.
 
 ## 3.4.1
 

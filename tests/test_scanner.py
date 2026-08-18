@@ -365,8 +365,6 @@ def test_scan_zip_with_unreadable_entries_returns_empty(
     with zipfile.ZipFile(archive, "w") as zf:
         zf.writestr("note.txt", "evil-marker")
 
-    original_open = zipfile.ZipFile.open
-
     def always_fails(
         self: zipfile.ZipFile,
         name: str | zipfile.ZipInfo,
@@ -377,14 +375,12 @@ def test_scan_zip_with_unreadable_entries_returns_empty(
     ):
         raise RuntimeError("Bad password for file")
 
+    # monkeypatch restores the original ZipFile.open at teardown.
     monkeypatch.setattr(zipfile.ZipFile, "open", always_fails)
-    try:
-        scanner = MailScanner(
-            attachment_rules="rule m { condition: true }",
-        )
-        assert scanner._scan_zip(archive.read_bytes()) == []
-    finally:
-        monkeypatch.setattr(zipfile.ZipFile, "open", original_open)
+    scanner = MailScanner(
+        attachment_rules="rule m { condition: true }",
+    )
+    assert scanner._scan_zip(archive.read_bytes()) == []
 
 
 def test_scan_email_accepts_pre_parsed_dict_without_from() -> None:

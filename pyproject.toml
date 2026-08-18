@@ -87,4 +87,10 @@ exclude_lines = [
     "raise NotImplementedError",
     "if TYPE_CHECKING:",
     "if __name__ == .__main__.:",
+    # Typing overload stubs are declarations, never executed at runtime.
+    "@overload",
 ]
+# Full statement and branch coverage is required. Code that cannot
+# meaningfully execute under the supported dependency floors should be
+# removed or excluded above, not left untested.
+fail_under = 100
