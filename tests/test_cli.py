@@ -414,3 +414,32 @@ def test_invalid_rules_exits_nonzero(
     code, _, err = _invoke(str(sample), "--rules", str(bad_rules), capsys=capsys)
     assert code != 0
     assert "Failed to parse YARA rules" in err
+
+
+def test_over_limit_file_is_logged_and_other_files_still_scan(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A message over mailsuite's limits is skipped; a normal sample is scanned.
+
+    With mailsuite 2.3.4 parsing the over-limit message took 48 s.
+    """
+    over_limit = tmp_path / "flood.eml"
+    over_limit.write_text(
+        "From: a@example.com\r\nTo: g: " + ",".join(["a@b.c"] * 250_000) + ";\r\n"
+        "Subject: x\r\n\r\nbody\r\n"
+    )
+    sample = tmp_path / "workday.eml"
+    sample.write_bytes((SAMPLES / "safe" / "workday.eml").read_bytes())
+    code, out, err = _invoke(
+        str(tmp_path / "*.eml"),
+        "--rules",
+        str(RULES_DIR),
+        "-o",
+        capsys=capsys,
+    )
+    assert f"Failed to parse email at {over_limit}" in err
+    results = json.loads(out)
+    assert str(sample) in results
+    assert str(over_limit) not in results
+    # One file scanned, so a mixed run exits 0.
+    assert code == 0

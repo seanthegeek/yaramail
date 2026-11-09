@@ -525,6 +525,17 @@ class MailScanner:
            - ``ambiguous`` - Multiple categories matched
            - Any custom ``category`` specified in the ``meta`` section of a
              YARA rule
+
+        Raises:
+            ValueError: ``email`` is text or bytes that
+                ``mailsuite.utils.parse_email()`` rejects, including a message
+                over mailsuite's structure limits
+                (``mailsuite.utils.MessageLimitExceeded``, a ``ValueError``)
+            mailsuite.utils.EmailParserError: ``email``, or a nested ``.msg``
+                attachment, is an Outlook ``.msg`` file that ``msgconvert``
+                cannot convert
+            TypeError: ``email`` is not text, bytes or a dictionary
+            yara.Error: a rule set could not be matched against the message
         """
         if isinstance(email, dict):
             parsed_email = email

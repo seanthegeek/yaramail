@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 import base64
+import time
 import zipfile
 from io import BytesIO
 from pathlib import Path
 
 import pytest
-from mailsuite.utils import parse_email
+from mailsuite.utils import MessageLimitExceeded, parse_email
 
 from yaramail import MailScanner
 
@@ -631,3 +632,73 @@ def test_use_raw_body_scans_both_plain_and_html() -> None:
     )
     result = scanner.scan_email(eml, use_raw_body=True)
     assert any(m["rule"] == "both" for m in result["matches"])
+
+
+# 250,000 members in one address group is about 1.5 MB.
+OVER_LIMIT_MESSAGE = (
+    "From: a@example.com\r\nTo: g: " + ",".join(["a@b.c"] * 250_000) + ";\r\n"
+    "Subject: x\r\n\r\nbody\r\n"
+)
+
+
+def test_forged_subject_cannot_forge_the_from_domain() -> None:
+    """An encoded word in ``Subject`` must not choose the parsed ``From``.
+
+    With mailsuite 2.3.4 the decoded line break let the subject add a
+    ``From:`` line, so this message gave the domain ``trusted.example``,
+    ``implicit_safe`` True and the verdict ``safe``.
+    """
+    message = (
+        "Authentication-Results: mx.example; dmarc=pass\r\n"
+        "From: attacker@attacker.example\r\nTo: victim@example.com\r\n"
+        "Subject: =?utf-8?q?Invoice=0AFrom:_ceo@trusted.example?=\r\n\r\n"
+        "Please wire the funds today.\r\n"
+    )
+    scanner = MailScanner(implicit_safe_domains=["trusted.example"])
+    result = scanner.scan_email(message)
+    assert result["msg_from_domain"]["domain"] == "attacker.example"
+    assert result["msg_from_domain"]["implicit_safe"] is False
+    assert result["verdict"] is None
+
+
+def test_scan_email_rejects_over_limit_message_quickly() -> None:
+    """A 250,000-member address group raises ``ValueError`` at once.
+
+    With mailsuite 2.3.4 this message took 48 s to scan (CPython 3.13).
+    """
+    scanner = MailScanner(header_rules="rule r { condition: true }")
+    started = time.monotonic()
+    with pytest.raises(ValueError) as excinfo:
+        scanner.scan_email(OVER_LIMIT_MESSAGE)
+    assert time.monotonic() - started < 2
+    assert isinstance(excinfo.value, MessageLimitExceeded)
+
+
+def test_over_limit_eml_attachment_is_logged_not_raised(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """An over-limit ``.eml`` attachment is logged; the outer message is scanned.
+
+    With mailsuite 2.3.4 parsing the attached message alone took 48 s.
+    """
+    payload = base64.b64encode(OVER_LIMIT_MESSAGE.encode()).decode()
+    lines = "\r\n".join(payload[i : i + 76] for i in range(0, len(payload), 76))
+    outer = (
+        "From: a@example.com\r\nTo: b@c.d\r\nX-Outer-Marker: 1\r\n"
+        'Content-Type: multipart/mixed; boundary="b1"\r\nSubject: x\r\n\r\n'
+        "--b1\r\nContent-Type: text/plain\r\n\r\nsee attachment\r\n--b1\r\n"
+        'Content-Type: application/octet-stream; name="nested.eml"\r\n'
+        "Content-Transfer-Encoding: base64\r\n"
+        'Content-Disposition: attachment; filename="nested.eml"\r\n\r\n'
+        f"{lines}\r\n--b1--\r\n"
+    )
+    scanner = MailScanner(
+        header_rules='rule h { strings: $a = "X-Outer-Marker: 1" condition: $a }',
+        attachment_rules="rule r { condition: true }",
+    )
+    started = time.monotonic()
+    with caplog.at_level("WARNING", logger="yaramail"):
+        result = scanner.scan_email(outer)
+    assert time.monotonic() - started < 5
+    assert any(match["rule"] == "h" for match in result["matches"])
+    assert any("Unable to scan nested.eml" in rec.message for rec in caplog.records)

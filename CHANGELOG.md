@@ -2,6 +2,38 @@
 
 ## 3.4.2
 
+### Security
+
+- A crafted email could make a scan take over a minute
+  ([GHSA-h6ch-hrq6-rpwf](https://github.com/seanthegeek/yaramail/security/advisories/GHSA-h6ch-hrq6-rpwf),
+  affects 3.4.1 and earlier with mailsuite 2.3.4 or earlier; mailsuite
+  [GHSA-748w-c9w9-79xp](https://github.com/seanthegeek/mailsuite/security/advisories/GHSA-748w-c9w9-79xp)).
+  `scan_email()` parsed every message with no limit on its structure, and a
+  `To:` header holding one address group of 250,000 members (3.5 MB) took 66
+  seconds. Blank-line, header-line and nested-multipart floods cost seconds and
+  hundreds of MB. mailsuite 2.3.5 checks the structure first and raises
+  `mailsuite.utils.MessageLimitExceeded`, a `ValueError`, in 0.01 seconds.
+  `scan_email()` lets it propagate; the CLI logs `Failed to parse email at`
+  for a file and goes on to the next one, logs `Failed to scan email provided
+  via stdin` and exits non-zero for standard input, and under `--test` logs
+  the sample's path and exits 1; a nested `.eml` or `.msg` attachment is
+  logged as `Unable to scan` and skipped while the outer message is still
+  scanned.
+- A forged `Subject` could make an untrusted email pass as a trusted sender
+  ([GHSA-84m7-f3fr-8xq4](https://github.com/seanthegeek/yaramail/security/advisories/GHSA-84m7-f3fr-8xq4),
+  affects 3.4.1 and earlier with mailsuite 1.10.0 through 2.3.4; mailsuite
+  [GHSA-x9xp-chhr-45cg](https://github.com/seanthegeek/mailsuite/security/advisories/GHSA-x9xp-chhr-45cg)).
+  An RFC 2047 encoded word in `Subject` can decode to a line break followed by
+  `From: ceo@trusted.example`, and mailsuite 2.3.4 read that line as the
+  message's `From`. The forged domain was reported as `msg_from_domain` and
+  compared with a rule's `from_domain`, and where the receiving server's
+  `Authentication-Results` gave the DMARC result without `header.from`, the
+  pass was credited to the forged domain, so the message got `implicit_safe`
+  true and the verdict `safe`. With mailsuite 2.3.5 the domain stays
+  `attacker.example`, `implicit_safe` is false and the verdict is `None`.
+
+**yaramail now requires mailsuite 2.3.5 or later.**
+
 ### Fixes
 
 - The CLI now exits non-zero without printing `{}` when scanning produces no
@@ -21,8 +53,9 @@
 - Relax the `pdftotext` pin from `==2.2.2` to `>=3.0.0`. The exact pin was
   just the latest version at the time (2022); newer releases only drop
   long-unsupported Python and Poppler versions.
-- Raise dependency floors: `mailsuite>=2.3.1` (fixes a crash when scanning
-  malformed `.eml` attachments under mail-parser 4.6.2), `yara-python>=4.5.4`
+- Raise dependency floors: `mailsuite>=2.3.5` (see Security above; 2.3.1
+  already fixed a crash when scanning malformed `.eml` attachments under
+  mail-parser 4.6.2), `yara-python>=4.5.4`
   (bundles YARA 4.5.4 parser robustness fixes), and `simplejson>=4.1.0`.
 - Test coverage is now 100% (statements and branches) and enforced. A dead
   compatibility branch for tuple-style match strings in yara-python < 4.3 —
