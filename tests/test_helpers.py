@@ -106,7 +106,7 @@ class TestCompileRules:
 
 
 class TestMatchToDict:
-    @pytest.fixture(scope="class")
+    @pytest.fixture
     def matches(self) -> list[yara.Match]:
         rules = yara.compile(source='rule r { strings: $a = "x" condition: $a }')
         return rules.match(data=b"xxx")

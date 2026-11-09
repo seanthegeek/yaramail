@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+from msg_fixtures import OLE_BYTES, build_outer_with_msg_attachment
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 RULES_DIR = REPO_ROOT / "tests"
@@ -442,4 +443,47 @@ def test_over_limit_file_is_logged_and_other_files_still_scan(
     assert str(sample) in results
     assert str(over_limit) not in results
     # One file scanned, so a mixed run exits 0.
+    assert code == 0
+
+
+@pytest.mark.usefixtures("no_msgconvert")
+def test_nested_msg_without_converter_is_logged_and_run_continues(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """An unconvertible nested ``.msg`` is logged; both files are still scanned."""
+    nested = tmp_path / "nested.eml"
+    nested.write_text(build_outer_with_msg_attachment())
+    sample = tmp_path / "workday.eml"
+    sample.write_bytes((SAMPLES / "safe" / "workday.eml").read_bytes())
+    code, out, err = _invoke(
+        str(tmp_path / "*.eml"), "--rules", str(RULES_DIR), "-o", capsys=capsys
+    )
+    assert "Unable to scan nested.msg" in err
+    results = json.loads(out)
+    assert str(nested) in results
+    assert str(sample) in results
+    assert code == 0
+
+
+@pytest.mark.usefixtures("no_msgconvert")
+def test_top_level_msg_without_converter_is_logged_and_run_continues(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A top-level ``.msg`` that cannot be converted is skipped, not fatal.
+
+    The ``not_installed`` case was already handled; only the ``fails`` case
+    exercises the new ``CalledProcessError`` handling.
+    """
+    msg = tmp_path / "a.msg"
+    msg.write_bytes(OLE_BYTES)
+    sample = tmp_path / "workday.eml"
+    sample.write_bytes((SAMPLES / "safe" / "workday.eml").read_bytes())
+    code, out, err = _invoke(
+        str(tmp_path / "*"), "--rules", str(RULES_DIR), "-o", capsys=capsys
+    )
+    assert f"Failed to parse email at {msg}" in err
+    results = json.loads(out)
+    assert str(sample) in results
+    assert str(msg) not in results
     assert code == 0
