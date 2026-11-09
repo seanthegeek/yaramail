@@ -10,6 +10,7 @@ from pathlib import Path
 
 import pytest
 from mailsuite.utils import MessageLimitExceeded, parse_email
+from msg_fixtures import build_outer_with_msg_attachment
 
 from yaramail import MailScanner
 
@@ -702,3 +703,23 @@ def test_over_limit_eml_attachment_is_logged_not_raised(
     assert time.monotonic() - started < 5
     assert any(match["rule"] == "h" for match in result["matches"])
     assert any("Unable to scan nested.eml" in rec.message for rec in caplog.records)
+
+
+@pytest.mark.usefixtures("no_msgconvert")
+def test_unconvertible_msg_attachment_is_logged_not_raised(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A nested ``.msg`` that cannot be converted is logged; the outer message is scanned.
+
+    Covers ``msgconvert`` missing and ``msgconvert`` failing on a corrupt file.
+    """
+    scanner = MailScanner(
+        header_rules='rule h { strings: $a = "X-Outer-Marker: 1" condition: $a }',
+        attachment_rules="rule r { condition: true }",
+    )
+    with caplog.at_level("WARNING", logger="yaramail"):
+        result = scanner.scan_email(
+            build_outer_with_msg_attachment("X-Outer-Marker: 1\r\n")
+        )
+    assert any(match["rule"] == "h" for match in result["matches"])
+    assert any("Unable to scan nested.msg" in rec.message for rec in caplog.records)

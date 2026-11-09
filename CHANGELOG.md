@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- A nested `.msg` attachment that could not be converted (`msgconvert` not
+  installed, or failing on a corrupt file, which mailsuite 2.3.5 lets escape as
+  `subprocess.CalledProcessError`) raised out of `scan_email()` and ended the
+  scan and the CLI run. It is now logged as `Unable to scan` and skipped, as a
+  nested `.eml` over mailsuite's limits is, and the outer message is still
+  scanned.
+
 ## 3.4.2
 
 ### Security
