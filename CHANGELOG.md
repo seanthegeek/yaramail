@@ -5,7 +5,8 @@
 ### Security
 
 - A URL in an email body could make a scan use gigabytes of memory
-  (affects 3.4.3 and earlier with mailsuite 1.9.6 through 2.3.6; mailsuite
+  ([GHSA-q4cc-j4v5-hchr](https://github.com/seanthegeek/yaramail/security/advisories/GHSA-q4cc-j4v5-hchr),
+  affects 3.4.3 and earlier with mailsuite 1.9.6 through 2.3.6; mailsuite
   [GHSA-4g5q-xm2p-2gc4](https://github.com/seanthegeek/mailsuite/security/advisories/GHSA-4g5q-xm2p-2gc4)).
   `scan_email()` parses every message with mailsuite's `parse_email()`, which
   searches the body for URLs. With mailsuite 2.3.6, one URL whose path or host
