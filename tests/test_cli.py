@@ -472,8 +472,8 @@ def test_top_level_msg_without_converter_is_logged_and_run_continues(
 ) -> None:
     """A top-level ``.msg`` that cannot be converted is skipped, not fatal.
 
-    The ``not_installed`` case was already handled; only the ``fails`` case
-    exercises the new ``CalledProcessError`` handling.
+    Covers ``msgconvert`` missing and ``msgconvert`` failing on a corrupt file;
+    mailsuite raises ``EmailParserError`` for both.
     """
     msg = tmp_path / "a.msg"
     msg.write_bytes(OLE_BYTES)

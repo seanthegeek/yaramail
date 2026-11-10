@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import base64
 import time
+import tracemalloc
 import zipfile
 from io import BytesIO
 from pathlib import Path
@@ -703,6 +704,35 @@ def test_over_limit_eml_attachment_is_logged_not_raised(
     assert time.monotonic() - started < 5
     assert any(match["rule"] == "h" for match in result["matches"])
     assert any("Unable to scan nested.eml" in rec.message for rec in caplog.records)
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        pytest.param("http://example.com/" + "a." * 100_000 + "a", id="dotted-path"),
+        pytest.param("http://" + "a." * 100_000 + "a/x", id="dotted-host"),
+    ],
+)
+def test_long_dotted_url_in_body_scans_in_bounded_memory(url: str) -> None:
+    """A 200,000-character dotted URL in the body costs little memory to scan.
+
+    With mailsuite 2.3.6 the URL search in ``parse_email()`` held 100 to 200
+    bytes per character of such a URL: a peak of 41.5 MB for the dotted path
+    and 21.0 MB for the dotted host, where 2.3.7 peaks at 3.2 MB and 1.9 MB
+    (GHSA-4g5q-xm2p-2gc4).
+    """
+    message = (
+        f"From: a@example.com\r\nTo: b@example.net\r\nSubject: x\r\n\r\nsee {url}\r\n"
+    )
+    scanner = MailScanner(body_rules="rule r { condition: true }")
+    tracemalloc.start()
+    try:
+        result = scanner.scan_email(message)
+        _, peak = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+    assert any(match["rule"] == "r" for match in result["matches"])
+    assert peak < 10_000_000
 
 
 @pytest.mark.usefixtures("no_msgconvert")

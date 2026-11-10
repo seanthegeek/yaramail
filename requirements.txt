@@ -1,4 +1,4 @@
-mailsuite>=2.3.5
+mailsuite>=2.3.7
 yara-python>=4.5.4
 pdftotext>=3.0.0
 simplejson>=4.1.0

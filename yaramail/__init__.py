@@ -1,7 +1,6 @@
 import binascii
 import logging
 import re
-import subprocess
 import zipfile
 from io import BytesIO, IOBase, StringIO
 from os import listdir, path
@@ -19,7 +18,7 @@ from mailsuite.utils import (
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
-__version__ = "3.4.3"
+__version__ = "3.4.4"
 
 _T = TypeVar("_T")
 
@@ -450,16 +449,11 @@ class MailScanner:
                     nested = self.scan_email(parse_email(payload))
                     nested_matches = add_location(nested["matches"], filename)
                     combined_attachment_matches += nested_matches
-                except (
-                    ValueError,
-                    EmailParserError,
-                    subprocess.CalledProcessError,
-                ) as e:
+                except (ValueError, EmailParserError) as e:
                     # ``parse_email`` raises ValueError when the attachment is
                     # not a parseable email, and EmailParserError when a
-                    # ``.msg`` attachment cannot be converted. mailsuite 2.3.5
-                    # lets CalledProcessError escape when ``msgconvert`` fails
-                    # on a corrupt ``.msg``.
+                    # ``.msg`` attachment cannot be converted (``msgconvert``
+                    # missing, or failing on a corrupt file).
                     logger.warning(f"Unable to scan {filename}. {e}.")
 
         return combined_attachment_matches
@@ -545,11 +539,9 @@ class MailScanner:
                 over mailsuite's structure limits
                 (``mailsuite.utils.MessageLimitExceeded``, a ``ValueError``)
             mailsuite.utils.EmailParserError: ``email`` is an Outlook ``.msg``
-                file that ``msgconvert`` cannot convert. A nested ``.msg``
-                attachment that cannot be converted is logged and skipped
-            subprocess.CalledProcessError: ``email`` is an Outlook ``.msg``
-                file on which ``msgconvert`` fails (mailsuite 2.3.5 does not
-                wrap it); a nested one is logged and skipped
+                file that ``msgconvert`` cannot convert, because it is not
+                installed or fails on the file. A nested ``.msg`` attachment
+                that cannot be converted is logged and skipped
             TypeError: ``email`` is not text, bytes or a dictionary
             yara.Error: a rule set could not be matched against the message
         """
