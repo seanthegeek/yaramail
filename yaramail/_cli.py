@@ -3,7 +3,6 @@
 import argparse
 import logging
 import os
-import subprocess
 from glob import glob
 from sys import exit, stdin
 from typing import Any
@@ -284,14 +283,7 @@ def _main():
         try:
             with open(file_path, "rb") as email_file:
                 parsed_email = parse_email(email_file.read())
-        # mailsuite 2.3.5 lets CalledProcessError escape when msgconvert
-        # fails on a corrupt .msg.
-        except (
-            OSError,
-            ValueError,
-            EmailParserError,
-            subprocess.CalledProcessError,
-        ) as e:
+        except (OSError, ValueError, EmailParserError) as e:
             logger.error(f"Failed to parse email at {file_path}: {e}")
             continue
         try:

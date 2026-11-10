@@ -1,5 +1,33 @@
 # Changelog
 
+## 3.4.4
+
+### Security
+
+- A URL in an email body could make a scan use gigabytes of memory
+  ([GHSA-q4cc-j4v5-hchr](https://github.com/seanthegeek/yaramail/security/advisories/GHSA-q4cc-j4v5-hchr),
+  affects 3.4.3 and earlier with mailsuite 1.9.6 through 2.3.6; mailsuite
+  [GHSA-4g5q-xm2p-2gc4](https://github.com/seanthegeek/mailsuite/security/advisories/GHSA-4g5q-xm2p-2gc4)).
+  `scan_email()` parses every message with mailsuite's `parse_email()`, which
+  searches the body for URLs. With mailsuite 2.3.6, one URL whose path or host
+  is a long run of dot-separated parts (`http://example.com/a.a.a.a…`) made
+  that search hold 100 to 200 bytes of memory for each character of the URL.
+  A 10.4 MB message, every line of it short because the body is
+  quoted-printable, took `scan_email()` to a peak of 1.76 GB, and the same
+  message attached as a `.eml` to 1.83 GB. Scanning can then end in a
+  `MemoryError` or the process can be killed. With mailsuite 2.3.7 the same
+  messages peak at 155 MB and 218 MB. yaramail now requires mailsuite 2.3.7 or
+  later.
+
+### Changed
+
+- With mailsuite 2.3.7 required, `msgconvert` failing on a corrupt Outlook
+  `.msg` raises `mailsuite.utils.EmailParserError`, as a missing `msgconvert`
+  already did, so `scan_email()` no longer raises
+  `subprocess.CalledProcessError`. A nested `.msg` that cannot be converted is
+  still logged as `Unable to scan` and skipped, and the CLI still logs
+  `Failed to parse email at` for a top-level one and moves on.
+
 ## 3.4.3
 
 ### Fixed
