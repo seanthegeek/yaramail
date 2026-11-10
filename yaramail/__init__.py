@@ -19,7 +19,7 @@ from mailsuite.utils import (
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
-__version__ = "3.4.2"
+__version__ = "3.4.3"
 
 _T = TypeVar("_T")
 
